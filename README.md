@@ -1,2 +1,2 @@
 # vite-plugin-static-copy
- rollup-plugin-copy with dev server support.
+rollup-plugin-copy for vite with dev server support.

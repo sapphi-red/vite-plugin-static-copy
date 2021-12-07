@@ -1,0 +1,56 @@
+{
+  "name": "vite-plugin-static-copy",
+  "version": "0.1.0",
+  "description": "rollup-plugin-copy for vite with dev server support.",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "typings": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "engines": {
+    "node": ">=14"
+  },
+  "scripts": {
+    "dev": "npm run build -- --watch",
+    "build": "tsup src/index.ts --dts --format cjs,esm --target=node14",
+    "lint": "eslint --cache .",
+    "type-check": "tsc --noEmit"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sapphi-red/vite-plugin-static-copy.git"
+  },
+  "keywords": [
+    "vite",
+    "vite-plugin"
+  ],
+  "author": "sapphi-red (https://github.com/sapphi-red)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sapphi-red/vite-plugin-static-copy/issues"
+  },
+  "homepage": "https://github.com/sapphi-red/vite-plugin-static-copy#readme",
+  "sideEffects": false,
+  "devDependencies": {
+    "@types/fs-extra": "^9.0.13",
+    "@types/node": "^16.11.11",
+    "@typescript-eslint/eslint-plugin": "^5.5.0",
+    "@typescript-eslint/parser": "^5.5.0",
+    "@typescript/lib-dom": "npm:@types/web@^0.0.47",
+    "eslint": "^8.3.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "prettier": "^2.5.0",
+    "tsup": "^5.10.1",
+    "typescript": "^4.5.2",
+    "vite": "^2.6.14"
+  },
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "fast-glob": "^3.2.7",
+    "fs-extra": "^10.0.0",
+    "sirv": "^1.0.19"
+  }
+}
