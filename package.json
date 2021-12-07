@@ -33,6 +33,9 @@
   },
   "homepage": "https://github.com/sapphi-red/vite-plugin-static-copy#readme",
   "sideEffects": false,
+  "peerDependencies": {
+    "vite": "^2.6.14"
+  },
   "devDependencies": {
     "@types/fs-extra": "^9.0.13",
     "@types/node": "^16.11.11",
