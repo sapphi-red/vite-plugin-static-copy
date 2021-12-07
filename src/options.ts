@@ -1,8 +1,28 @@
-export type Target = { src: string | string[]; dest: string }
+export type Target = {
+  /**
+   * path or glob
+   */
+  src: string | string[]
+  /**
+   * destination
+   */
+  dest: string
+}
 
 export type ViteStaticCopyOptions = {
+  /**
+   * Directory to save cache files.
+   * @default 'node_modules/.vite-static-copy'
+   */
   devCopyDir?: string
+  /**
+   * Array of targets to copy.
+   */
   targets: Target[]
+  /**
+   * Remove the directory structure.
+   * @default true
+   */
   flatten?: boolean
 }
 
