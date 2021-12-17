@@ -24,12 +24,17 @@ export type ViteStaticCopyOptions = {
    * @default true
    */
   flatten?: boolean
+  /**
+   * Cleanup devCopyDir
+   */
+  cleanup?: boolean
 }
 
 export type ResolvedViteStaticCopyOptions = {
   devCopyDir: string
   targets: Target[]
   flatten: boolean
+  cleanup: boolean
 }
 
 export const resolveOptions = (
@@ -37,5 +42,6 @@ export const resolveOptions = (
 ): ResolvedViteStaticCopyOptions => ({
   devCopyDir: options.devCopyDir ?? 'node_modules/.vite-static-copy',
   targets: options.targets,
-  flatten: options.flatten ?? true
+  flatten: options.flatten ?? true,
+  cleanup: options.cleanup ?? true
 })
