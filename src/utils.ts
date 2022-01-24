@@ -12,7 +12,7 @@ export const collectCopyTargets = async (
 ) => {
   const copyTargets: Array<SimpleTarget> = []
 
-  for (const { src, dest } of targets) {
+  for (const { src, dest, rename = '' } of targets) {
     const matchedPaths = await fastglob(src, {
       onlyFiles: false,
       dot: true
@@ -27,7 +27,10 @@ export const collectCopyTargets = async (
           : // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             dir.replace(dir.split('/')[0]!, dest)
 
-      copyTargets.push({ src: matchedPath, dest: path.join(destDir, base) })
+      copyTargets.push({
+        src: matchedPath,
+        dest: path.join(destDir, rename || base)
+      })
     }
   }
   return copyTargets

@@ -7,6 +7,10 @@ export type Target = {
    * destination
    */
   dest: string
+  /**
+   * rename
+   */
+  rename?: string
 }
 
 export type ViteStaticCopyOptions = {
