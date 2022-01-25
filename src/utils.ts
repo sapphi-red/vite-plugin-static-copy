@@ -12,7 +12,7 @@ export const collectCopyTargets = async (
 ) => {
   const copyTargets: Array<SimpleTarget> = []
 
-  for (const { src, dest, rename = '' } of targets) {
+  for (const { src, dest, rename } of targets) {
     const matchedPaths = await fastglob(src, {
       onlyFiles: false,
       dot: true
@@ -29,7 +29,7 @@ export const collectCopyTargets = async (
 
       copyTargets.push({
         src: matchedPath,
-        dest: path.join(destDir, rename || base)
+        dest: path.join(destDir, rename ?? base)
       })
     }
   }
