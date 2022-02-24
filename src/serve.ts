@@ -22,13 +22,14 @@ export const servePlugin = ({
         }
         fileMap.set(dest, target.src)
       }
-
-      outputCollectedLog(copyTargets.length)
     },
     configureServer(server) {
-      return () => {
-        server.middlewares.use(serveStaticCopyMiddleware(fileMap))
-      }
+      server.middlewares.use(serveStaticCopyMiddleware(fileMap))
+      server.httpServer?.once('listening', () => {
+        setTimeout(() => {
+          outputCollectedLog(fileMap.size)
+        }, 0)
+      })
     }
   }
 }

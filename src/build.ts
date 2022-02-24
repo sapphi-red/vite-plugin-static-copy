@@ -7,6 +7,7 @@ export const buildPlugin = ({
   flatten
 }: ResolvedViteStaticCopyOptions): Plugin => {
   let viteConfigBuildOutDir: string | undefined
+  let copyCount: number | undefined
 
   return {
     name: 'vite-plugin-static-copy:build',
@@ -19,7 +20,9 @@ export const buildPlugin = ({
         throw new Error('viteConfigBuildOutDir is undefined. What happened...?')
       }
 
-      const copyCount = await copyAll(viteConfigBuildOutDir, targets, flatten)
+      copyCount = await copyAll(viteConfigBuildOutDir, targets, flatten)
+    },
+    closeBundle() {
       outputCopyLog(copyCount)
     }
   }

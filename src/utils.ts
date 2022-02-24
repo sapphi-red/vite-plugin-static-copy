@@ -58,8 +58,12 @@ export const outputCollectedLog = (collectCount: number) => {
   }
 }
 
-export const outputCopyLog = (copyCount: number) => {
-  if (copyCount > 0) {
+export const outputCopyLog = (copyCount: number | undefined) => {
+  if (copyCount === undefined) {
+    console.log(
+      chalk.yellow('[vite-plugin-static-copy] Copy count was not set.')
+    )
+  } else if (copyCount > 0) {
     console.log(
       chalk.green(`[vite-plugin-static-copy] Copied ${copyCount} items.`)
     )
