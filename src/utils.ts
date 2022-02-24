@@ -1,7 +1,7 @@
 import fastglob from 'fast-glob'
 import path from 'path'
 import fs from 'fs-extra'
-import chalk from 'chalk'
+import pc from 'picocolors'
 import { Target } from './options'
 
 type SimpleTarget = { src: string; dest: string }
@@ -51,23 +51,21 @@ export const copyAll = async (
 export const outputCollectedLog = (collectCount: number) => {
   if (collectCount > 0) {
     console.log(
-      chalk.green(`[vite-plugin-static-copy] Collected ${collectCount} items.`)
+      pc.green(`[vite-plugin-static-copy] Collected ${collectCount} items.`)
     )
   } else {
-    console.log(chalk.yellow('[vite-plugin-static-copy] No items found.'))
+    console.log(pc.yellow('[vite-plugin-static-copy] No items found.'))
   }
 }
 
 export const outputCopyLog = (copyCount: number | undefined) => {
   if (copyCount === undefined) {
-    console.log(
-      chalk.yellow('[vite-plugin-static-copy] Copy count was not set.')
-    )
+    console.log(pc.yellow('[vite-plugin-static-copy] Copy count was not set.'))
   } else if (copyCount > 0) {
     console.log(
-      chalk.green(`[vite-plugin-static-copy] Copied ${copyCount} items.`)
+      pc.green(`[vite-plugin-static-copy] Copied ${copyCount} items.`)
     )
   } else {
-    console.log(chalk.yellow('[vite-plugin-static-copy] No items to copy.'))
+    console.log(pc.yellow('[vite-plugin-static-copy] No items to copy.'))
   }
 }
