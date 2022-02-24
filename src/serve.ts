@@ -1,31 +1,33 @@
 import { Plugin } from 'vite'
-import fs from 'fs-extra'
 import { ResolvedViteStaticCopyOptions } from './options'
-import { servePublicMiddleware } from './middleware'
-import { copyAll, outputCopyLog } from './utils'
+import { serveStaticCopyMiddleware } from './middleware'
+import { collectCopyTargets, outputCollectedLog } from './utils'
 
 export const servePlugin = ({
-  devCopyDir,
   targets,
   flatten
 }: ResolvedViteStaticCopyOptions): Plugin => {
+  const fileMap = new Map<string, string>()
+
   return {
     name: 'vite-plugin-static-copy:serve',
     apply: 'serve',
     async buildStart() {
-      // copy again
-      try {
-        await fs.rm(devCopyDir, { force: true, recursive: true })
-        // eslint-disable-next-line no-empty
-      } catch {}
-      await fs.mkdir(devCopyDir, { recursive: true })
+      const copyTargets = await collectCopyTargets(targets, flatten)
 
-      const copyCount = await copyAll(devCopyDir, targets, flatten)
-      outputCopyLog(copyCount)
+      for (const target of [...copyTargets].reverse()) {
+        let dest = target.dest.replace(/\\/g, '/')
+        if (!dest.startsWith('/')) {
+          dest = `/${dest}`
+        }
+        fileMap.set(dest, target.src)
+      }
+
+      outputCollectedLog(copyTargets.length)
     },
     configureServer(server) {
       return () => {
-        server.middlewares.use(servePublicMiddleware(devCopyDir))
+        server.middlewares.use(serveStaticCopyMiddleware(fileMap))
       }
     }
   }

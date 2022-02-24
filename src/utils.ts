@@ -48,6 +48,16 @@ export const copyAll = async (
   return copyTargets.length
 }
 
+export const outputCollectedLog = (collectCount: number) => {
+  if (collectCount > 0) {
+    console.log(
+      chalk.green(`[vite-plugin-static-copy] Collected ${collectCount} items.`)
+    )
+  } else {
+    console.log(chalk.yellow('[vite-plugin-static-copy] No items found.'))
+  }
+}
+
 export const outputCopyLog = (copyCount: number) => {
   if (copyCount > 0) {
     console.log(
