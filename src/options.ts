@@ -25,16 +25,26 @@ export type ViteStaticCopyOptions = {
    * @default true
    */
   flatten?: boolean
-  /**
-   * Watch options
-   */
-  watchOptions?: WatchOptions
+  watch?: {
+    /**
+     * Watch options
+     */
+    options?: WatchOptions
+    /**
+     * Reloads page on file change when true
+     * @default false
+     */
+    reloadPageOnChange?: boolean
+  }
 }
 
 export type ResolvedViteStaticCopyOptions = {
   targets: Target[]
   flatten: boolean
-  watchOptions: WatchOptions
+  watch: {
+    options: WatchOptions
+    reloadPageOnChange: boolean
+  }
 }
 
 export const resolveOptions = (
@@ -42,5 +52,8 @@ export const resolveOptions = (
 ): ResolvedViteStaticCopyOptions => ({
   targets: options.targets,
   flatten: options.flatten ?? true,
-  watchOptions: options.watchOptions ?? {}
+  watch: {
+    options: options.watch?.options ?? {},
+    reloadPageOnChange: options.watch?.reloadPageOnChange ?? false
+  }
 })
