@@ -1,3 +1,5 @@
+import { WatchOptions } from 'chokidar'
+
 export type Target = {
   /**
    * path or glob
@@ -23,16 +25,22 @@ export type ViteStaticCopyOptions = {
    * @default true
    */
   flatten?: boolean
+  /**
+   * Watch options
+   */
+  watchOptions?: WatchOptions
 }
 
 export type ResolvedViteStaticCopyOptions = {
   targets: Target[]
   flatten: boolean
+  watchOptions: WatchOptions
 }
 
 export const resolveOptions = (
   options: ViteStaticCopyOptions
 ): ResolvedViteStaticCopyOptions => ({
   targets: options.targets,
-  flatten: options.flatten ?? true
+  flatten: options.flatten ?? true,
+  watchOptions: options.watchOptions ?? {}
 })

@@ -48,6 +48,20 @@ export const copyAll = async (
   return copyTargets.length
 }
 
+export const updateFileMapFromTargets = (
+  targets: SimpleTarget[],
+  fileMap: Map<string, string>
+) => {
+  fileMap.clear()
+  for (const target of [...targets].reverse()) {
+    let dest = target.dest.replace(/\\/g, '/')
+    if (!dest.startsWith('/')) {
+      dest = `/${dest}`
+    }
+    fileMap.set(dest, target.src)
+  }
+}
+
 export const outputCollectedLog = (collectCount: number) => {
   if (collectCount > 0) {
     console.log(
