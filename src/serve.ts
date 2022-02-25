@@ -4,10 +4,12 @@ import { serveStaticCopyMiddleware } from './middleware'
 import {
   collectCopyTargets,
   updateFileMapFromTargets,
-  outputCollectedLog
+  outputCollectedLog,
+  formatConsole
 } from './utils'
 import { debounce } from 'throttle-debounce'
 import chokidar from 'chokidar'
+import pc from 'picocolors'
 
 export const servePlugin = ({
   targets,
@@ -40,20 +42,39 @@ export const servePlugin = ({
         targets.flatMap(target => target.src),
         {
           cwd: config.root,
+          ignoreInitial: true,
           ...watch.options
         }
       )
-      watcher.on('add', async () => {
+      watcher.on('add', async path => {
+        config.logger.info(
+          formatConsole(`${pc.green('detected new file')} ${path}`),
+          {
+            timestamp: true
+          }
+        )
         await collectFileMapDebounce()
         if (watch.reloadPageOnChange) {
           reloadPage()
         }
       })
       if (watch.reloadPageOnChange) {
-        watcher.on('change', () => {
+        watcher.on('change', path => {
+          config.logger.info(
+            formatConsole(`${pc.green('file changed')} ${path}`),
+            {
+              timestamp: true
+            }
+          )
           reloadPage()
         })
-        watcher.on('unlink', () => {
+        watcher.on('unlink', path => {
+          config.logger.info(
+            formatConsole(`${pc.green('file deleted')} ${path}`),
+            {
+              timestamp: true
+            }
+          )
           reloadPage()
         })
       }

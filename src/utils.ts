@@ -62,24 +62,23 @@ export const updateFileMapFromTargets = (
   }
 }
 
+export const formatConsole = (msg: string) =>
+  `${pc.cyan('[vite-plugin-static-copy]')} ${msg}`
+
 export const outputCollectedLog = (collectCount: number) => {
   if (collectCount > 0) {
-    console.log(
-      pc.green(`[vite-plugin-static-copy] Collected ${collectCount} items.`)
-    )
+    console.log(formatConsole(pc.green(`Collected ${collectCount} items.`)))
   } else {
-    console.log(pc.yellow('[vite-plugin-static-copy] No items found.'))
+    console.log(formatConsole(pc.yellow('No items found.')))
   }
 }
 
 export const outputCopyLog = (copyCount: number | undefined) => {
   if (copyCount === undefined) {
-    console.log(pc.yellow('[vite-plugin-static-copy] Copy count was not set.'))
+    console.log(formatConsole(pc.yellow('Copy count was not set.')))
   } else if (copyCount > 0) {
-    console.log(
-      pc.green(`[vite-plugin-static-copy] Copied ${copyCount} items.`)
-    )
+    console.log(formatConsole(pc.green(`Copied ${copyCount} items.`)))
   } else {
-    console.log(pc.yellow('[vite-plugin-static-copy] No items to copy.'))
+    console.log(formatConsole(pc.yellow('No items to copy.')))
   }
 }
