@@ -14,7 +14,6 @@ export const servePlugin = ({
   flatten,
   watch
 }: ResolvedViteStaticCopyOptions): Plugin => {
-  let viteConfigRoot: string | undefined
   const fileMap = new Map<string, string>()
 
   const collectFileMap = async () => {
@@ -28,26 +27,19 @@ export const servePlugin = ({
   return {
     name: 'vite-plugin-static-copy:serve',
     apply: 'serve',
-    configResolved(config) {
-      viteConfigRoot = config.root
-    },
     async buildStart() {
       await collectFileMap()
     },
-    configureServer(server) {
-      if (viteConfigRoot === undefined) {
-        throw new Error('viteConfigRoot is undefined. What happened...?')
-      }
-
+    configureServer({ httpServer, middlewares, ws, config }) {
       const reloadPage = () => {
-        server.ws.send({ type: 'full-reload', path: '*' })
+        ws.send({ type: 'full-reload', path: '*' })
       }
 
       // cannot use server.watcher since disableGlobbing is true
       const watcher = chokidar.watch(
         targets.flatMap(target => target.src),
         {
-          cwd: viteConfigRoot,
+          cwd: config.root,
           ...watch.options
         }
       )
@@ -66,8 +58,8 @@ export const servePlugin = ({
         })
       }
 
-      server.middlewares.use(serveStaticCopyMiddleware(fileMap))
-      server.httpServer?.once('listening', () => {
+      middlewares.use(serveStaticCopyMiddleware(fileMap))
+      httpServer?.once('listening', () => {
         setTimeout(() => {
           outputCollectedLog(fileMap.size)
         }, 0)
