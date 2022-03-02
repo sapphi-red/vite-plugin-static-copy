@@ -13,9 +13,9 @@ module.exports = {
   },
   overrides: [
     {
-      // 直下のファイル
-      files: ['*.{js,mjs}'],
-      excludedFiles: ['*/**/*.{js,mjs}'],
+      // root files
+      files: ['*.{js,cjs}'],
+      excludedFiles: ['*/**/*.{js,cjs}'],
       env: {
         node: true
       },

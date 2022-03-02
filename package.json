@@ -2,9 +2,17 @@
   "name": "vite-plugin-static-copy",
   "version": "0.3.0",
   "description": "rollup-plugin-copy for vite with dev server support.",
-  "main": "dist/index.js",
-  "module": "dist/index.mjs",
-  "typings": "dist/index.d.ts",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs",
+      "type": "./dist/index.d.ts"
+    }
+  },
   "files": [
     "dist",
     "src"
