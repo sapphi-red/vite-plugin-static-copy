@@ -13,8 +13,8 @@
     "node": ">=14"
   },
   "scripts": {
-    "dev": "npm run build -- --watch",
-    "build": "tsup src/index.ts --dts --format cjs,esm --target=node14",
+    "dev": "tsup --watch",
+    "build": "tsup",
     "lint": "eslint --cache .",
     "type-check": "tsc --noEmit"
   },
