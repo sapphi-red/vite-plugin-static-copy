@@ -1,4 +1,4 @@
-import { WatchOptions } from 'chokidar'
+import type { WatchOptions } from 'chokidar'
 
 export type Target = {
   /**

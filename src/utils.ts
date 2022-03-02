@@ -2,7 +2,7 @@ import fastglob from 'fast-glob'
 import path from 'path'
 import fs from 'fs-extra'
 import pc from 'picocolors'
-import { Target } from './options'
+import type { Target } from './options'
 
 type SimpleTarget = { src: string; dest: string }
 

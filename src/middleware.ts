@@ -11,8 +11,8 @@
 import { parse } from '@polka/url'
 import { lookup } from 'mrmime'
 import { statSync, createReadStream, Stats } from 'fs'
-import { Connect } from 'vite'
-import { IncomingMessage, OutgoingHttpHeaders, ServerResponse } from 'http'
+import type { Connect } from 'vite'
+import type { IncomingMessage, OutgoingHttpHeaders, ServerResponse } from 'http'
 
 const FS_PREFIX = `/@fs/`
 const VALID_ID_PREFIX = `/@id/`
@@ -39,6 +39,7 @@ function viaLocal(fileMap: Map<string, string>, uri: string) {
     const headers = toHeaders(file, stats)
     return { file, stats, headers }
   }
+  return undefined
 }
 
 function toHeaders(name: string, stats: Stats) {

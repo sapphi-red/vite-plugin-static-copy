@@ -1,5 +1,5 @@
-import { Plugin } from 'vite'
-import { ResolvedViteStaticCopyOptions } from './options'
+import type { Plugin } from 'vite'
+import type { ResolvedViteStaticCopyOptions } from './options'
 import { serveStaticCopyMiddleware } from './middleware'
 import {
   collectCopyTargets,

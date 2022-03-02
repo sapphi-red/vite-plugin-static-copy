@@ -1,4 +1,4 @@
-import { Plugin } from 'vite'
+import type { Plugin } from 'vite'
 import { resolveOptions, ViteStaticCopyOptions } from './options'
 import { servePlugin } from './serve'
 import { buildPlugin } from './build'
