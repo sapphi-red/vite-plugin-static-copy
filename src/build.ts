@@ -1,4 +1,4 @@
-import type { Plugin } from 'vite'
+import type { Plugin, ResolvedConfig } from 'vite'
 import type { ResolvedViteStaticCopyOptions } from './options'
 import { copyAll, outputCopyLog } from './utils'
 
@@ -6,27 +6,25 @@ export const buildPlugin = ({
   targets,
   flatten
 }: ResolvedViteStaticCopyOptions): Plugin => {
-  let viteConfigRoot: string
-  let viteConfigBuildOutDir: string
+  let config: ResolvedConfig
   let copyCount: number | undefined
 
   return {
     name: 'vite-plugin-static-copy:build',
     apply: 'build',
-    configResolved(config) {
-      viteConfigRoot = config.root
-      viteConfigBuildOutDir = config.build.outDir
+    configResolved(_config) {
+      config = _config
     },
     async writeBundle() {
       copyCount = await copyAll(
-        viteConfigRoot,
-        viteConfigBuildOutDir,
+        config.root,
+        config.build.outDir,
         targets,
         flatten
       )
     },
     closeBundle() {
-      outputCopyLog(copyCount)
+      outputCopyLog(config.logger, copyCount)
     }
   }
 }

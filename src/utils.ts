@@ -3,6 +3,7 @@ import path from 'path'
 import fs from 'fs-extra'
 import pc from 'picocolors'
 import type { Target } from './options'
+import type { Logger } from 'vite'
 
 type SimpleTarget = { src: string; dest: string }
 
@@ -70,20 +71,23 @@ export const updateFileMapFromTargets = (
 export const formatConsole = (msg: string) =>
   `${pc.cyan('[vite-plugin-static-copy]')} ${msg}`
 
-export const outputCollectedLog = (collectCount: number) => {
+export const outputCollectedLog = (logger: Logger, collectCount: number) => {
   if (collectCount > 0) {
-    console.log(formatConsole(pc.green(`Collected ${collectCount} items.`)))
+    logger.info(formatConsole(pc.green(`Collected ${collectCount} items.`)))
   } else {
-    console.log(formatConsole(pc.yellow('No items found.')))
+    logger.warn(formatConsole(pc.yellow('No items found.')))
   }
 }
 
-export const outputCopyLog = (copyCount: number | undefined) => {
+export const outputCopyLog = (
+  logger: Logger,
+  copyCount: number | undefined
+) => {
   if (copyCount === undefined) {
-    console.log(formatConsole(pc.yellow('Copy count was not set.')))
+    logger.error(formatConsole(pc.yellow('Copy count was not set.')))
   } else if (copyCount > 0) {
-    console.log(formatConsole(pc.green(`Copied ${copyCount} items.`)))
+    logger.info(formatConsole(pc.green(`Copied ${copyCount} items.`)))
   } else {
-    console.log(formatConsole(pc.yellow('No items to copy.')))
+    logger.warn(formatConsole(pc.yellow('No items to copy.')))
   }
 }
