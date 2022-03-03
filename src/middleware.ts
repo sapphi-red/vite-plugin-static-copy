@@ -95,7 +95,8 @@ function send(
     if (start >= stats.size || end >= stats.size) {
       res.setHeader('Content-Range', `bytes */${stats.size}`)
       res.statusCode = 416
-      return res.end()
+      res.end()
+      return
     }
 
     headers['Content-Range'] = `bytes ${start}-${end}/${stats.size}`
