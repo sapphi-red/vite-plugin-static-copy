@@ -23,7 +23,8 @@
     "dev": "tsup --watch",
     "build": "tsup",
     "lint": "eslint --cache .",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "test": "vitest"
   },
   "repository": {
     "type": "git",
@@ -54,12 +55,15 @@
     "eslint-config-prettier": "^8.4.0",
     "eslint-plugin-prettier": "^4.0.0",
     "mrmime": "^1.0.0",
+    "node-fetch": "^3.2.1",
     "picocolors": "^1.0.0",
     "prettier": "^2.5.1",
     "throttle-debounce": "^3.0.1",
     "tsup": "^5.11.13",
     "typescript": "^4.5.5",
-    "vite": "^2.8.4"
+    "vite": "^2.8.4",
+    "vitest": "^0.5.9",
+    "vitest-github-actions-reporter": "^0.1.6"
   },
   "dependencies": {
     "chokidar": "^3.5.3",
