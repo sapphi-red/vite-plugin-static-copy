@@ -74,7 +74,7 @@ jobs:
     needs: [packages]
     strategy:
       matrix:
-        node_version: [14.x, 16.x]
+        node_version: [12.x, 14.x, 16.x]
         os: [ubuntu-latest, windows-latest]
     steps:
       - name: checkout
