@@ -7,7 +7,11 @@ export default defineConfig({
       targets: [
         {
           src: 'foo.txt',
-          dest: 'fixture'
+          dest: 'fixture1'
+        },
+        {
+          src: 'foo.*',
+          dest: 'fixture2'
         }
       ]
     })
