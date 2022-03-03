@@ -68,3 +68,23 @@ jobs:
         run: npm ci
       - name: run build
         run: npm run build
+  test:
+    name: run test
+    runs-on: ubuntu-latest
+    needs: [packages]
+    strategy:
+      matrix:
+        node_version: [14.x, 16.x]
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: setup Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node_version }}
+          cache: npm
+      - name: npm ci
+        run: npm ci
+      - name: run test
+        run: npm run test
