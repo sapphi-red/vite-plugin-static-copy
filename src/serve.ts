@@ -1,4 +1,4 @@
-import type { Plugin } from 'vite'
+import type { Plugin, ResolvedConfig } from 'vite'
 import type { ResolvedViteStaticCopyOptions } from './options'
 import { serveStaticCopyMiddleware } from './middleware'
 import {
@@ -16,10 +16,11 @@ export const servePlugin = ({
   flatten,
   watch
 }: ResolvedViteStaticCopyOptions): Plugin => {
+  let config: ResolvedConfig
   const fileMap = new Map<string, string>()
 
   const collectFileMap = async () => {
-    const copyTargets = await collectCopyTargets(targets, flatten)
+    const copyTargets = await collectCopyTargets(config.root, targets, flatten)
     updateFileMapFromTargets(copyTargets, fileMap)
   }
   const collectFileMapDebounce = debounce(100, async () => {
@@ -29,10 +30,13 @@ export const servePlugin = ({
   return {
     name: 'vite-plugin-static-copy:serve',
     apply: 'serve',
+    configResolved(_config) {
+      config = _config
+    },
     async buildStart() {
       await collectFileMap()
     },
-    configureServer({ httpServer, middlewares, ws, config }) {
+    configureServer({ httpServer, middlewares, ws }) {
       const reloadPage = () => {
         ws.send({ type: 'full-reload', path: '*' })
       }
@@ -79,7 +83,7 @@ export const servePlugin = ({
         })
       }
 
-      middlewares.use(serveStaticCopyMiddleware(fileMap))
+      middlewares.use(serveStaticCopyMiddleware(config.root, fileMap))
       httpServer?.once('listening', () => {
         setTimeout(() => {
           outputCollectedLog(fileMap.size)

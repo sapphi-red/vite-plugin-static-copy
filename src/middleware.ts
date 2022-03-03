@@ -10,9 +10,14 @@
 
 import { parse } from '@polka/url'
 import { lookup } from 'mrmime'
-import { statSync, createReadStream, Stats } from 'fs'
+import { statSync, createReadStream, Stats } from 'node:fs'
 import type { Connect } from 'vite'
-import type { IncomingMessage, OutgoingHttpHeaders, ServerResponse } from 'http'
+import type {
+  IncomingMessage,
+  OutgoingHttpHeaders,
+  ServerResponse
+} from 'node:http'
+import { resolve } from 'node:path'
 
 const FS_PREFIX = `/@fs/`
 const VALID_ID_PREFIX = `/@id/`
@@ -29,15 +34,16 @@ const InternalPrefixRE = new RegExp(`^(?:${internalPrefixes.join('|')})`)
 const isImportRequest = (url: string): boolean => importQueryRE.test(url)
 const isInternalRequest = (url: string): boolean => InternalPrefixRE.test(url)
 
-function viaLocal(fileMap: Map<string, string>, uri: string) {
+function viaLocal(root: string, fileMap: Map<string, string>, uri: string) {
   if (uri.endsWith('/')) {
     uri = uri.slice(-1)
   }
   const file = fileMap.get(uri)
   if (file) {
-    const stats = statSync(file)
-    const headers = toHeaders(file, stats)
-    return { file, stats, headers }
+    const filepath = resolve(root, file)
+    const stats = statSync(filepath)
+    const headers = toHeaders(filepath, stats)
+    return { filepath, stats, headers }
   }
   return undefined
 }
@@ -102,6 +108,7 @@ function send(
 }
 
 export function serveStaticCopyMiddleware(
+  root: string,
   fileMap: Map<string, string>
 ): Connect.NextHandleFunction {
   // Keep the named function. The name is visible in debug logs via `DEBUG=connect:dispatcher ...`
@@ -121,7 +128,7 @@ export function serveStaticCopyMiddleware(
       }
     }
 
-    const data = viaLocal(fileMap, pathname)
+    const data = viaLocal(root, fileMap, pathname)
     if (!data) {
       if (next) {
         next()
@@ -146,6 +153,7 @@ export function serveStaticCopyMiddleware(
     if (/\.[tj]sx?$/.test(pathname)) {
       res.setHeader('Content-Type', 'application/javascript')
     }
-    send(req, res, data.file, data.stats, data.headers)
+
+    send(req, res, data.filepath, data.stats, data.headers)
   }
 }

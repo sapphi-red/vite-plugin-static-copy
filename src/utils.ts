@@ -7,6 +7,7 @@ import type { Target } from './options'
 type SimpleTarget = { src: string; dest: string }
 
 export const collectCopyTargets = async (
+  root: string,
   targets: Target[],
   flatten: boolean
 ) => {
@@ -15,7 +16,8 @@ export const collectCopyTargets = async (
   for (const { src, dest, rename } of targets) {
     const matchedPaths = await fastglob(src, {
       onlyFiles: false,
-      dot: true
+      dot: true,
+      cwd: root
     })
 
     for (const matchedPath of matchedPaths) {
@@ -37,13 +39,16 @@ export const collectCopyTargets = async (
 }
 
 export const copyAll = async (
+  rootSrc: string,
   rootDest: string,
   targets: Target[],
   flatten: boolean
 ) => {
-  const copyTargets = await collectCopyTargets(targets, flatten)
+  const copyTargets = await collectCopyTargets(rootSrc, targets, flatten)
   await Promise.all(
-    copyTargets.map(({ src, dest }) => fs.copy(src, path.join(rootDest, dest)))
+    copyTargets.map(({ src, dest }) =>
+      fs.copy(path.join(rootSrc, src), path.join(rootSrc, rootDest, dest))
+    )
   )
   return copyTargets.length
 }
