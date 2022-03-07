@@ -4,6 +4,9 @@
 
 `rollup-plugin-copy` for vite with dev server support.
 
+Before you use this plugin, consider using [public directory](https://vitejs.dev/guide/assets.html#the-public-directory) or [`import` in JavaScript](https://vitejs.dev/guide/features.html#static-assets).
+In most cases, these will work.
+
 ## Install
 ```shell
 npm i -D vite-plugin-static-copy # yarn add -D vite-plugin-static-copy
