@@ -56,7 +56,6 @@
     "eslint-plugin-prettier": "^4.0.0",
     "mrmime": "^1.0.0",
     "node-fetch": "^3.2.1",
-    "picocolors": "^1.0.0",
     "prettier": "^2.5.1",
     "throttle-debounce": "^3.0.1",
     "tsup": "^5.11.13",
@@ -68,6 +67,7 @@
   "dependencies": {
     "chokidar": "^3.5.3",
     "fast-glob": "^3.2.11",
-    "fs-extra": "^10.0.1"
+    "fs-extra": "^10.0.1",
+    "picocolors": "^1.0.0"
   }
 }
