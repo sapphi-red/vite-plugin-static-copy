@@ -17,6 +17,7 @@ export const servePlugin = ({
   watch
 }: ResolvedViteStaticCopyOptions): Plugin => {
   let config: ResolvedConfig
+  let watcher: chokidar.FSWatcher
   const fileMap = new Map<string, string>()
 
   const collectFileMap = async () => {
@@ -42,7 +43,7 @@ export const servePlugin = ({
       }
 
       // cannot use server.watcher since disableGlobbing is true
-      const watcher = chokidar.watch(
+      watcher = chokidar.watch(
         targets.flatMap(target => target.src),
         {
           cwd: config.root,
@@ -89,10 +90,9 @@ export const servePlugin = ({
           outputCollectedLog(config.logger, fileMap.size)
         }, 0)
       })
-
-      httpServer?.once('close', () => {
-        watcher.close()
-      })
+    },
+    async closeBundle() {
+      await watcher.close()
     }
   }
 }
