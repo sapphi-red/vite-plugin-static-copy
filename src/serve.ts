@@ -89,6 +89,10 @@ export const servePlugin = ({
           outputCollectedLog(config.logger, fileMap.size)
         }, 0)
       })
+
+      httpServer?.once('close', () => {
+        watcher.close()
+      })
     }
   }
 }
