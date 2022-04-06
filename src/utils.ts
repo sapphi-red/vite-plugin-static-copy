@@ -1,5 +1,5 @@
 import fastglob from 'fast-glob'
-import path from 'path'
+import path from 'node:path'
 import fs from 'fs-extra'
 import pc from 'picocolors'
 import type { Target } from './options'
