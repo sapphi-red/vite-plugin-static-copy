@@ -38,6 +38,7 @@ function viaLocal(root: string, fileMap: Map<string, string>, uri: string) {
   if (uri.endsWith('/')) {
     uri = uri.slice(-1)
   }
+
   const file = fileMap.get(uri)
   if (file) {
     const filepath = resolve(root, file)
@@ -45,6 +46,17 @@ function viaLocal(root: string, fileMap: Map<string, string>, uri: string) {
     const headers = toHeaders(filepath, stats)
     return { filepath, stats, headers }
   }
+
+  for (const [key, val] of fileMap) {
+    const dir = key.endsWith('/') ? key : `${key}/`
+    if (!uri.startsWith(dir)) continue
+
+    const filepath = resolve(root, val, uri.slice(dir.length))
+    const stats = statSync(filepath)
+    const headers = toHeaders(filepath, stats)
+    return { filepath, stats, headers }
+  }
+
   return undefined
 }
 

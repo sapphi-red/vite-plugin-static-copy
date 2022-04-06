@@ -12,6 +12,10 @@ export default defineConfig({
         {
           src: 'foo.*',
           dest: 'fixture2'
+        },
+        {
+          src: 'dir',
+          dest: 'fixture3'
         }
       ]
     })
