@@ -87,7 +87,7 @@ export const servePlugin = ({
       middlewares.use(serveStaticCopyMiddleware(config.root, fileMap))
       httpServer?.once('listening', () => {
         setTimeout(() => {
-          outputCollectedLog(config.logger, fileMap.size)
+          outputCollectedLog(config.logger, fileMap)
         }, 0)
       })
     },

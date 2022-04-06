@@ -71,9 +71,19 @@ export const updateFileMapFromTargets = (
 export const formatConsole = (msg: string) =>
   `${pc.cyan('[vite-plugin-static-copy]')} ${msg}`
 
-export const outputCollectedLog = (logger: Logger, collectCount: number) => {
-  if (collectCount > 0) {
-    logger.info(formatConsole(pc.green(`Collected ${collectCount} items.`)))
+export const outputCollectedLog = (
+  logger: Logger,
+  collectedMap: Map<string, string>
+) => {
+  if (collectedMap.size > 0) {
+    logger.info(
+      formatConsole(pc.green(`Collected ${collectedMap.size} items.`))
+    )
+    if (process.env.DEBUG === 'vite:plugin-static-copy') {
+      for (const [key, val] of collectedMap) {
+        logger.info(formatConsole(`  - '${key}' -> '${val}'`))
+      }
+    }
   } else {
     logger.warn(formatConsole(pc.yellow('No items found.')))
   }
