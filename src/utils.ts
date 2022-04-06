@@ -48,7 +48,8 @@ export const copyAll = async (
   const copyTargets = await collectCopyTargets(rootSrc, targets, flatten)
   await Promise.all(
     copyTargets.map(({ src, dest }) =>
-      fs.copy(path.join(rootSrc, src), path.join(rootSrc, rootDest, dest))
+      // use `path.resolve` because rootDest maybe absolute path
+      fs.copy(path.resolve(rootSrc, src), path.resolve(rootSrc, rootDest, dest))
     )
   )
   return copyTargets.length
