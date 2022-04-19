@@ -5,16 +5,23 @@ import pc from 'picocolors'
 import type { Target } from './options'
 import type { Logger } from 'vite'
 
-type SimpleTarget = { src: string; dest: string }
-
+// type SimpleTarget = { src: string; dest: string }
+export type SimpleTarget = {
+  src: string
+  dest: string
+  transform?: (content: string, filepath: string) => string
+}
 export const collectCopyTargets = async (
   root: string,
   targets: Target[],
-  flatten: boolean
+  flatten: boolean,
+  copyTargets?: Array<SimpleTarget>
 ) => {
-  const copyTargets: Array<SimpleTarget> = []
+  if (!copyTargets) {
+    copyTargets = []
+  }
 
-  for (const { src, dest, rename } of targets) {
+  for (const { src, dest, rename, transform } of targets) {
     const matchedPaths = await fastglob(src, {
       onlyFiles: false,
       dot: true,
@@ -32,13 +39,31 @@ export const collectCopyTargets = async (
 
       copyTargets.push({
         src: matchedPath,
-        dest: path.join(destDir, rename ?? base)
+        dest: path.join(destDir, rename ?? base),
+        transform
       })
     }
   }
   return copyTargets
 }
 
+async function transformCopy(
+  transform: (content: string, filepath: string) => string,
+  src: string,
+  dest: string
+) {
+  //is directory
+  if (src.indexOf('.') === -1) {
+    const dirs = await fs.readdir(src)
+    dirs.forEach(async fileName => {
+      transformCopy(transform, src + '\\' + fileName, dest + '\\' + fileName)
+    })
+  } else {
+    const s = (await fs.readFile(src)).toString()
+    const content = transform(s, src)
+    await fs.outputFile(dest, content)
+  }
+}
 export const copyAll = async (
   rootSrc: string,
   rootDest: string,
@@ -46,12 +71,28 @@ export const copyAll = async (
   flatten: boolean
 ) => {
   const copyTargets = await collectCopyTargets(rootSrc, targets, flatten)
+  // await Promise.all(
+  //   copyTargets.map(({ src, dest }) =>
+  //     // use `path.resolve` because rootDest maybe absolute path
+  //     fs.copy(path.resolve(rootSrc, src), path.resolve(rootSrc, rootDest, dest))
+  //   )
   await Promise.all(
-    copyTargets.map(({ src, dest }) =>
-      // use `path.resolve` because rootDest maybe absolute path
-      fs.copy(path.resolve(rootSrc, src), path.resolve(rootSrc, rootDest, dest))
-    )
+    copyTargets.map(({ src, dest, transform }) => {
+      if (transform) {
+        return transformCopy(
+          transform,
+          path.resolve(rootSrc, src),
+          path.resolve(rootSrc, rootDest, dest)
+        )
+      } else {
+        return fs.copy(
+          path.resolve(rootSrc, src),
+          path.resolve(rootSrc, rootDest, dest)
+        )
+      }
+    })
   )
+
   return copyTargets.length
 }
 
@@ -61,11 +102,12 @@ export const updateFileMapFromTargets = (
 ) => {
   fileMap.clear()
   for (const target of [...targets].reverse()) {
-    let dest = target.dest.replace(/\\/g, '/')
+    const dest = target.dest.replace(/\\/g, '/')
+    target.dest = dest
     if (!dest.startsWith('/')) {
-      dest = `/${dest}`
+      target.dest = `/${dest}`
     }
-    fileMap.set(dest, target.src)
+    fileMap.set(target.dest, target.src)
   }
 }
 

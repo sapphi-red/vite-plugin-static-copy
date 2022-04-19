@@ -13,6 +13,10 @@ export type Target = {
    * rename
    */
   rename?: string
+  /**
+   * transform
+   */
+  transform?: (contents: string, filename: string) => string
 }
 
 export type ViteStaticCopyOptions = {

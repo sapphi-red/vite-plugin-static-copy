@@ -1,0 +1,17 @@
+{
+  "name": "fixtures-copy",
+  "version": "1.0.0",
+  "description": "",
+  "main": "foo.js",
+  "scripts": {
+    "dev": "vite"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "vite": "^2.9.4"
+  },
+  "devDependencies": {
+    "vite-plugin-static-copy": "^0.4.4"
+  }
+}

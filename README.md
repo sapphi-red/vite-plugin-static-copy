@@ -25,6 +25,11 @@ export default {
         {
           src: 'bin/example.wasm',
           dest: 'wasm-files'
+        },
+        {
+          src: 'bin/example.wasm',
+          dest: 'wasm-files',
+          transform: (contents,file) => contents + 'transform dir'
         }
       ]
     })

@@ -5,7 +5,8 @@ import {
   collectCopyTargets,
   updateFileMapFromTargets,
   outputCollectedLog,
-  formatConsole
+  formatConsole,
+  SimpleTarget
 } from './utils'
 import { debounce } from 'throttle-debounce'
 import chokidar from 'chokidar'
@@ -19,9 +20,9 @@ export const servePlugin = ({
   let config: ResolvedConfig
   let watcher: chokidar.FSWatcher
   const fileMap = new Map<string, string>()
-
+  const copyTargets: SimpleTarget[] = []
   const collectFileMap = async () => {
-    const copyTargets = await collectCopyTargets(config.root, targets, flatten)
+    await collectCopyTargets(config.root, targets, flatten, copyTargets)
     updateFileMapFromTargets(copyTargets, fileMap)
   }
   const collectFileMapDebounce = debounce(100, async () => {
@@ -84,7 +85,9 @@ export const servePlugin = ({
         })
       }
 
-      middlewares.use(serveStaticCopyMiddleware(config.root, fileMap))
+      middlewares.use(
+        serveStaticCopyMiddleware(config.root, fileMap, copyTargets)
+      )
       httpServer?.once('listening', () => {
         setTimeout(() => {
           outputCollectedLog(config.logger, fileMap)

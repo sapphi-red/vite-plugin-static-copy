@@ -12,12 +12,14 @@ import { parse } from '@polka/url'
 import { lookup } from 'mrmime'
 import { statSync, createReadStream, Stats } from 'node:fs'
 import type { Connect } from 'vite'
+import fs from 'fs-extra'
 import type {
   IncomingMessage,
   OutgoingHttpHeaders,
   ServerResponse
 } from 'node:http'
 import { resolve } from 'node:path'
+import type { SimpleTarget } from './utils'
 
 const FS_PREFIX = `/@fs/`
 const VALID_ID_PREFIX = `/@id/`
@@ -54,7 +56,7 @@ function viaLocal(root: string, fileMap: Map<string, string>, uri: string) {
     const filepath = resolve(root, val, uri.slice(dir.length))
     const stats = statSync(filepath)
     const headers = toHeaders(filepath, stats)
-    return { filepath, stats, headers }
+    return { filepath, stats, headers, isDir: true }
   }
 
   return undefined
@@ -80,7 +82,8 @@ function send(
   res: ServerResponse,
   file: string,
   stats: Stats,
-  headers: OutgoingHttpHeaders
+  headers: OutgoingHttpHeaders,
+  content?: string
 ) {
   let code = 200
   const opts: { start?: number; end?: number } = {}
@@ -116,16 +119,25 @@ function send(
     headers['Accept-Ranges'] = 'bytes'
   }
 
-  res.writeHead(code, headers)
-  createReadStream(file, opts).pipe(res)
+  if (content) {
+    res.writeHead(code, {
+      'Content-Type': headers['Content-Type'],
+      'Content-Length': content.length
+    })
+    res.end(content)
+  } else {
+    res.writeHead(code, headers)
+    createReadStream(file, opts).pipe(res)
+  }
 }
 
 export function serveStaticCopyMiddleware(
   root: string,
-  fileMap: Map<string, string>
+  fileMap: Map<string, string>,
+  copyTargets: SimpleTarget[]
 ): Connect.NextHandleFunction {
   // Keep the named function. The name is visible in debug logs via `DEBUG=connect:dispatcher ...`
-  return function viteServeStaticCopyMiddleware(req, res, next) {
+  return async function viteServeStaticCopyMiddleware(req, res, next) {
     // skip import request and internal requests `/@fs/ /@vite-client` etc...
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     if (isImportRequest(req.url!) || isInternalRequest(req.url!)) {
@@ -142,6 +154,7 @@ export function serveStaticCopyMiddleware(
     }
 
     const data = viaLocal(root, fileMap, pathname)
+
     if (!data) {
       if (next) {
         next()
@@ -152,21 +165,34 @@ export function serveStaticCopyMiddleware(
       return
     }
 
-    if (req.headers['if-none-match'] === data.headers['ETag']) {
-      res.writeHead(304)
-      res.end()
-      return
-    }
-
-    // Matches js, jsx, ts, tsx.
-    // The reason this is done, is that the .ts file extension is reserved
-    // for the MIME type video/mp2t. In almost all cases, we can expect
-    // these files to be TypeScript files, and for Vite to serve them with
-    // this Content-Type.
     if (/\.[tj]sx?$/.test(pathname)) {
       res.setHeader('Content-Type', 'application/javascript')
     }
 
-    send(req, res, data.filepath, data.stats, data.headers)
+    const find = copyTargets.find(({ dest }) => {
+      if (data.isDir) {
+        return pathname.startsWith(dest)
+      } else {
+        return dest === pathname
+      }
+    })
+    console.log('🚀 ~ find', find)
+
+    if (find && find.transform) {
+      const content = find.transform(
+        (await fs.readFile(data.filepath)).toString(),
+        data.filepath
+      )
+      send(req, res, data.filepath, data.stats, data.headers, content)
+      console.log('🚀 ~ content', content)
+    } else {
+      if (req.headers['if-none-match'] === data.headers['ETag']) {
+        res.writeHead(304)
+        res.end()
+        return
+      }
+
+      send(req, res, data.filepath, data.stats, data.headers)
+    }
   }
 }
