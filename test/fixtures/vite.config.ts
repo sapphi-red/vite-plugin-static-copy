@@ -1,5 +1,5 @@
 import { defineConfig } from 'vite'
-import { viteStaticCopy } from '../../src'
+import { viteStaticCopy } from '../../dist'
 
 export default defineConfig({
   plugins: [
