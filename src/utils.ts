@@ -7,12 +7,12 @@ import type { Logger } from 'vite'
 import type { FileMap } from './serve'
 import { createHash } from 'node:crypto'
 
-// type SimpleTarget = { src: string; dest: string }
 export type SimpleTarget = {
   src: string
   dest: string
   transform?: TransformFunc
 }
+
 export const collectCopyTargets = async (
   root: string,
   targets: Target[],
@@ -60,9 +60,9 @@ async function transformCopy(
   src: string,
   dest: string
 ) {
-  const s = (await fs.readFile(src)).toString()
-  const content = transform(s, src)
-  await fs.outputFile(dest, content)
+  const content = await fs.readFile(src, 'utf8')
+  const transformedContent = transform(content, src)
+  await fs.outputFile(dest, transformedContent)
 }
 
 export const copyAll = async (
@@ -72,24 +72,14 @@ export const copyAll = async (
   flatten: boolean
 ) => {
   const copyTargets = await collectCopyTargets(rootSrc, targets, flatten)
-  // await Promise.all(
-  //   copyTargets.map(({ src, dest }) =>
-  //     // use `path.resolve` because rootDest maybe absolute path
-  //     fs.copy(path.resolve(rootSrc, src), path.resolve(rootSrc, rootDest, dest))
-  //   )
   await Promise.all(
     copyTargets.map(({ src, dest, transform }) => {
+      const resolvedSrc = path.resolve(rootSrc, src)
+      const resolvedDest = path.resolve(rootSrc, rootDest, dest)
       if (transform) {
-        return transformCopy(
-          transform,
-          path.resolve(rootSrc, src),
-          path.resolve(rootSrc, rootDest, dest)
-        )
+        return transformCopy(transform, resolvedSrc, resolvedDest)
       } else {
-        return fs.copy(
-          path.resolve(rootSrc, src),
-          path.resolve(rootSrc, rootDest, dest)
-        )
+        return fs.copy(resolvedSrc, resolvedDest)
       }
     })
   )
@@ -101,15 +91,6 @@ export const updateFileMapFromTargets = (
   targets: SimpleTarget[],
   fileMap: FileMap
 ) => {
-  // fileMap.clear()
-  // for (const target of [...targets].reverse()) {
-  //   const dest = target.dest.replace(/\\/g, '/')
-  //   target.dest = dest
-  //   if (!dest.startsWith('/')) {
-  //     target.dest = `/${dest}`
-  //   }
-  //   fileMap.set(target.dest, target.src)
-  // }
   fileMap.clear()
   for (const target of [...targets].reverse()) {
     let dest = target.dest.replace(/\\/g, '/')
