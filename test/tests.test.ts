@@ -28,9 +28,7 @@ describe('serve', () => {
       const actual = await fetchTextContent(dest)
 
       const expected = await loadFileContent(src)
-      console.log('🚀 ~ actual', actual)
-      console.log('🚀 ~ expected', expected)
-      expect(actual).toBe(transform ? transform(expected, 'path') : expected)
+      expect(actual).toBe(transform ? transform(expected) : expected)
     })
   }
 })
@@ -44,7 +42,7 @@ describe('build', () => {
     test.concurrent(name, async () => {
       const actual = await loadFileContent(join('./dist', `.${dest}`))
       const expected = await loadFileContent(src)
-      expect(actual).toBe(transform ? transform(expected, 'path') : expected)
+      expect(actual).toBe(transform ? transform(expected) : expected)
     })
   }
 })

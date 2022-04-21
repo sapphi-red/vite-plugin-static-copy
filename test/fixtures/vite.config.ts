@@ -1,18 +1,8 @@
 
 import { defineConfig } from 'vite'
-import { viteStaticCopy } from '../../src'
-// import { fileURLToPath } from 'node:url'
-
-
-// export const root = new URL('./fixtures/', import.meta.url)
-// console.log("🚀 ~ root", root)
-
-// const fileURLToNormalizedPath = (url: URL) => normalizePath(fileURLToPath(url))
+import { viteStaticCopy } from '../../dist'
 
 export default defineConfig({
-  // logLevel: 'silent',
-  // root: fileURLToNormalizedPath(root),
-  // configFile: fileURLToNormalizedPath(new URL('./vite.config.ts', root)),
   plugins: [
     viteStaticCopy({
       targets: [
@@ -23,7 +13,7 @@ export default defineConfig({
         {
           src: 'foo.*',
           dest: 'fixture2',
-          transform: (contents, filename) => contents
+          transform: (contents) => contents
         },
         {
           src: 'dir',
@@ -32,13 +22,13 @@ export default defineConfig({
         {
           src: 'foo.txt',
           dest: 'fixture4',
-          transform: (contents, filename) => contents + 'transform file'
+          transform: (contents) => contents + 'transform file'
         }
         ,
         {
-          src: 'dir',
+          src: 'foo.*',
           dest: 'fixture5',
-          transform: (contents, filename) => contents + 'transform dir'
+          transform: (contents) => contents + 'transform glob'
         }
       ]
     })

@@ -32,17 +32,9 @@ export const testcases = [
     transform: (contents: string) => contents + 'transform file'
   },
   {
-    name: 'transform dir',
-    src: './dir/deep/bar.txt',
-    dest: '/fixture5/dir/deep/bar.txt',
-    transform: (contents: string) => contents + 'transform dir'
+    name: 'transform glob.*',
+    src: './foo.js',
+    dest: '/fixture5/foo.js',
+    transform: (contents: string) => contents + 'transform glob'
   }
-
-  // {
-  //   name: 'file copy transform',
-  //   src: './foo.js',
-  //   dest: '/fixture4/foo.js',
-  //   transform: (contents: string, filename: string) =>
-  //     'transform' + contents.toString()
-  // }
 ]

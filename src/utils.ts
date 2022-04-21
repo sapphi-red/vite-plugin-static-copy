@@ -4,6 +4,7 @@ import fs from 'fs-extra'
 import pc from 'picocolors'
 import type { Target } from './options'
 import type { Logger } from 'vite'
+import type { FileMapValue } from './serve'
 
 // type SimpleTarget = { src: string; dest: string }
 export type SimpleTarget = {
@@ -14,12 +15,9 @@ export type SimpleTarget = {
 export const collectCopyTargets = async (
   root: string,
   targets: Target[],
-  flatten: boolean,
-  copyTargets?: Array<SimpleTarget>
+  flatten: boolean
 ) => {
-  if (!copyTargets) {
-    copyTargets = []
-  }
+  const copyTargets: Array<SimpleTarget> = []
 
   for (const { src, dest, rename, transform } of targets) {
     const matchedPaths = await fastglob(src, {
@@ -53,11 +51,13 @@ async function transformCopy(
   dest: string
 ) {
   //is directory
-  if (src.indexOf('.') === -1) {
-    const dirs = await fs.readdir(src)
-    dirs.forEach(async fileName => {
-      transformCopy(transform, src + '\\' + fileName, dest + '\\' + fileName)
-    })
+
+  if (fs.statSync(src).isDirectory()) {
+    throw new Error(`${src} is a directory,transformCopy only support file`)
+    // const dirs = await fs.readdir(src)
+    // dirs.forEach(async fileName => {
+    //   transformCopy(transform, src + '\\' + fileName, dest + '\\' + fileName)
+    // })
   } else {
     const s = (await fs.readFile(src)).toString()
     const content = transform(s, src)
@@ -98,16 +98,27 @@ export const copyAll = async (
 
 export const updateFileMapFromTargets = (
   targets: SimpleTarget[],
-  fileMap: Map<string, string>
+  fileMap: Map<string, FileMapValue>
 ) => {
+  // fileMap.clear()
+  // for (const target of [...targets].reverse()) {
+  //   const dest = target.dest.replace(/\\/g, '/')
+  //   target.dest = dest
+  //   if (!dest.startsWith('/')) {
+  //     target.dest = `/${dest}`
+  //   }
+  //   fileMap.set(target.dest, target.src)
+  // }
   fileMap.clear()
   for (const target of [...targets].reverse()) {
-    const dest = target.dest.replace(/\\/g, '/')
-    target.dest = dest
+    let dest = target.dest.replace(/\\/g, '/')
     if (!dest.startsWith('/')) {
-      target.dest = `/${dest}`
+      dest = `/${dest}`
     }
-    fileMap.set(target.dest, target.src)
+    fileMap.set(dest, {
+      src: target.src,
+      transform: target.transform
+    })
   }
 }
 
@@ -116,7 +127,7 @@ export const formatConsole = (msg: string) =>
 
 export const outputCollectedLog = (
   logger: Logger,
-  collectedMap: Map<string, string>
+  collectedMap: Map<string, FileMapValue>
 ) => {
   if (collectedMap.size > 0) {
     logger.info(

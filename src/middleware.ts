@@ -19,7 +19,8 @@ import type {
   ServerResponse
 } from 'node:http'
 import { resolve } from 'node:path'
-import type { SimpleTarget } from './utils'
+
+import type { FileMapValue } from './serve'
 
 const FS_PREFIX = `/@fs/`
 const VALID_ID_PREFIX = `/@id/`
@@ -36,27 +37,31 @@ const InternalPrefixRE = new RegExp(`^(?:${internalPrefixes.join('|')})`)
 const isImportRequest = (url: string): boolean => importQueryRE.test(url)
 const isInternalRequest = (url: string): boolean => InternalPrefixRE.test(url)
 
-function viaLocal(root: string, fileMap: Map<string, string>, uri: string) {
+function viaLocal(
+  root: string,
+  fileMap: Map<string, FileMapValue>,
+  uri: string
+) {
   if (uri.endsWith('/')) {
     uri = uri.slice(-1)
   }
-
   const file = fileMap.get(uri)
   if (file) {
-    const filepath = resolve(root, file)
+    const filepath = resolve(root, file.src)
     const stats = statSync(filepath)
     const headers = toHeaders(filepath, stats)
-    return { filepath, stats, headers }
+    return { filepath, stats, headers, ...file }
   }
-
   for (const [key, val] of fileMap) {
     const dir = key.endsWith('/') ? key : `${key}/`
     if (!uri.startsWith(dir)) continue
-
-    const filepath = resolve(root, val, uri.slice(dir.length))
+    if (fileMap.get(key)?.transform) {
+      throw new Error('Transform cannot be used for directories')
+    }
+    const filepath = resolve(root, val.src, uri.slice(dir.length))
     const stats = statSync(filepath)
     const headers = toHeaders(filepath, stats)
-    return { filepath, stats, headers, isDir: true }
+    return { filepath, stats, headers, isDir: true, ...val }
   }
 
   return undefined
@@ -133,8 +138,7 @@ function send(
 
 export function serveStaticCopyMiddleware(
   root: string,
-  fileMap: Map<string, string>,
-  copyTargets: SimpleTarget[]
+  fileMap: Map<string, FileMapValue>
 ): Connect.NextHandleFunction {
   // Keep the named function. The name is visible in debug logs via `DEBUG=connect:dispatcher ...`
   return async function viteServeStaticCopyMiddleware(req, res, next) {
@@ -165,33 +169,32 @@ export function serveStaticCopyMiddleware(
       return
     }
 
+    //&&!data.transform : Prevent changes to transform without updating
+    if (
+      req.headers['if-none-match'] === data.headers['ETag'] &&
+      !data.transform
+    ) {
+      res.writeHead(304)
+      res.end()
+      return
+    }
+
+    // Matches js, jsx, ts, tsx.
+    // The reason this is done, is that the .ts file extension is reserved
+    // for the MIME type video/mp2t. In almost all cases, we can expect
+    // these files to be TypeScript files, and for Vite to serve them with
+    // this Content-Type.
     if (/\.[tj]sx?$/.test(pathname)) {
       res.setHeader('Content-Type', 'application/javascript')
     }
 
-    const find = copyTargets.find(({ dest }) => {
-      if (data.isDir) {
-        return pathname.startsWith(dest)
-      } else {
-        return dest === pathname
-      }
-    })
-    console.log('🚀 ~ find', find)
-
-    if (find && find.transform) {
-      const content = find.transform(
+    if (data.transform) {
+      const content = data.transform(
         (await fs.readFile(data.filepath)).toString(),
         data.filepath
       )
       send(req, res, data.filepath, data.stats, data.headers, content)
-      console.log('🚀 ~ content', content)
     } else {
-      if (req.headers['if-none-match'] === data.headers['ETag']) {
-        res.writeHead(304)
-        res.end()
-        return
-      }
-
       send(req, res, data.filepath, data.stats, data.headers)
     }
   }

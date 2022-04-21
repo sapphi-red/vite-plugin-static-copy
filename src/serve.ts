@@ -5,12 +5,16 @@ import {
   collectCopyTargets,
   updateFileMapFromTargets,
   outputCollectedLog,
-  formatConsole,
-  SimpleTarget
+  formatConsole
 } from './utils'
 import { debounce } from 'throttle-debounce'
 import chokidar from 'chokidar'
 import pc from 'picocolors'
+
+export type FileMapValue = {
+  src: string
+  transform: ((contents: string, filename: string) => string) | undefined
+}
 
 export const servePlugin = ({
   targets,
@@ -19,10 +23,10 @@ export const servePlugin = ({
 }: ResolvedViteStaticCopyOptions): Plugin => {
   let config: ResolvedConfig
   let watcher: chokidar.FSWatcher
-  const fileMap = new Map<string, string>()
-  const copyTargets: SimpleTarget[] = []
+  const fileMap = new Map<string, FileMapValue>()
+
   const collectFileMap = async () => {
-    await collectCopyTargets(config.root, targets, flatten, copyTargets)
+    const copyTargets = await collectCopyTargets(config.root, targets, flatten)
     updateFileMapFromTargets(copyTargets, fileMap)
   }
   const collectFileMapDebounce = debounce(100, async () => {
@@ -85,9 +89,7 @@ export const servePlugin = ({
         })
       }
 
-      middlewares.use(
-        serveStaticCopyMiddleware(config.root, fileMap, copyTargets)
-      )
+      middlewares.use(serveStaticCopyMiddleware(config.root, fileMap))
       httpServer?.once('listening', () => {
         setTimeout(() => {
           outputCollectedLog(config.logger, fileMap)
