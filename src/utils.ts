@@ -118,7 +118,13 @@ export const outputCollectedLog = (logger: Logger, collectedMap: FileMap) => {
     )
     if (process.env.DEBUG === 'vite:plugin-static-copy') {
       for (const [key, val] of collectedMap) {
-        logger.info(formatConsole(`  - '${key}' -> '${val}'`))
+        logger.info(
+          formatConsole(
+            `  - '${key}' -> '${val.src}'${
+              val.transform ? ' (with content transform)' : ''
+            }`
+          )
+        )
       }
     }
   } else {
