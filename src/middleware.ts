@@ -40,7 +40,7 @@ const isInternalRequest = (url: string): boolean => InternalPrefixRE.test(url)
 
 function viaLocal(root: string, base: string, fileMap: FileMap, uri: string) {
   if (uri.endsWith('/')) {
-    uri = uri.slice(-1)
+    uri = uri.slice(0, -1)
   }
 
   if (base !== '/') {
