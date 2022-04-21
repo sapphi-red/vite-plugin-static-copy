@@ -1,4 +1,13 @@
-export const testcases = {
+import type { TransformFunc } from '../dist'
+
+type Testcase = {
+  name: string
+  src: string
+  dest: string
+  transform?: TransformFunc
+}
+
+export const testcases: Record<string, Testcase[]> = {
   'vite.config.ts': [
     {
       name: 'file copy',
@@ -32,13 +41,13 @@ export const testcases = {
       name: 'transform file',
       src: './foo.txt',
       dest: '/fixture4/foo.txt',
-      transform: (contents: string) => contents + 'transform file'
+      transform: (content: string) => content + 'transform file'
     },
     {
       name: 'transform glob.*',
       src: './foo.js',
       dest: '/fixture5/foo.js',
-      transform: (contents: string) => contents + 'transform glob'
+      transform: (content: string) => content + 'transform glob'
     }
   ],
   'vite.absolute.config.ts': [
