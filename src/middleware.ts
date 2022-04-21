@@ -12,12 +12,16 @@ import { parse } from '@polka/url'
 import { lookup } from 'mrmime'
 import { statSync, createReadStream, Stats } from 'node:fs'
 import type { Connect } from 'vite'
+import fs from 'fs-extra'
 import type {
   IncomingMessage,
   OutgoingHttpHeaders,
   ServerResponse
 } from 'node:http'
 import { resolve } from 'node:path'
+import type { FileMap } from './serve'
+import type { TransformFunc } from './options'
+import { calculateMd5Base64 } from './utils'
 
 const FS_PREFIX = `/@fs/`
 const VALID_ID_PREFIX = `/@id/`
@@ -34,33 +38,29 @@ const InternalPrefixRE = new RegExp(`^(?:${internalPrefixes.join('|')})`)
 const isImportRequest = (url: string): boolean => importQueryRE.test(url)
 const isInternalRequest = (url: string): boolean => InternalPrefixRE.test(url)
 
-function viaLocal(root: string, fileMap: Map<string, string>, uri: string) {
+function viaLocal(root: string, fileMap: FileMap, uri: string) {
   if (uri.endsWith('/')) {
     uri = uri.slice(-1)
   }
 
   const file = fileMap.get(uri)
   if (file) {
-    const filepath = resolve(root, file)
-    const stats = statSync(filepath)
-    const headers = toHeaders(filepath, stats)
-    return { filepath, stats, headers }
+    const filepath = resolve(root, file.src)
+    return { filepath, transform: file.transform }
   }
 
   for (const [key, val] of fileMap) {
     const dir = key.endsWith('/') ? key : `${key}/`
     if (!uri.startsWith(dir)) continue
 
-    const filepath = resolve(root, val, uri.slice(dir.length))
-    const stats = statSync(filepath)
-    const headers = toHeaders(filepath, stats)
-    return { filepath, stats, headers }
+    const filepath = resolve(root, val.src, uri.slice(dir.length))
+    return { filepath }
   }
 
   return undefined
 }
 
-function toHeaders(name: string, stats: Stats) {
+function getStaticHeaders(name: string, stats: Stats) {
   let ctype = lookup(name) || ''
   if (ctype === 'text/html') ctype += ';charset=utf-8'
 
@@ -75,15 +75,21 @@ function toHeaders(name: string, stats: Stats) {
   return headers
 }
 
-function send(
-  req: IncomingMessage,
-  res: ServerResponse,
-  file: string,
-  stats: Stats,
-  headers: OutgoingHttpHeaders
-) {
-  let code = 200
-  const opts: { start?: number; end?: number } = {}
+function getTransformHeaders(name: string, content: string) {
+  let ctype = lookup(name) || ''
+  if (ctype === 'text/html') ctype += ';charset=utf-8'
+
+  const headers: OutgoingHttpHeaders = {
+    'Content-Length': Buffer.byteLength(content, 'utf8'),
+    'Content-Type': ctype,
+    ETag: `W/"${calculateMd5Base64(content)}"`,
+    'Cache-Control': 'no-cache'
+  }
+
+  return headers
+}
+
+function getMergeHeaders(headers: OutgoingHttpHeaders, res: ServerResponse) {
   headers = { ...headers }
 
   for (const key in headers) {
@@ -95,6 +101,22 @@ function send(
   if (contentTypeHeader) {
     headers['Content-Type'] = contentTypeHeader
   }
+  return headers
+}
+
+function sendStatic(req: IncomingMessage, res: ServerResponse, file: string) {
+  const stats = statSync(file)
+  const staticHeaders = getStaticHeaders(file, stats)
+
+  if (req.headers['if-none-match'] === staticHeaders['ETag']) {
+    res.writeHead(304)
+    res.end()
+    return
+  }
+
+  let code = 200
+  const headers = getMergeHeaders(staticHeaders, res)
+  const opts: { start?: number; end?: number } = {}
 
   if (req.headers.range) {
     code = 206
@@ -120,12 +142,35 @@ function send(
   createReadStream(file, opts).pipe(res)
 }
 
+async function sendTransform(
+  req: IncomingMessage,
+  res: ServerResponse,
+  file: string,
+  transform: TransformFunc
+) {
+  const content = await fs.readFile(file, 'utf8')
+  const transformedContent = transform(content, file)
+  const transformHeaders = getTransformHeaders(file, transformedContent)
+
+  if (req.headers['if-none-match'] === transformHeaders['ETag']) {
+    res.writeHead(304)
+    res.end()
+    return
+  }
+
+  const code = 200
+  const headers = getMergeHeaders(transformHeaders, res)
+
+  res.writeHead(code, headers)
+  res.end(transformedContent)
+}
+
 export function serveStaticCopyMiddleware(
   root: string,
-  fileMap: Map<string, string>
+  fileMap: FileMap
 ): Connect.NextHandleFunction {
   // Keep the named function. The name is visible in debug logs via `DEBUG=connect:dispatcher ...`
-  return function viteServeStaticCopyMiddleware(req, res, next) {
+  return async function viteServeStaticCopyMiddleware(req, res, next) {
     // skip import request and internal requests `/@fs/ /@vite-client` etc...
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     if (isImportRequest(req.url!) || isInternalRequest(req.url!)) {
@@ -142,18 +187,13 @@ export function serveStaticCopyMiddleware(
     }
 
     const data = viaLocal(root, fileMap, pathname)
+
     if (!data) {
       if (next) {
         next()
         return
       }
       res.statusCode = 404
-      res.end()
-      return
-    }
-
-    if (req.headers['if-none-match'] === data.headers['ETag']) {
-      res.writeHead(304)
       res.end()
       return
     }
@@ -167,6 +207,11 @@ export function serveStaticCopyMiddleware(
       res.setHeader('Content-Type', 'application/javascript')
     }
 
-    send(req, res, data.filepath, data.stats, data.headers)
+    if (data.transform) {
+      await sendTransform(req, res, data.filepath, data.transform)
+      return
+    }
+
+    sendStatic(req, res, data.filepath)
   }
 }

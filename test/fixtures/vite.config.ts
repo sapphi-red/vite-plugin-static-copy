@@ -16,6 +16,16 @@ export default defineConfig({
         {
           src: 'dir',
           dest: 'fixture3'
+        },
+        {
+          src: 'foo.txt',
+          dest: 'fixture4',
+          transform: contents => contents + 'transform file'
+        },
+        {
+          src: 'foo.*',
+          dest: 'fixture5',
+          transform: contents => contents + 'transform glob'
         }
       ]
     })

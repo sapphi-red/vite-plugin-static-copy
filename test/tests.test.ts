@@ -23,11 +23,11 @@ describe('serve', () => {
     return content
   }
 
-  for (const { name, src, dest } of testcases) {
+  for (const { name, src, dest, transform } of testcases) {
     test.concurrent(name, async () => {
       const actual = await fetchTextContent(dest)
       const expected = await loadFileContent(src)
-      expect(actual).toBe(expected)
+      expect(actual).toBe(transform ? transform(expected) : expected)
     })
   }
 })
@@ -37,11 +37,11 @@ describe('build', () => {
     await build(config)
   })
 
-  for (const { name, src, dest } of testcases) {
+  for (const { name, src, dest, transform } of testcases) {
     test.concurrent(name, async () => {
       const actual = await loadFileContent(join('./dist', `.${dest}`))
       const expected = await loadFileContent(src)
-      expect(actual).toBe(expected)
+      expect(actual).toBe(transform ? transform(expected) : expected)
     })
   }
 })
