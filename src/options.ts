@@ -1,6 +1,10 @@
 import type { WatchOptions } from 'chokidar'
 
-export type TransformFunc = (contents: string, filename: string) => string
+/**
+ * @param content content of file
+ * @param filename absolute path to the file
+ */
+export type TransformFunc = (content: string, filename: string) => string
 
 export type Target = {
   /**
@@ -17,6 +21,8 @@ export type Target = {
   rename?: string
   /**
    * transform
+   *
+   * `src` should only include files when this option is used
    */
   transform?: TransformFunc
 }
