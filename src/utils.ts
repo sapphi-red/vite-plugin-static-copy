@@ -2,15 +2,15 @@ import fastglob from 'fast-glob'
 import path from 'node:path'
 import fs from 'fs-extra'
 import pc from 'picocolors'
-import type { Target } from './options'
+import type { Target, TransformFunc } from './options'
 import type { Logger } from 'vite'
-import type { FileMapValue } from './serve'
+import type { FileMap } from './serve'
 
 // type SimpleTarget = { src: string; dest: string }
 export type SimpleTarget = {
   src: string
   dest: string
-  transform?: (content: string, filepath: string) => string
+  transform?: TransformFunc
 }
 export const collectCopyTargets = async (
   root: string,
@@ -98,7 +98,7 @@ export const copyAll = async (
 
 export const updateFileMapFromTargets = (
   targets: SimpleTarget[],
-  fileMap: Map<string, FileMapValue>
+  fileMap: FileMap
 ) => {
   // fileMap.clear()
   // for (const target of [...targets].reverse()) {
@@ -125,10 +125,7 @@ export const updateFileMapFromTargets = (
 export const formatConsole = (msg: string) =>
   `${pc.cyan('[vite-plugin-static-copy]')} ${msg}`
 
-export const outputCollectedLog = (
-  logger: Logger,
-  collectedMap: Map<string, FileMapValue>
-) => {
+export const outputCollectedLog = (logger: Logger, collectedMap: FileMap) => {
   if (collectedMap.size > 0) {
     logger.info(
       formatConsole(pc.green(`Collected ${collectedMap.size} items.`))

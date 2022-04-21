@@ -1,5 +1,5 @@
 import type { Plugin, ResolvedConfig } from 'vite'
-import type { ResolvedViteStaticCopyOptions } from './options'
+import type { ResolvedViteStaticCopyOptions, TransformFunc } from './options'
 import { serveStaticCopyMiddleware } from './middleware'
 import {
   collectCopyTargets,
@@ -11,10 +11,11 @@ import { debounce } from 'throttle-debounce'
 import chokidar from 'chokidar'
 import pc from 'picocolors'
 
-export type FileMapValue = {
+type FileMapValue = {
   src: string
-  transform: ((contents: string, filename: string) => string) | undefined
+  transform?: TransformFunc
 }
+export type FileMap = Map<string, FileMapValue>
 
 export const servePlugin = ({
   targets,
@@ -23,7 +24,7 @@ export const servePlugin = ({
 }: ResolvedViteStaticCopyOptions): Plugin => {
   let config: ResolvedConfig
   let watcher: chokidar.FSWatcher
-  const fileMap = new Map<string, FileMapValue>()
+  const fileMap: FileMap = new Map()
 
   const collectFileMap = async () => {
     const copyTargets = await collectCopyTargets(config.root, targets, flatten)

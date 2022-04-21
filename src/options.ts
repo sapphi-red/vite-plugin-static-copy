@@ -1,5 +1,7 @@
 import type { WatchOptions } from 'chokidar'
 
+export type TransformFunc = (contents: string, filename: string) => string
+
 export type Target = {
   /**
    * path or glob
@@ -16,7 +18,7 @@ export type Target = {
   /**
    * transform
    */
-  transform?: (contents: string, filename: string) => string
+  transform?: TransformFunc
 }
 
 export type ViteStaticCopyOptions = {

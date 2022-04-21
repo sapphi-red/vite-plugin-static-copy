@@ -19,8 +19,7 @@ import type {
   ServerResponse
 } from 'node:http'
 import { resolve } from 'node:path'
-
-import type { FileMapValue } from './serve'
+import type { FileMap } from './serve'
 
 const FS_PREFIX = `/@fs/`
 const VALID_ID_PREFIX = `/@id/`
@@ -37,11 +36,7 @@ const InternalPrefixRE = new RegExp(`^(?:${internalPrefixes.join('|')})`)
 const isImportRequest = (url: string): boolean => importQueryRE.test(url)
 const isInternalRequest = (url: string): boolean => InternalPrefixRE.test(url)
 
-function viaLocal(
-  root: string,
-  fileMap: Map<string, FileMapValue>,
-  uri: string
-) {
+function viaLocal(root: string, fileMap: FileMap, uri: string) {
   if (uri.endsWith('/')) {
     uri = uri.slice(-1)
   }
@@ -138,7 +133,7 @@ function send(
 
 export function serveStaticCopyMiddleware(
   root: string,
-  fileMap: Map<string, FileMapValue>
+  fileMap: FileMap
 ): Connect.NextHandleFunction {
   // Keep the named function. The name is visible in debug logs via `DEBUG=connect:dispatcher ...`
   return async function viteServeStaticCopyMiddleware(req, res, next) {
