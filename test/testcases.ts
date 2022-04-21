@@ -40,5 +40,12 @@ export const testcases = {
       dest: '/fixture5/foo.js',
       transform: (contents: string) => contents + 'transform glob'
     }
+  ],
+  'vite.absolute.config.ts': [
+    {
+      name: 'copy',
+      src: './foo.txt',
+      dest: '/fixture1/foo.txt'
+    }
   ]
 }

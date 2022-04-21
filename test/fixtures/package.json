@@ -1,0 +1,10 @@
+{
+  "name": "test",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "dev:absolute": "vite --config vite.absolute.config.ts",
+    "build:absolute": "vite --config vite.absolute.config.ts build"
+  }
+}
