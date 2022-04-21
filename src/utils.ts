@@ -5,6 +5,7 @@ import pc from 'picocolors'
 import type { Target, TransformFunc } from './options'
 import type { Logger } from 'vite'
 import type { FileMap } from './serve'
+import { createHash } from 'node:crypto'
 
 // type SimpleTarget = { src: string; dest: string }
 export type SimpleTarget = {
@@ -121,6 +122,9 @@ export const updateFileMapFromTargets = (
     })
   }
 }
+
+export const calculateMd5Base64 = (content: string) =>
+  createHash('md5').update(content).digest('base64')
 
 export const formatConsole = (msg: string) =>
   `${pc.cyan('[vite-plugin-static-copy]')} ${msg}`

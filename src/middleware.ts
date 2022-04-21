@@ -20,6 +20,8 @@ import type {
 } from 'node:http'
 import { resolve } from 'node:path'
 import type { FileMap } from './serve'
+import type { TransformFunc } from './options'
+import { calculateMd5Base64 } from './utils'
 
 const FS_PREFIX = `/@fs/`
 const VALID_ID_PREFIX = `/@id/`
@@ -44,9 +46,7 @@ function viaLocal(root: string, fileMap: FileMap, uri: string) {
   const file = fileMap.get(uri)
   if (file) {
     const filepath = resolve(root, file.src)
-    const stats = statSync(filepath)
-    const headers = toHeaders(filepath, stats)
-    return { filepath, stats, headers, ...file }
+    return { filepath, transform: file.transform }
   }
 
   for (const [key, val] of fileMap) {
@@ -54,15 +54,13 @@ function viaLocal(root: string, fileMap: FileMap, uri: string) {
     if (!uri.startsWith(dir)) continue
 
     const filepath = resolve(root, val.src, uri.slice(dir.length))
-    const stats = statSync(filepath)
-    const headers = toHeaders(filepath, stats)
-    return { filepath, stats, headers, isDir: true, ...val }
+    return { filepath }
   }
 
   return undefined
 }
 
-function toHeaders(name: string, stats: Stats) {
+function getStaticHeaders(name: string, stats: Stats) {
   let ctype = lookup(name) || ''
   if (ctype === 'text/html') ctype += ';charset=utf-8'
 
@@ -77,16 +75,21 @@ function toHeaders(name: string, stats: Stats) {
   return headers
 }
 
-function send(
-  req: IncomingMessage,
-  res: ServerResponse,
-  file: string,
-  stats: Stats,
-  headers: OutgoingHttpHeaders,
-  content?: string
-) {
-  let code = 200
-  const opts: { start?: number; end?: number } = {}
+function getTransformHeaders(name: string, content: string) {
+  let ctype = lookup(name) || ''
+  if (ctype === 'text/html') ctype += ';charset=utf-8'
+
+  const headers: OutgoingHttpHeaders = {
+    'Content-Length': Buffer.byteLength(content, 'utf8'),
+    'Content-Type': ctype,
+    ETag: `W/"${calculateMd5Base64(content)}"`,
+    'Cache-Control': 'no-cache'
+  }
+
+  return headers
+}
+
+function getMergeHeaders(headers: OutgoingHttpHeaders, res: ServerResponse) {
   headers = { ...headers }
 
   for (const key in headers) {
@@ -98,6 +101,22 @@ function send(
   if (contentTypeHeader) {
     headers['Content-Type'] = contentTypeHeader
   }
+  return headers
+}
+
+function sendStatic(req: IncomingMessage, res: ServerResponse, file: string) {
+  const stats = statSync(file)
+  const staticHeaders = getStaticHeaders(file, stats)
+
+  if (req.headers['if-none-match'] === staticHeaders['ETag']) {
+    res.writeHead(304)
+    res.end()
+    return
+  }
+
+  let code = 200
+  const headers = getMergeHeaders(staticHeaders, res)
+  const opts: { start?: number; end?: number } = {}
 
   if (req.headers.range) {
     code = 206
@@ -119,16 +138,31 @@ function send(
     headers['Accept-Ranges'] = 'bytes'
   }
 
-  if (content) {
-    res.writeHead(code, {
-      'Content-Type': headers['Content-Type'],
-      'Content-Length': content.length
-    })
-    res.end(content)
-  } else {
-    res.writeHead(code, headers)
-    createReadStream(file, opts).pipe(res)
+  res.writeHead(code, headers)
+  createReadStream(file, opts).pipe(res)
+}
+
+async function sendTransform(
+  req: IncomingMessage,
+  res: ServerResponse,
+  file: string,
+  transform: TransformFunc
+) {
+  const content = await fs.readFile(file, 'utf8')
+  const transformedContent = transform(content, file)
+  const transformHeaders = getTransformHeaders(file, transformedContent)
+
+  if (req.headers['if-none-match'] === transformHeaders['ETag']) {
+    res.writeHead(304)
+    res.end()
+    return
   }
+
+  const code = 200
+  const headers = getMergeHeaders(transformHeaders, res)
+
+  res.writeHead(code, headers)
+  res.end(transformedContent)
 }
 
 export function serveStaticCopyMiddleware(
@@ -164,16 +198,6 @@ export function serveStaticCopyMiddleware(
       return
     }
 
-    //&&!data.transform : Prevent changes to transform without updating
-    if (
-      req.headers['if-none-match'] === data.headers['ETag'] &&
-      !data.transform
-    ) {
-      res.writeHead(304)
-      res.end()
-      return
-    }
-
     // Matches js, jsx, ts, tsx.
     // The reason this is done, is that the .ts file extension is reserved
     // for the MIME type video/mp2t. In almost all cases, we can expect
@@ -184,13 +208,10 @@ export function serveStaticCopyMiddleware(
     }
 
     if (data.transform) {
-      const content = data.transform(
-        (await fs.readFile(data.filepath)).toString(),
-        data.filepath
-      )
-      send(req, res, data.filepath, data.stats, data.headers, content)
-    } else {
-      send(req, res, data.filepath, data.stats, data.headers)
+      await sendTransform(req, res, data.filepath, data.transform)
+      return
     }
+
+    sendStatic(req, res, data.filepath)
   }
 }
