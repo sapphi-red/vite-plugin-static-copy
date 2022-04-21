@@ -54,5 +54,12 @@ export const testcases: Record<string, Testcase[]> = {
       src: './foo.txt',
       dest: '/fixture1/foo.txt'
     }
+  ],
+  'vite.base.config.ts': [
+    {
+      name: 'copy',
+      src: './foo.txt',
+      dest: '/base/fixture1/foo.txt'
+    }
   ]
 }

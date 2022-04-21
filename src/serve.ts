@@ -98,7 +98,9 @@ export const servePlugin = ({
         })
       }
 
-      middlewares.use(serveStaticCopyMiddleware(config.root, fileMap))
+      middlewares.use(
+        serveStaticCopyMiddleware(config.root, config.base, fileMap)
+      )
       httpServer?.once('listening', () => {
         setTimeout(() => {
           outputCollectedLog(config.logger, fileMap)

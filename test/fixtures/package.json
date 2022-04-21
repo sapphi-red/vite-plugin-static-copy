@@ -5,6 +5,8 @@
     "dev": "vite",
     "build": "vite build",
     "dev:absolute": "vite --config vite.absolute.config.ts",
-    "build:absolute": "vite --config vite.absolute.config.ts build"
+    "build:absolute": "vite --config vite.absolute.config.ts build",
+    "dev:base": "vite --config vite.base.config.ts",
+    "build:base": "vite --config vite.base.config.ts build"
   }
 }

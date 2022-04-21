@@ -1,9 +1,27 @@
 import { describe, test, beforeAll, afterAll, expect } from 'vitest'
-import { build, createServer, ViteDevServer } from 'vite'
+import {
+  build,
+  createServer,
+  preview,
+  PreviewServer,
+  ViteDevServer
+} from 'vite'
 import fetch from 'node-fetch'
 import { testcases } from './testcases'
 import { getConfig, loadFileContent } from './utils'
-import { join } from 'node:path'
+import type { AddressInfo } from 'node:net'
+
+const fetchTextContent = async (
+  server: ViteDevServer | PreviewServer,
+  path: string
+) => {
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const port = (server.httpServer!.address() as AddressInfo).port
+  const url = `http://localhost:${port}${path}`
+  const res = await fetch(url)
+  const content = await res.text()
+  return content
+}
 
 describe('serve', () => {
   for (const [configFile, tests] of Object.entries(testcases)) {
@@ -17,16 +35,9 @@ describe('serve', () => {
         await server.close()
       })
 
-      const fetchTextContent = async (path: string) => {
-        const url = `http://localhost:${server.config.server.port}${path}`
-        const res = await fetch(url)
-        const content = await res.text()
-        return content
-      }
-
       for (const { name, src, dest, transformedContent } of tests) {
         test.concurrent(name, async () => {
-          const actual = await fetchTextContent(dest)
+          const actual = await fetchTextContent(server, dest)
           const expected = await loadFileContent(src)
           expect(actual).toBe(transformedContent ?? expected)
         })
@@ -38,13 +49,19 @@ describe('serve', () => {
 describe('build', () => {
   for (const [configFile, tests] of Object.entries(testcases)) {
     describe(configFile, () => {
+      let server: PreviewServer
       beforeAll(async () => {
         await build(getConfig(configFile))
+        server = await preview(getConfig(configFile))
+        server.printUrls
+      })
+      afterAll(() => {
+        server.httpServer.close()
       })
 
       for (const { name, src, dest, transformedContent } of tests) {
         test.concurrent(name, async () => {
-          const actual = await loadFileContent(join('./dist', `.${dest}`))
+          const actual = await fetchTextContent(server, dest)
           const expected = await loadFileContent(src)
           expect(actual).toBe(transformedContent ?? expected)
         })
