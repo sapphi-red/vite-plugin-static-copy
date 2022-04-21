@@ -24,11 +24,11 @@ describe('serve', () => {
         return content
       }
 
-      for (const { name, src, dest, transform } of tests) {
+      for (const { name, src, dest, transformedContent } of tests) {
         test.concurrent(name, async () => {
           const actual = await fetchTextContent(dest)
           const expected = await loadFileContent(src)
-          expect(actual).toBe(transform ? transform(expected) : expected)
+          expect(actual).toBe(transformedContent ?? expected)
         })
       }
     })
@@ -42,11 +42,11 @@ describe('build', () => {
         await build(getConfig(configFile))
       })
 
-      for (const { name, src, dest, transform } of tests) {
+      for (const { name, src, dest, transformedContent } of tests) {
         test.concurrent(name, async () => {
           const actual = await loadFileContent(join('./dist', `.${dest}`))
           const expected = await loadFileContent(src)
-          expect(actual).toBe(transform ? transform(expected) : expected)
+          expect(actual).toBe(transformedContent ?? expected)
         })
       }
     })
