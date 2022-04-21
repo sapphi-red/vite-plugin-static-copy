@@ -74,6 +74,7 @@ export const copyAll = async (
   const copyTargets = await collectCopyTargets(rootSrc, targets, flatten)
   await Promise.all(
     copyTargets.map(({ src, dest, transform }) => {
+      // use `path.resolve` because rootSrc/rootDest maybe absolute path
       const resolvedSrc = path.resolve(rootSrc, src)
       const resolvedDest = path.resolve(rootSrc, rootDest, dest)
       if (transform) {
