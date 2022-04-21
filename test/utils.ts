@@ -6,11 +6,11 @@ export const root = new URL('./fixtures/', import.meta.url)
 
 const fileURLToNormalizedPath = (url: URL) => normalizePath(fileURLToPath(url))
 
-export const config: InlineConfig = {
+export const getConfig = (filename: string): InlineConfig => ({
   logLevel: 'silent',
   root: fileURLToNormalizedPath(root),
-  configFile: fileURLToNormalizedPath(new URL('./vite.config.ts', root))
-}
+  configFile: fileURLToNormalizedPath(new URL(`./${filename}`, root))
+})
 
 export const loadFileContent = async (path: string) => {
   const absolutePath = new URL(path, root)
