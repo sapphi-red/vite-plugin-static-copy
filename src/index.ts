@@ -4,7 +4,7 @@ import { servePlugin } from './serve'
 import { buildPlugin } from './build'
 
 export { ViteStaticCopyOptions }
-export { Target } from './options'
+export { TransformFunc, Target } from './options'
 
 export const viteStaticCopy = (options: ViteStaticCopyOptions): Plugin[] => {
   const resolvedOptions = resolveOptions(options)
