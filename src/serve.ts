@@ -64,7 +64,11 @@ export const servePlugin = ({
             timestamp: true
           }
         )
-        await collectFileMapDebounce()
+        try {
+          await collectFileMapDebounce()
+        } catch (e) {
+          config.logger.error(`${pc.red((e as Error).toString())}`)
+        }
         if (watch.reloadPageOnChange) {
           reloadPage()
         }

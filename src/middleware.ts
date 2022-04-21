@@ -40,6 +40,7 @@ function viaLocal(root: string, fileMap: FileMap, uri: string) {
   if (uri.endsWith('/')) {
     uri = uri.slice(-1)
   }
+
   const file = fileMap.get(uri)
   if (file) {
     const filepath = resolve(root, file.src)
@@ -47,12 +48,11 @@ function viaLocal(root: string, fileMap: FileMap, uri: string) {
     const headers = toHeaders(filepath, stats)
     return { filepath, stats, headers, ...file }
   }
+
   for (const [key, val] of fileMap) {
     const dir = key.endsWith('/') ? key : `${key}/`
     if (!uri.startsWith(dir)) continue
-    if (fileMap.get(key)?.transform) {
-      throw new Error('Transform cannot be used for directories')
-    }
+
     const filepath = resolve(root, val.src, uri.slice(dir.length))
     const stats = statSync(filepath)
     const headers = toHeaders(filepath, stats)

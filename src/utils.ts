@@ -27,6 +27,15 @@ export const collectCopyTargets = async (
     })
 
     for (const matchedPath of matchedPaths) {
+      if (transform) {
+        const srcStat = await fs.stat(path.resolve(root, matchedPath))
+        if (!srcStat.isFile()) {
+          throw new Error(
+            `"transform" option only supports a file: '${matchedPath}' is not a file`
+          )
+        }
+      }
+
       // https://github.com/vladshcherbin/rollup-plugin-copy/blob/507bf5e99aa2c6d0d858821e627cb7617a1d9a6d/src/index.js#L32-L35
       const { base, dir } = path.parse(matchedPath)
       const destDir =
@@ -50,20 +59,11 @@ async function transformCopy(
   src: string,
   dest: string
 ) {
-  //is directory
-
-  if (fs.statSync(src).isDirectory()) {
-    throw new Error(`${src} is a directory,transformCopy only support file`)
-    // const dirs = await fs.readdir(src)
-    // dirs.forEach(async fileName => {
-    //   transformCopy(transform, src + '\\' + fileName, dest + '\\' + fileName)
-    // })
-  } else {
-    const s = (await fs.readFile(src)).toString()
-    const content = transform(s, src)
-    await fs.outputFile(dest, content)
-  }
+  const s = (await fs.readFile(src)).toString()
+  const content = transform(s, src)
+  await fs.outputFile(dest, content)
 }
+
 export const copyAll = async (
   rootSrc: string,
   rootDest: string,
