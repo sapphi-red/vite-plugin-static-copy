@@ -27,8 +27,16 @@ export const servePlugin = ({
   const fileMap: FileMap = new Map()
 
   const collectFileMap = async () => {
-    const copyTargets = await collectCopyTargets(config.root, targets, flatten)
-    updateFileMapFromTargets(copyTargets, fileMap)
+    try {
+      const copyTargets = await collectCopyTargets(
+        config.root,
+        targets,
+        flatten
+      )
+      updateFileMapFromTargets(copyTargets, fileMap)
+    } catch (e) {
+      config.logger.error(formatConsole(pc.red((e as Error).toString())))
+    }
   }
   const collectFileMapDebounce = debounce(100, async () => {
     await collectFileMap()
@@ -64,11 +72,7 @@ export const servePlugin = ({
             timestamp: true
           }
         )
-        try {
-          await collectFileMapDebounce()
-        } catch (e) {
-          config.logger.error(`${pc.red((e as Error).toString())}`)
-        }
+        await collectFileMapDebounce()
         if (watch.reloadPageOnChange) {
           reloadPage()
         }
