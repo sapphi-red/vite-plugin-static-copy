@@ -15,6 +15,7 @@ export const testcases = [
     src: './dir/deep/bar.txt',
     dest: '/fixture3/dir/deep/bar.txt'
   },
+
   {
     name: 'glob copy (1)',
     src: './foo.txt',
@@ -25,6 +26,7 @@ export const testcases = [
     src: './foo.js',
     dest: '/fixture2/foo.js'
   },
+
   {
     name: 'transform file',
     src: './foo.txt',

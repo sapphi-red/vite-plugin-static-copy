@@ -1,4 +1,3 @@
-
 import { defineConfig } from 'vite'
 import { viteStaticCopy } from '../../dist'
 
@@ -8,27 +7,25 @@ export default defineConfig({
       targets: [
         {
           src: 'foo.txt',
-          dest: 'fixture1',
+          dest: 'fixture1'
         },
         {
           src: 'foo.*',
-          dest: 'fixture2',
-          transform: (contents) => contents
+          dest: 'fixture2'
         },
         {
           src: 'dir',
-          dest: 'fixture3',
+          dest: 'fixture3'
         },
         {
           src: 'foo.txt',
           dest: 'fixture4',
-          transform: (contents) => contents + 'transform file'
-        }
-        ,
+          transform: contents => contents + 'transform file'
+        },
         {
           src: 'foo.*',
           dest: 'fixture5',
-          transform: (contents) => contents + 'transform glob'
+          transform: contents => contents + 'transform glob'
         }
       ]
     })
