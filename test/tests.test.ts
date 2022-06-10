@@ -19,7 +19,7 @@ const fetchTextContent = async (
   const port = (server.httpServer!.address() as AddressInfo).port
   const url = `http://localhost:${port}${path}`
   const res = await fetch(url)
-  const content = await res.text()
+  const content = res.status === 200 ? await res.text() : null
   return content
 }
 
