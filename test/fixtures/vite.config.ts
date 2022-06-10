@@ -26,6 +26,22 @@ export default defineConfig({
           src: 'foo.*',
           dest: 'fixture5',
           transform: contents => contents + 'transform glob'
+        },
+        {
+          src: 'dir/bar.txt',
+          dest: 'fixture6'
+        },
+        {
+          src: 'dir/deep/bar.txt',
+          dest: 'fixture6'
+        },
+        {
+          src: 'dir',
+          dest: 'fixture7'
+        },
+        {
+          src: 'dir2/dir',
+          dest: 'fixture7'
         }
       ]
     })

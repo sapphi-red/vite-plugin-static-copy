@@ -46,6 +46,21 @@ export const testcases: Record<string, Testcase[]> = {
       src: './foo.js',
       dest: '/fixture5/foo.js',
       transformedContent: "console.log('foo')\ntransform glob"
+    },
+    {
+      name: 'override with later entry',
+      src: './dir/deep/bar.txt',
+      dest: '/fixture6/bar.txt'
+    },
+    {
+      name: 'merge with later entry (1)',
+      src: './dir/bar.txt',
+      dest: '/fixture7/dir/bar.txt'
+    },
+    {
+      name: 'merge with later entry (2)',
+      src: './dir2/dir/foo.txt',
+      dest: '/fixture7/dir/foo.txt'
     }
   ],
   'vite.absolute.config.ts': [

@@ -15,7 +15,7 @@ type FileMapValue = {
   src: string
   transform?: TransformFunc
 }
-export type FileMap = Map<string, FileMapValue>
+export type FileMap = Map<string, FileMapValue[]>
 
 export const servePlugin = ({
   targets,
