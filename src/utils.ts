@@ -96,7 +96,12 @@ export const updateFileMapFromTargets = (
     if (!dest.startsWith('/')) {
       dest = `/${dest}`
     }
-    fileMap.set(dest, {
+
+    if (!fileMap.has(dest)) {
+      fileMap.set(dest, [])
+    }
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    fileMap.get(dest)!.push({
       src: target.src,
       transform: target.transform
     })
@@ -115,14 +120,16 @@ export const outputCollectedLog = (logger: Logger, collectedMap: FileMap) => {
       formatConsole(pc.green(`Collected ${collectedMap.size} items.`))
     )
     if (process.env.DEBUG === 'vite:plugin-static-copy') {
-      for (const [key, val] of collectedMap) {
-        logger.info(
-          formatConsole(
-            `  - '${key}' -> '${val.src}'${
-              val.transform ? ' (with content transform)' : ''
-            }`
+      for (const [key, vals] of collectedMap) {
+        for (const val of vals) {
+          logger.info(
+            formatConsole(
+              `  - '${key}' -> '${val.src}'${
+                val.transform ? ' (with content transform)' : ''
+              }`
+            )
           )
-        )
+        }
       }
     }
   } else {

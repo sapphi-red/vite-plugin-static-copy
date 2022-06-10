@@ -52,18 +52,29 @@ function viaLocal(root: string, base: string, fileMap: FileMap, uri: string) {
     uri = uri.slice(prefix.length)
   }
 
-  const file = fileMap.get(uri)
-  if (file) {
+  const files = fileMap.get(uri)
+  if (files && files[0]) {
+    const file = files[0]
     const filepath = resolve(root, file.src)
-    return { filepath, transform: file.transform }
+    const stats = statSync(filepath)
+    return { filepath, stats, transform: file.transform }
   }
 
-  for (const [key, val] of fileMap) {
+  for (const [key, vals] of fileMap) {
     const dir = key.endsWith('/') ? key : `${key}/`
     if (!uri.startsWith(dir)) continue
 
-    const filepath = resolve(root, val.src, uri.slice(dir.length))
-    return { filepath }
+    for (const val of vals) {
+      const filepath = resolve(root, val.src, uri.slice(dir.length))
+      try {
+        const stats = statSync(filepath)
+        return { filepath, stats }
+      } catch {
+        // file not found
+      }
+    }
+    // no entry matched for this prefix
+    return undefined
   }
 
   return undefined
@@ -113,8 +124,12 @@ function getMergeHeaders(headers: OutgoingHttpHeaders, res: ServerResponse) {
   return headers
 }
 
-function sendStatic(req: IncomingMessage, res: ServerResponse, file: string) {
-  const stats = statSync(file)
+function sendStatic(
+  req: IncomingMessage,
+  res: ServerResponse,
+  file: string,
+  stats: Stats
+) {
   const staticHeaders = getStaticHeaders(file, stats)
 
   if (req.headers['if-none-match'] === staticHeaders['ETag']) {
@@ -226,6 +241,6 @@ export function serveStaticCopyMiddleware(
       return
     }
 
-    sendStatic(req, res, data.filepath)
+    sendStatic(req, res, data.filepath, data.stats)
   }
 }
