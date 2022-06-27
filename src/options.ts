@@ -29,7 +29,7 @@ export type Target = {
    * Should timestamps on copied files be presered?
    * Ignored for transformed files.
    */
-  preserveTimestamps?: boolean;
+  preserveTimestamps?: boolean
 }
 
 export type ViteStaticCopyOptions = {
