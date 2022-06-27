@@ -11,6 +11,7 @@ export type SimpleTarget = {
   src: string
   dest: string
   transform?: TransformFunc
+  preserveTimestamps?: boolean;
 }
 
 export const collectCopyTargets = async (
@@ -20,7 +21,7 @@ export const collectCopyTargets = async (
 ) => {
   const copyTargets: Array<SimpleTarget> = []
 
-  for (const { src, dest, rename, transform } of targets) {
+  for (const { src, dest, rename, transform, preserveTimestamps } of targets) {
     const matchedPaths = await fastglob(src, {
       onlyFiles: false,
       dot: true,
@@ -48,7 +49,8 @@ export const collectCopyTargets = async (
       copyTargets.push({
         src: matchedPath,
         dest: path.join(destDir, rename ?? base),
-        transform
+        transform,
+        preserveTimestamps
       })
     }
   }
@@ -72,14 +74,14 @@ export const copyAll = async (
   flatten: boolean
 ) => {
   const copyTargets = await collectCopyTargets(rootSrc, targets, flatten)
-  for (const { src, dest, transform } of copyTargets) {
+  for (const { src, dest, transform, preserveTimestamps } of copyTargets) {
     // use `path.resolve` because rootSrc/rootDest maybe absolute path
     const resolvedSrc = path.resolve(rootSrc, src)
     const resolvedDest = path.resolve(rootSrc, rootDest, dest)
     if (transform) {
       await transformCopy(transform, resolvedSrc, resolvedDest)
     } else {
-      await fs.copy(resolvedSrc, resolvedDest)
+      await fs.copy(resolvedSrc, resolvedDest, { preserveTimestamps })
     }
   }
 
