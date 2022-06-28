@@ -27,7 +27,10 @@ export type Target = {
   transform?: TransformFunc
   /**
    * Should timestamps on copied files be presered?
+   *
+   * When false, timestamp behavior is OS-dependent.
    * Ignored for transformed files.
+   * @default false
    */
   preserveTimestamps?: boolean
 }
