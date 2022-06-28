@@ -11,7 +11,7 @@ export type SimpleTarget = {
   src: string
   dest: string
   transform?: TransformFunc
-  preserveTimestamps?: boolean
+  preserveTimestamps: boolean
 }
 
 export const collectCopyTargets = async (
@@ -50,7 +50,7 @@ export const collectCopyTargets = async (
         src: matchedPath,
         dest: path.join(destDir, rename ?? base),
         transform,
-        preserveTimestamps
+        preserveTimestamps: preserveTimestamps ?? false
       })
     }
   }
