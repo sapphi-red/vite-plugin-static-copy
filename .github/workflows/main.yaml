@@ -36,6 +36,22 @@ jobs:
         run: npm ci
       - name: run lint
         run: npm run lint -- --max-warnings=0
+  format:
+    name: run format
+    runs-on: ubuntu-latest
+    needs: [packages]
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: setup Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16.x'
+          cache: npm
+      - name: npm ci
+        run: npm ci
+      - name: run format
+        run: npx prettier --check .
   build:
     name: run build
     runs-on: ubuntu-latest

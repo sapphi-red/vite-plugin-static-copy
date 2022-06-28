@@ -23,6 +23,7 @@
     "dev": "tsup --watch",
     "build": "tsup",
     "lint": "eslint --cache .",
+    "format": "prettier --write --cache .",
     "type-check": "tsc --noEmit",
     "test": "vitest"
   },
@@ -53,7 +54,6 @@
     "@typescript-eslint/parser": "^5.30.0",
     "eslint": "^8.18.0",
     "eslint-config-prettier": "^8.5.0",
-    "eslint-plugin-prettier": "^4.1.0",
     "mrmime": "^1.0.1",
     "node-fetch": "^3.2.6",
     "prettier": "^2.7.1",
