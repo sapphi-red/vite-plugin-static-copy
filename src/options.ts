@@ -25,6 +25,14 @@ export type Target = {
    * `src` should only include files when this option is used
    */
   transform?: TransformFunc
+  /**
+   * Should timestamps on copied files be presered?
+   *
+   * When false, timestamp behavior is OS-dependent.
+   * Ignored for transformed files.
+   * @default false
+   */
+  preserveTimestamps?: boolean
 }
 
 export type ViteStaticCopyOptions = {
