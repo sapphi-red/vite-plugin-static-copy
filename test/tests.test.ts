@@ -11,7 +11,7 @@ import { testcases } from './testcases'
 import { getConfig, loadFileContent } from './utils'
 import type { AddressInfo } from 'node:net'
 
-const fetchTextContent = async (
+const fetchFromServer = async (
   server: ViteDevServer | PreviewServer,
   path: string
 ) => {
@@ -19,6 +19,14 @@ const fetchTextContent = async (
   const port = (server.httpServer!.address() as AddressInfo).port
   const url = `http://localhost:${port}${path}`
   const res = await fetch(url)
+  return res
+}
+
+const fetchTextContent = async (
+  server: ViteDevServer | PreviewServer,
+  path: string
+) => {
+  const res = await fetchFromServer(server, path)
   const content = res.status === 200 ? await res.text() : null
   return content
 }
@@ -44,6 +52,23 @@ describe('serve', () => {
       }
     })
   }
+
+  describe('vite.other.config.ts', () => {
+    let server: ViteDevServer
+    beforeAll(async () => {
+      server = await createServer(getConfig('vite.other.config.ts'))
+      server = await server.listen()
+    })
+    afterAll(async () => {
+      await server.close()
+    })
+
+    test.concurrent('cors', async () => {
+      const res = await fetchFromServer(server, '/fixture1/foo.txt')
+      expect(res.status).toBe(200)
+      expect(res.headers.get('Access-Control-Allow-Origin')).toBe('*')
+    })
+  })
 })
 
 describe('build', () => {

@@ -98,14 +98,15 @@ export const servePlugin = ({
         })
       }
 
-      middlewares.use(
-        serveStaticCopyMiddleware(config.root, config.base, fileMap)
-      )
       httpServer?.once('listening', () => {
         setTimeout(() => {
           outputCollectedLog(config.logger, fileMap)
         }, 0)
       })
+
+      return () => {
+        middlewares.use(serveStaticCopyMiddleware(config.root, fileMap))
+      }
     },
     async closeBundle() {
       await watcher.close()

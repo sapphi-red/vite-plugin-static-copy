@@ -38,18 +38,9 @@ const InternalPrefixRE = new RegExp(`^(?:${internalPrefixes.join('|')})`)
 const isImportRequest = (url: string): boolean => importQueryRE.test(url)
 const isInternalRequest = (url: string): boolean => InternalPrefixRE.test(url)
 
-function viaLocal(root: string, base: string, fileMap: FileMap, uri: string) {
+function viaLocal(root: string, fileMap: FileMap, uri: string) {
   if (uri.endsWith('/')) {
     uri = uri.slice(0, -1)
-  }
-
-  if (base !== '/') {
-    if (!uri.startsWith(base)) {
-      return undefined
-    }
-
-    const prefix = base.slice(0, -1) // trim last slash
-    uri = uri.slice(prefix.length)
   }
 
   const files = fileMap.get(uri)
@@ -191,13 +182,8 @@ async function sendTransform(
 
 export function serveStaticCopyMiddleware(
   root: string,
-  base: string,
   fileMap: FileMap
 ): Connect.NextHandleFunction {
-  if (base === './' || base === '') {
-    base = '/'
-  }
-
   // Keep the named function. The name is visible in debug logs via `DEBUG=connect:dispatcher ...`
   return async function viteServeStaticCopyMiddleware(req, res, next) {
     // skip import request and internal requests `/@fs/ /@vite-client` etc...
@@ -215,7 +201,7 @@ export function serveStaticCopyMiddleware(
       }
     }
 
-    const data = viaLocal(root, base, fileMap, pathname)
+    const data = viaLocal(root, fileMap, pathname)
 
     if (!data) {
       if (next) {
