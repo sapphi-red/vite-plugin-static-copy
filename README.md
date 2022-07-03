@@ -4,7 +4,7 @@
 
 `rollup-plugin-copy` for vite with dev server support.
 
-> **Info**
+> **Note**
 > Before you use this plugin, consider using [public directory](https://vitejs.dev/guide/assets.html#the-public-directory) or [`import` in JavaScript](https://vitejs.dev/guide/features.html#static-assets).
 > In most cases, these will work.
 
