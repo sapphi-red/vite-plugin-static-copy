@@ -37,6 +37,21 @@ export default {
 
 For example, if you use the config above, you will be able to fetch `bin/example.wasm` with `fetch('/wasm-files/example.wasm')`.
 
+> **Warning**
+> If you are using Windows, make sure to use `normalizePath` after doing `path.resolve` or else.
+> `/` is a escape charactor in `fast-glob` and you should use `/`.
+> ```
+> import { normalizePath } from 'vite'
+> import path from 'node:path'
+>
+> normalizePath(path.resolve(__dirname, './foo'))
+>
+> // instead of
+> path.resolve(__dirname, './foo')
+> ```
+>
+> See [`fast-glob` documentation about this](https://github.com/mrmlnc/fast-glob#how-to-write-patterns-on-windows) for more details.
+
 ### Options
 
 See [options.ts](https://github.com/sapphi-red/vite-plugin-static-copy/blob/main/src/options.ts).
