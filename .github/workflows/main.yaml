@@ -98,7 +98,7 @@ jobs:
     needs: [packages, build]
     strategy:
       matrix:
-        node_version: [14.x, 16.x]
+        node_version: [14.x, 16.x, 18.x]
         os: [ubuntu-latest, windows-latest]
     steps:
       - name: checkout
