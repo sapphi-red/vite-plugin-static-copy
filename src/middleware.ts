@@ -23,21 +23,6 @@ import type { FileMap } from './serve'
 import type { TransformFunc } from './options'
 import { calculateMd5Base64 } from './utils'
 
-const FS_PREFIX = `/@fs/`
-const VALID_ID_PREFIX = `/@id/`
-const CLIENT_PUBLIC_PATH = `/@vite/client`
-const ENV_PUBLIC_PATH = `/@vite/env`
-const importQueryRE = /(\?|&)import=?(?:&|$)/
-const internalPrefixes = [
-  FS_PREFIX,
-  VALID_ID_PREFIX,
-  CLIENT_PUBLIC_PATH,
-  ENV_PUBLIC_PATH
-]
-const InternalPrefixRE = new RegExp(`^(?:${internalPrefixes.join('|')})`)
-const isImportRequest = (url: string): boolean => importQueryRE.test(url)
-const isInternalRequest = (url: string): boolean => InternalPrefixRE.test(url)
-
 function viaLocal(root: string, fileMap: FileMap, uri: string) {
   if (uri.endsWith('/')) {
     uri = uri.slice(0, -1)
@@ -186,12 +171,6 @@ export function serveStaticCopyMiddleware(
 ): Connect.NextHandleFunction {
   // Keep the named function. The name is visible in debug logs via `DEBUG=connect:dispatcher ...`
   return async function viteServeStaticCopyMiddleware(req, res, next) {
-    // skip import request and internal requests `/@fs/ /@vite-client` etc...
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    if (isImportRequest(req.url!) || isInternalRequest(req.url!)) {
-      return next()
-    }
-
     let pathname = parse(req).pathname
     if (pathname.includes('%')) {
       try {
