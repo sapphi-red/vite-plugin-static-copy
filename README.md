@@ -26,9 +26,15 @@ export default {
   plugins: [
     viteStaticCopy({
       targets: [
+        // copy file
         {
           src: 'bin/example.wasm',
           dest: 'wasm-files'
+        },
+        // copy directory to build folder
+        {
+          src: 'my-files',
+          dest: '.'
         }
       ]
     })
