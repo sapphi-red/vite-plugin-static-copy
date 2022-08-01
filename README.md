@@ -37,8 +37,10 @@ export default {
 ```
 
 For example, if you use the config above, you will be able to fetch `bin/example.wasm` with `fetch('/wasm-files/example.wasm')`.
+So the file will be copied to `dist/wasm-files/example.wasm`.
 
 > **Warning**
+>
 > If you are using Windows, make sure to use `normalizePath` after doing `path.resolve` or else.
 > `/` is a escape charactor in `fast-glob` and you should use `/`.
 >
@@ -60,6 +62,7 @@ See [options.ts](https://github.com/sapphi-red/vite-plugin-static-copy/blob/main
 
 ## Differences with `rollup-plugin-copy`
 
-- `dest` is limited inside [`build.outDir`](https://vitejs.dev/config/#build-outdir).
+- `dest` is relative to [`build.outDir`](https://vitejs.dev/config/#build-outdir).
+  - If you are going to copy files outside `build.outDir`, you could use `rollup-plugin-copy` instead. Because that will not require dev server support.
 - [`fast-glob`](https://www.npmjs.com/package/fast-glob) is used instead of [`globby`](https://www.npmjs.com/package/globby).
   - Because `fast-glob` is used inside `vite`.
