@@ -62,6 +62,8 @@ See [options.ts](https://github.com/sapphi-red/vite-plugin-static-copy/blob/main
 
 ## Differences with `rollup-plugin-copy`
 
+- Faster dev server start up than using `rollup-plugin-copy` on `buildStart` hook.
+  - Files are not copied and served directly from server during dev to reduce start up time.
 - `dest` is relative to [`build.outDir`](https://vitejs.dev/config/build-options.html#build-outdir).
   - If you are going to copy files outside `build.outDir`, you could use `rollup-plugin-copy` instead. Because that will not require dev server support.
 - [`fast-glob`](https://www.npmjs.com/package/fast-glob) is used instead of [`globby`](https://www.npmjs.com/package/globby).
