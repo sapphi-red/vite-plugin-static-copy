@@ -62,7 +62,7 @@ See [options.ts](https://github.com/sapphi-red/vite-plugin-static-copy/blob/main
 
 ## Differences with `rollup-plugin-copy`
 
-- `dest` is relative to [`build.outDir`](https://vitejs.dev/config/#build-outdir).
+- `dest` is relative to [`build.outDir`](https://vitejs.dev/config/build-options.html#build-outdir).
   - If you are going to copy files outside `build.outDir`, you could use `rollup-plugin-copy` instead. Because that will not require dev server support.
 - [`fast-glob`](https://www.npmjs.com/package/fast-glob) is used instead of [`globby`](https://www.npmjs.com/package/globby).
   - Because `fast-glob` is used inside `vite`.
