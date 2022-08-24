@@ -58,7 +58,7 @@ export const collectCopyTargets = async (
 }
 
 async function transformCopy(
-  transform: (content: string, filepath: string) => string,
+  transform: (content: string, filepath: string) => string | null | undefined,
   src: string,
   dest: string
 ) {
