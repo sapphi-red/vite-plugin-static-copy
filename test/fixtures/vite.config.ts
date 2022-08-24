@@ -42,7 +42,12 @@ export default defineConfig({
         {
           src: 'dir2/dir',
           dest: 'fixture7'
-        }
+        },
+        {
+          src: 'foo.txt',
+          dest: 'fixture8',
+          transform: () => undefined
+        },
       ]
     })
   ]

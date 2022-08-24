@@ -64,7 +64,9 @@ async function transformCopy(
 ) {
   const content = await fs.readFile(src, 'utf8')
   const transformedContent = transform(content, src)
-  await fs.outputFile(dest, transformedContent)
+  if (transformedContent != null) {
+    await fs.outputFile(dest, transformedContent)
+  }
 }
 
 export const copyAll = async (
