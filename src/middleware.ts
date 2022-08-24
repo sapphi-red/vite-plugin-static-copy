@@ -150,11 +150,12 @@ async function sendTransform(
 ) {
   const content = await fs.readFile(file, 'utf8')
   const transformedContent = transform(content, file)
-  const transformHeaders = getTransformHeaders(file, transformedContent)
 
   if (transformedContent == null) {
     return false
   }
+
+  const transformHeaders = getTransformHeaders(file, transformedContent)
 
   if (req.headers['if-none-match'] === transformHeaders['ETag']) {
     res.writeHead(304)
@@ -207,7 +208,12 @@ export function serveStaticCopyMiddleware(
     }
 
     if (data.transform) {
-      const hasContent = await sendTransform(req, res, data.filepath, data.transform)
+      const hasContent = await sendTransform(
+        req,
+        res,
+        data.filepath,
+        data.transform
+      )
       if (!hasContent) {
         if (next) {
           next()
