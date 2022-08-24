@@ -47,7 +47,9 @@ describe('serve', () => {
         test.concurrent(name, async () => {
           const actual = await fetchTextContent(server, dest)
           const expected = await loadFileContent(src)
-          expect(actual).toBe(transformedContent ?? expected)
+          expect(actual).toBe(
+            transformedContent !== undefined ? transformedContent : expected
+          )
         })
       }
     })
@@ -88,7 +90,9 @@ describe('build', () => {
         test.concurrent(name, async () => {
           const actual = await fetchTextContent(server, dest)
           const expected = await loadFileContent(src)
-          expect(actual).toBe(transformedContent ?? expected)
+          expect(actual).toBe(
+            transformedContent !== undefined ? transformedContent : expected
+          )
         })
       }
     })
