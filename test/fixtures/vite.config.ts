@@ -47,7 +47,7 @@ export default defineConfig({
           src: 'foo.txt',
           dest: 'fixture8',
           transform: () => undefined
-        },
+        }
       ]
     })
   ]

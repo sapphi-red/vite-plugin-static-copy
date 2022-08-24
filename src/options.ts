@@ -4,7 +4,10 @@ import type { WatchOptions } from 'chokidar'
  * @param content content of file
  * @param filename absolute path to the file
  */
-export type TransformFunc = (content: string, filename: string) => string | null | undefined
+export type TransformFunc = (
+  content: string,
+  filename: string
+) => string | null | undefined
 
 export type Target = {
   /**
