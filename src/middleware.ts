@@ -147,7 +147,7 @@ async function sendTransform(
   res: ServerResponse,
   file: string,
   transform: TransformFunc
-) {
+): Promise<boolean> {
   const content = await fs.readFile(file, 'utf8')
   const transformedContent = transform(content, file)
   if (transformedContent === null) {
@@ -159,7 +159,7 @@ async function sendTransform(
   if (req.headers['if-none-match'] === transformHeaders['ETag']) {
     res.writeHead(304)
     res.end()
-    return
+    return true
   }
 
   const code = 200
