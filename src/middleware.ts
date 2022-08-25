@@ -210,12 +210,7 @@ export function serveStaticCopyMiddleware(
     }
 
     if (data.transform) {
-      const sent = await sendTransform(
-        req,
-        res,
-        data.filepath,
-        data.transform
-      )
+      const sent = await sendTransform(req, res, data.filepath, data.transform)
       if (!sent) {
         return404(res, next)
         return
