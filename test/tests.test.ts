@@ -46,10 +46,8 @@ describe('serve', () => {
       for (const { name, src, dest, transformedContent } of tests) {
         test.concurrent(name, async () => {
           const actual = await fetchTextContent(server, dest)
-          const expected = await loadFileContent(src)
-          expect(actual).toBe(
-            transformedContent !== undefined ? transformedContent : expected
-          )
+          const expected = src === null ? null : await loadFileContent(src)
+          expect(actual).toBe(transformedContent ?? expected)
         })
       }
     })
@@ -89,10 +87,8 @@ describe('build', () => {
       for (const { name, src, dest, transformedContent } of tests) {
         test.concurrent(name, async () => {
           const actual = await fetchTextContent(server, dest)
-          const expected = await loadFileContent(src)
-          expect(actual).toBe(
-            transformedContent !== undefined ? transformedContent : expected
-          )
+          const expected = src === null ? null : await loadFileContent(src)
+          expect(actual).toBe(transformedContent ?? expected)
         })
       }
     })
