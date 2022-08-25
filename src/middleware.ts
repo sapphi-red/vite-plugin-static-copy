@@ -150,8 +150,7 @@ async function sendTransform(
 ) {
   const content = await fs.readFile(file, 'utf8')
   const transformedContent = transform(content, file)
-
-  if (transformedContent == null) {
+  if (transformedContent === null) {
     return false
   }
 

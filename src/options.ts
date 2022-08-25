@@ -3,11 +3,12 @@ import type { WatchOptions } from 'chokidar'
 /**
  * @param content content of file
  * @param filename absolute path to the file
+ * @returns the transformed content. when `null` is returned, the file won't be created.
  */
 export type TransformFunc = (
   content: string,
   filename: string
-) => string | null | undefined
+) => string | null
 
 export type Target = {
   /**

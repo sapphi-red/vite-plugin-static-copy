@@ -58,13 +58,13 @@ export const collectCopyTargets = async (
 }
 
 async function transformCopy(
-  transform: (content: string, filepath: string) => string | null | undefined,
+  transform: TransformFunc,
   src: string,
   dest: string
 ) {
   const content = await fs.readFile(src, 'utf8')
   const transformedContent = transform(content, src)
-  if (transformedContent != null) {
+  if (transformedContent !== null) {
     await fs.outputFile(dest, transformedContent)
   }
 }
