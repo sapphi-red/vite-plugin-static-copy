@@ -2,7 +2,7 @@ type Testcase = {
   name: string
   src: string
   dest: string
-  transformedContent?: string
+  transformedContent?: string | null
 }
 
 export const testcases: Record<string, Testcase[]> = {
@@ -61,6 +61,12 @@ export const testcases: Record<string, Testcase[]> = {
       name: 'merge with later entry (2)',
       src: './dir2/dir/foo.txt',
       dest: '/fixture7/dir/foo.txt'
+    },
+    {
+      name: 'drop file',
+      src: './foo.txt',
+      dest: '/fixture8/foo.txt',
+      transformedContent: null
     }
   ],
   'vite.absolute.config.ts': [

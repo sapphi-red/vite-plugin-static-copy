@@ -147,15 +147,19 @@ async function sendTransform(
   res: ServerResponse,
   file: string,
   transform: TransformFunc
-) {
+): Promise<boolean> {
   const content = await fs.readFile(file, 'utf8')
   const transformedContent = transform(content, file)
+  if (transformedContent === null) {
+    return false
+  }
+
   const transformHeaders = getTransformHeaders(file, transformedContent)
 
   if (req.headers['if-none-match'] === transformHeaders['ETag']) {
     res.writeHead(304)
     res.end()
-    return
+    return true
   }
 
   const code = 200
@@ -163,6 +167,7 @@ async function sendTransform(
 
   res.writeHead(code, headers)
   res.end(transformedContent)
+  return true
 }
 
 export function serveStaticCopyMiddleware(
@@ -202,7 +207,21 @@ export function serveStaticCopyMiddleware(
     }
 
     if (data.transform) {
-      await sendTransform(req, res, data.filepath, data.transform)
+      const hasContent = await sendTransform(
+        req,
+        res,
+        data.filepath,
+        data.transform
+      )
+      if (!hasContent) {
+        if (next) {
+          next()
+          return
+        }
+        res.statusCode = 404
+        res.end()
+        return
+      }
       return
     }
 
