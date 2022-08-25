@@ -170,6 +170,15 @@ async function sendTransform(
   return true
 }
 
+function return404(res: ServerResponse, next: Connect.NextFunction) {
+  if (next) {
+    next()
+    return
+  }
+  res.statusCode = 404
+  res.end()
+}
+
 export function serveStaticCopyMiddleware(
   root: string,
   fileMap: FileMap
@@ -186,14 +195,8 @@ export function serveStaticCopyMiddleware(
     }
 
     const data = viaLocal(root, fileMap, pathname)
-
     if (!data) {
-      if (next) {
-        next()
-        return
-      }
-      res.statusCode = 404
-      res.end()
+      return404(res, next)
       return
     }
 
@@ -207,19 +210,14 @@ export function serveStaticCopyMiddleware(
     }
 
     if (data.transform) {
-      const hasContent = await sendTransform(
+      const sent = await sendTransform(
         req,
         res,
         data.filepath,
         data.transform
       )
-      if (!hasContent) {
-        if (next) {
-          next()
-          return
-        }
-        res.statusCode = 404
-        res.end()
+      if (!sent) {
+        return404(res, next)
         return
       }
       return
