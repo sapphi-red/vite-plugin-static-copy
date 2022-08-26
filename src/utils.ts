@@ -11,6 +11,7 @@ export type SimpleTarget = {
   src: string
   dest: string
   transform?: TransformFunc
+  encoding: string
   preserveTimestamps: boolean
 }
 
@@ -21,7 +22,14 @@ export const collectCopyTargets = async (
 ) => {
   const copyTargets: Array<SimpleTarget> = []
 
-  for (const { src, dest, rename, transform, preserveTimestamps } of targets) {
+  for (const {
+    src,
+    dest,
+    rename,
+    transform,
+    encoding,
+    preserveTimestamps
+  } of targets) {
     const matchedPaths = await fastglob(src, {
       onlyFiles: false,
       dot: true,
@@ -50,6 +58,7 @@ export const collectCopyTargets = async (
         src: matchedPath,
         dest: path.join(destDir, rename ?? base),
         transform,
+        encoding: encoding ?? 'utf8',
         preserveTimestamps: preserveTimestamps ?? false
       })
     }
@@ -60,9 +69,10 @@ export const collectCopyTargets = async (
 async function transformCopy(
   transform: TransformFunc,
   src: string,
-  dest: string
+  dest: string,
+  encoding: string
 ) {
-  const content = await fs.readFile(src, 'utf8')
+  const content = await fs.readFile(src, encoding)
   const transformedContent = transform(content, src)
   if (transformedContent !== null) {
     await fs.outputFile(dest, transformedContent)
@@ -76,12 +86,18 @@ export const copyAll = async (
   flatten: boolean
 ) => {
   const copyTargets = await collectCopyTargets(rootSrc, targets, flatten)
-  for (const { src, dest, transform, preserveTimestamps } of copyTargets) {
+  for (const {
+    src,
+    dest,
+    transform,
+    preserveTimestamps,
+    encoding
+  } of copyTargets) {
     // use `path.resolve` because rootSrc/rootDest maybe absolute path
     const resolvedSrc = path.resolve(rootSrc, src)
     const resolvedDest = path.resolve(rootSrc, rootDest, dest)
     if (transform) {
-      await transformCopy(transform, resolvedSrc, resolvedDest)
+      await transformCopy(transform, resolvedSrc, resolvedDest, encoding)
     } else {
       await fs.copy(resolvedSrc, resolvedDest, { preserveTimestamps })
     }

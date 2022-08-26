@@ -26,6 +26,13 @@ export type Target = {
    * `src` should only include files when this option is used
    */
   transform?: TransformFunc
+
+  /**
+   * The encoding to use when reading files to pass to the transform function.
+   * @default 'utf8'
+   */
+  encoding?: string
+
   /**
    * Should timestamps on copied files be presered?
    *

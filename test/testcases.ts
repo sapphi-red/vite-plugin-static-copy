@@ -66,6 +66,11 @@ export const testcases: Record<string, Testcase[]> = {
       name: 'drop file',
       src: null,
       dest: '/fixture8/foo.txt'
+    },
+    {
+      name: 'binary file',
+      src: './global.wasm',
+      dest: '/fixture9/global.wasm'
     }
   ],
   'vite.absolute.config.ts': [
