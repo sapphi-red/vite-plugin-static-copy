@@ -15,7 +15,7 @@ export type TransformOptionObject<E extends BufferEncoding = 'utf8'> = {
   handler: TransformFunc<E extends 'binary' ? Buffer : string>
 }
 
-export type TransformOption = TransformFunc<'utf8'> | TransformOptionObject
+export type TransformOption = TransformFunc<string> | TransformOptionObject
 
 export type Target = {
   /**
@@ -36,12 +36,6 @@ export type Target = {
    * `src` should only include files when this option is used
    */
   transform?: TransformOption
-
-  /**
-   * The encoding to use when reading files to pass to the transform function.
-   * @default 'utf8'
-   */
-  encoding?: string
 
   /**
    * Should timestamps on copied files be presered?

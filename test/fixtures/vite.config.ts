@@ -51,8 +51,10 @@ export default defineConfig({
         {
           src: 'global.wasm',
           dest: 'fixture9',
-          encoding: 'binary',
-          transform: content => content
+          transform: {
+            handler: content => content,
+            encoding: 'binary'
+          }
         }
       ]
     })
