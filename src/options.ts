@@ -5,7 +5,7 @@ import type { WatchOptions } from 'chokidar'
  * @param filename absolute path to the file
  * @returns the transformed content. when `null` is returned, the file won't be created.
  */
-export type TransformFunc<T extends string | Buffer = 'utf8'> = (
+type TransformFunc<T extends string | Buffer> = (
   content: T,
   filename: string
 ) => T | null
@@ -35,7 +35,7 @@ export type Target = {
    *
    * `src` should only include files when this option is used
    */
-  transform?: TransformFunc
+  transform?: TransformOption
 
   /**
    * The encoding to use when reading files to pass to the transform function.

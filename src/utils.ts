@@ -2,12 +2,7 @@ import fastglob from 'fast-glob'
 import path from 'node:path'
 import fs from 'fs-extra'
 import pc from 'picocolors'
-import type {
-  Target,
-  TransformFunc,
-  TransformOption,
-  TransformOptionObject
-} from './options'
+import type { Target, TransformOption, TransformOptionObject } from './options'
 import type { Logger } from 'vite'
 import type { FileMap } from './serve'
 
@@ -62,14 +57,15 @@ export const collectCopyTargets = async (
 }
 
 async function transformCopy<E extends BufferEncoding>(
-  transform: TransformFunc<E extends 'binary' ? Buffer : string>,
+  transform: TransformOptionObject<E>['handler'],
   src: string,
   dest: string,
   encoding: E
 ) {
-  const content = (await fs.readFile(src, encoding)) as E extends 'binary'
-    ? Buffer
-    : string
+  const content = (await fs.readFile(src, encoding)) as Exclude<
+    ReturnType<typeof transform>,
+    null
+  >
   const transformedContent = transform(content, src)
   if (transformedContent !== null) {
     await fs.outputFile(dest, transformedContent)
