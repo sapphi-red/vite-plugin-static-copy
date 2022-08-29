@@ -57,15 +57,12 @@ export const collectCopyTargets = async (
 }
 
 async function transformCopy<E extends BufferEncoding>(
-  transform: TransformOptionObject<E>['handler'],
+  transform: TransformOptionObject['handler'],
   src: string,
   dest: string,
   encoding: E
 ) {
-  const content = (await fs.readFile(src, encoding)) as Exclude<
-    ReturnType<typeof transform>,
-    null
-  >
+  const content = (await fs.readFile(src, encoding)) as string & Buffer
   const transformedContent = transform(content, src)
   if (transformedContent !== null) {
     await fs.outputFile(dest, transformedContent)

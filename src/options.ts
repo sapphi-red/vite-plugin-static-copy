@@ -10,10 +10,15 @@ type TransformFunc<T extends string | Buffer> = (
   filename: string
 ) => T | null
 
-export type TransformOptionObject<E extends BufferEncoding = 'utf8'> = {
-  encoding: E
-  handler: TransformFunc<E extends 'binary' ? Buffer : string>
-}
+export type TransformOptionObject =
+  | {
+      encoding: Exclude<BufferEncoding, 'binary'>
+      handler: TransformFunc<string>
+    }
+  | {
+      encoding: 'binary'
+      handler: TransformFunc<Buffer>
+    }
 
 export type TransformOption = TransformFunc<string> | TransformOptionObject
 
