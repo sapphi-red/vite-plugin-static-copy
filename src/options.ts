@@ -5,7 +5,17 @@ import type { WatchOptions } from 'chokidar'
  * @param filename absolute path to the file
  * @returns the transformed content. when `null` is returned, the file won't be created.
  */
-export type TransformFunc = (content: string, filename: string) => string | null
+export type TransformFunc<T extends string | Buffer = 'utf8'> = (
+  content: T,
+  filename: string
+) => T | null
+
+export type TransformOptionObject<E extends BufferEncoding = 'utf8'> = {
+  encoding: E
+  handler: TransformFunc<E extends 'binary' ? Buffer : string>
+}
+
+export type TransformOption = TransformFunc<'utf8'> | TransformOptionObject
 
 export type Target = {
   /**

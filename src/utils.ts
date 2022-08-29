@@ -2,16 +2,19 @@ import fastglob from 'fast-glob'
 import path from 'node:path'
 import fs from 'fs-extra'
 import pc from 'picocolors'
-import type { Target, TransformFunc } from './options'
+import type {
+  Target,
+  TransformFunc,
+  TransformOption,
+  TransformOptionObject
+} from './options'
 import type { Logger } from 'vite'
 import type { FileMap } from './serve'
-import { createHash } from 'node:crypto'
 
 export type SimpleTarget = {
   src: string
   dest: string
-  transform?: TransformFunc
-  encoding: string
+  transform?: TransformOption
   preserveTimestamps: boolean
 }
 
@@ -22,14 +25,7 @@ export const collectCopyTargets = async (
 ) => {
   const copyTargets: Array<SimpleTarget> = []
 
-  for (const {
-    src,
-    dest,
-    rename,
-    transform,
-    encoding,
-    preserveTimestamps
-  } of targets) {
+  for (const { src, dest, rename, transform, preserveTimestamps } of targets) {
     const matchedPaths = await fastglob(src, {
       onlyFiles: false,
       dot: true,
@@ -58,7 +54,6 @@ export const collectCopyTargets = async (
         src: matchedPath,
         dest: path.join(destDir, rename ?? base),
         transform,
-        encoding: encoding ?? 'utf8',
         preserveTimestamps: preserveTimestamps ?? false
       })
     }
@@ -66,13 +61,15 @@ export const collectCopyTargets = async (
   return copyTargets
 }
 
-async function transformCopy(
-  transform: TransformFunc,
+async function transformCopy<E extends BufferEncoding>(
+  transform: TransformFunc<E extends 'binary' ? Buffer : string>,
   src: string,
   dest: string,
-  encoding: string
+  encoding: E
 ) {
-  const content = await fs.readFile(src, encoding)
+  const content = (await fs.readFile(src, encoding)) as E extends 'binary'
+    ? Buffer
+    : string
   const transformedContent = transform(content, src)
   if (transformedContent !== null) {
     await fs.outputFile(dest, transformedContent)
@@ -86,18 +83,18 @@ export const copyAll = async (
   flatten: boolean
 ) => {
   const copyTargets = await collectCopyTargets(rootSrc, targets, flatten)
-  for (const {
-    src,
-    dest,
-    transform,
-    preserveTimestamps,
-    encoding
-  } of copyTargets) {
+  for (const { src, dest, transform, preserveTimestamps } of copyTargets) {
     // use `path.resolve` because rootSrc/rootDest maybe absolute path
     const resolvedSrc = path.resolve(rootSrc, src)
     const resolvedDest = path.resolve(rootSrc, rootDest, dest)
-    if (transform) {
-      await transformCopy(transform, resolvedSrc, resolvedDest, encoding)
+    const transformOption = resolveTransformOption(transform)
+    if (transformOption) {
+      await transformCopy(
+        transformOption.handler,
+        resolvedSrc,
+        resolvedDest,
+        transformOption.encoding
+      )
     } else {
       await fs.copy(resolvedSrc, resolvedDest, { preserveTimestamps })
     }
@@ -127,9 +124,6 @@ export const updateFileMapFromTargets = (
     })
   }
 }
-
-export const calculateMd5Base64 = (content: string) =>
-  createHash('md5').update(content).digest('base64')
 
 export const formatConsole = (msg: string) =>
   `${pc.cyan('[vite-plugin-static-copy]')} ${msg}`
@@ -167,5 +161,18 @@ export const outputCopyLog = (
     logger.info(formatConsole(pc.green(`Copied ${copyCount} items.`)))
   } else {
     logger.warn(formatConsole(pc.yellow('No items to copy.')))
+  }
+}
+
+export function resolveTransformOption(
+  transformOption: TransformOption | undefined
+): TransformOptionObject | undefined {
+  if (typeof transformOption === 'function') {
+    return {
+      handler: transformOption,
+      encoding: 'utf8'
+    } as TransformOptionObject
+  } else {
+    return transformOption
   }
 }

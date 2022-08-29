@@ -20,8 +20,9 @@ import type {
 } from 'node:http'
 import { resolve } from 'node:path'
 import type { FileMap } from './serve'
-import type { TransformFunc } from './options'
-import { calculateMd5Base64 } from './utils'
+import type { TransformOptionObject } from './options'
+import { resolveTransformOption } from './utils'
+import etag from 'etag'
 
 function viaLocal(root: string, fileMap: FileMap, uri: string) {
   if (uri.endsWith('/')) {
@@ -71,14 +72,14 @@ function getStaticHeaders(name: string, stats: Stats) {
   return headers
 }
 
-function getTransformHeaders(name: string, content: string) {
+function getTransformHeaders(name: string, content: string | Buffer) {
   let ctype = lookup(name) || ''
   if (ctype === 'text/html') ctype += ';charset=utf-8'
 
   const headers: OutgoingHttpHeaders = {
     'Content-Length': Buffer.byteLength(content, 'utf8'),
     'Content-Type': ctype,
-    ETag: `W/"${calculateMd5Base64(content)}"`,
+    ETag: etag(content),
     'Cache-Control': 'no-cache'
   }
 
@@ -146,10 +147,11 @@ async function sendTransform(
   req: IncomingMessage,
   res: ServerResponse,
   file: string,
-  transform: TransformFunc
+  transform: TransformOptionObject
 ): Promise<boolean> {
-  const content = await fs.readFile(file, 'utf8')
-  const transformedContent = transform(content, file)
+  const content = (await fs.readFile(file, transform.encoding)) as string &
+    Buffer
+  const transformedContent = transform.handler(content, file)
   if (transformedContent === null) {
     return false
   }
@@ -209,8 +211,10 @@ export function serveStaticCopyMiddleware(
       res.setHeader('Content-Type', 'application/javascript')
     }
 
-    if (data.transform) {
-      const sent = await sendTransform(req, res, data.filepath, data.transform)
+    const transformOption = resolveTransformOption(data.transform)
+
+    if (transformOption) {
+      const sent = await sendTransform(req, res, data.filepath, transformOption)
       if (!sent) {
         return404(res, next)
         return

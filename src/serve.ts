@@ -1,5 +1,5 @@
 import type { Plugin, ResolvedConfig } from 'vite'
-import type { ResolvedViteStaticCopyOptions, TransformFunc } from './options'
+import type { ResolvedViteStaticCopyOptions, TransformOption } from './options'
 import { serveStaticCopyMiddleware } from './middleware'
 import {
   collectCopyTargets,
@@ -13,7 +13,7 @@ import pc from 'picocolors'
 
 type FileMapValue = {
   src: string
-  transform?: TransformFunc
+  transform?: TransformOption
 }
 export type FileMap = Map<string, FileMapValue[]>
 
