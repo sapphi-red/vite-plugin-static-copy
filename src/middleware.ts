@@ -79,7 +79,7 @@ function getTransformHeaders(name: string, content: string | Buffer) {
   const headers: OutgoingHttpHeaders = {
     'Content-Length': Buffer.byteLength(content, 'utf8'),
     'Content-Type': ctype,
-    ETag: etag(content),
+    ETag: etag(content, { weak: true }),
     'Cache-Control': 'no-cache'
   }
 
