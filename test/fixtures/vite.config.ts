@@ -47,6 +47,14 @@ export default defineConfig({
           src: 'foo.txt',
           dest: 'fixture8',
           transform: () => null
+        },
+        {
+          src: 'global.wasm',
+          dest: 'fixture9',
+          transform: {
+            handler: content => content,
+            encoding: 'buffer'
+          }
         }
       ]
     })

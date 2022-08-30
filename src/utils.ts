@@ -2,7 +2,7 @@ import fastglob from 'fast-glob'
 import path from 'node:path'
 import fs from 'fs-extra'
 import pc from 'picocolors'
-import type { Target, TransformFunc } from './options'
+import type { Target, TransformOption, TransformOptionObject } from './options'
 import type { Logger } from 'vite'
 import type { FileMap } from './serve'
 import { createHash } from 'node:crypto'
@@ -10,7 +10,7 @@ import { createHash } from 'node:crypto'
 export type SimpleTarget = {
   src: string
   dest: string
-  transform?: TransformFunc
+  transform?: TransformOption
   preserveTimestamps: boolean
 }
 
@@ -57,13 +57,25 @@ export const collectCopyTargets = async (
   return copyTargets
 }
 
+export async function getTransformedContent(
+  file: string,
+  transform: TransformOptionObject
+) {
+  if (transform.encoding === 'buffer') {
+    const content = await fs.readFile(file)
+    return transform.handler(content, file)
+  }
+
+  const content = await fs.readFile(file, transform.encoding)
+  return transform.handler(content, file)
+}
+
 async function transformCopy(
-  transform: TransformFunc,
+  transform: TransformOptionObject,
   src: string,
   dest: string
 ) {
-  const content = await fs.readFile(src, 'utf8')
-  const transformedContent = transform(content, src)
+  const transformedContent = await getTransformedContent(src, transform)
   if (transformedContent !== null) {
     await fs.outputFile(dest, transformedContent)
   }
@@ -80,8 +92,9 @@ export const copyAll = async (
     // use `path.resolve` because rootSrc/rootDest maybe absolute path
     const resolvedSrc = path.resolve(rootSrc, src)
     const resolvedDest = path.resolve(rootSrc, rootDest, dest)
-    if (transform) {
-      await transformCopy(transform, resolvedSrc, resolvedDest)
+    const transformOption = resolveTransformOption(transform)
+    if (transformOption) {
+      await transformCopy(transformOption, resolvedSrc, resolvedDest)
     } else {
       await fs.copy(resolvedSrc, resolvedDest, { preserveTimestamps })
     }
@@ -112,7 +125,7 @@ export const updateFileMapFromTargets = (
   }
 }
 
-export const calculateMd5Base64 = (content: string) =>
+export const calculateMd5Base64 = (content: string | Buffer) =>
   createHash('md5').update(content).digest('base64')
 
 export const formatConsole = (msg: string) =>
@@ -152,4 +165,16 @@ export const outputCopyLog = (
   } else {
     logger.warn(formatConsole(pc.yellow('No items to copy.')))
   }
+}
+
+export function resolveTransformOption(
+  transformOption: TransformOption | undefined
+): TransformOptionObject | undefined {
+  if (typeof transformOption === 'function') {
+    return {
+      handler: transformOption,
+      encoding: 'utf8'
+    }
+  }
+  return transformOption
 }

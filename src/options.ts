@@ -5,7 +5,22 @@ import type { WatchOptions } from 'chokidar'
  * @param filename absolute path to the file
  * @returns the transformed content. when `null` is returned, the file won't be created.
  */
-export type TransformFunc = (content: string, filename: string) => string | null
+type TransformFunc<T extends string | Buffer> = (
+  content: T,
+  filename: string
+) => T | null
+
+export type TransformOptionObject =
+  | {
+      encoding: Exclude<BufferEncoding, 'binary'>
+      handler: TransformFunc<string>
+    }
+  | {
+      encoding: 'buffer'
+      handler: TransformFunc<Buffer>
+    }
+
+export type TransformOption = TransformFunc<string> | TransformOptionObject
 
 export type Target = {
   /**
@@ -25,7 +40,7 @@ export type Target = {
    *
    * `src` should only include files when this option is used
    */
-  transform?: TransformFunc
+  transform?: TransformOption
   /**
    * Should timestamps on copied files be presered?
    *

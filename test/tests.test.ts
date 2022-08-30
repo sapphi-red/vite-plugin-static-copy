@@ -31,6 +31,15 @@ const fetchTextContent = async (
   return content
 }
 
+const fetchBufferContent = async (
+  server: ViteDevServer | PreviewServer,
+  path: string
+) => {
+  const res = await fetchFromServer(server, path)
+  const content = res.status === 200 ? await res.arrayBuffer() : null
+  return content
+}
+
 describe('serve', () => {
   for (const [configFile, tests] of Object.entries(testcases)) {
     describe(configFile, () => {
@@ -43,11 +52,15 @@ describe('serve', () => {
         await server.close()
       })
 
-      for (const { name, src, dest, transformedContent } of tests) {
+      for (const { name, src, dest, transformedContent, encoding } of tests) {
         test.concurrent(name, async () => {
-          const actual = await fetchTextContent(server, dest)
-          const expected = src === null ? null : await loadFileContent(src)
-          expect(actual).toBe(transformedContent ?? expected)
+          const expected =
+            src === null ? null : await loadFileContent(src, encoding)
+          const actual =
+            encoding === 'buffer'
+              ? await fetchBufferContent(server, dest)
+              : await fetchTextContent(server, dest)
+          expect(actual).toStrictEqual(transformedContent ?? expected)
         })
       }
     })
@@ -84,11 +97,15 @@ describe('build', () => {
         server.httpServer.close()
       })
 
-      for (const { name, src, dest, transformedContent } of tests) {
+      for (const { name, src, dest, transformedContent, encoding } of tests) {
         test.concurrent(name, async () => {
-          const actual = await fetchTextContent(server, dest)
-          const expected = src === null ? null : await loadFileContent(src)
-          expect(actual).toBe(transformedContent ?? expected)
+          const expected =
+            src === null ? null : await loadFileContent(src, encoding)
+          const actual =
+            encoding === 'buffer'
+              ? await fetchBufferContent(server, dest)
+              : await fetchTextContent(server, dest)
+          expect(actual).toStrictEqual(transformedContent ?? expected)
         })
       }
     })

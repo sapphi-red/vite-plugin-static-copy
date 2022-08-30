@@ -12,7 +12,6 @@ import { parse } from '@polka/url'
 import { lookup } from 'mrmime'
 import { statSync, createReadStream, Stats } from 'node:fs'
 import type { Connect } from 'vite'
-import fs from 'fs-extra'
 import type {
   IncomingMessage,
   OutgoingHttpHeaders,
@@ -20,8 +19,12 @@ import type {
 } from 'node:http'
 import { resolve } from 'node:path'
 import type { FileMap } from './serve'
-import type { TransformFunc } from './options'
-import { calculateMd5Base64 } from './utils'
+import type { TransformOptionObject } from './options'
+import {
+  calculateMd5Base64,
+  getTransformedContent,
+  resolveTransformOption
+} from './utils'
 
 function viaLocal(root: string, fileMap: FileMap, uri: string) {
   if (uri.endsWith('/')) {
@@ -71,12 +74,19 @@ function getStaticHeaders(name: string, stats: Stats) {
   return headers
 }
 
-function getTransformHeaders(name: string, content: string) {
+function getTransformHeaders(
+  name: string,
+  encoding: BufferEncoding | 'buffer',
+  content: string | Buffer
+) {
   let ctype = lookup(name) || ''
   if (ctype === 'text/html') ctype += ';charset=utf-8'
 
   const headers: OutgoingHttpHeaders = {
-    'Content-Length': Buffer.byteLength(content, 'utf8'),
+    'Content-Length': Buffer.byteLength(
+      content,
+      encoding === 'buffer' ? undefined : encoding
+    ),
     'Content-Type': ctype,
     ETag: `W/"${calculateMd5Base64(content)}"`,
     'Cache-Control': 'no-cache'
@@ -146,15 +156,18 @@ async function sendTransform(
   req: IncomingMessage,
   res: ServerResponse,
   file: string,
-  transform: TransformFunc
+  transform: TransformOptionObject
 ): Promise<boolean> {
-  const content = await fs.readFile(file, 'utf8')
-  const transformedContent = transform(content, file)
+  const transformedContent = await getTransformedContent(file, transform)
   if (transformedContent === null) {
     return false
   }
 
-  const transformHeaders = getTransformHeaders(file, transformedContent)
+  const transformHeaders = getTransformHeaders(
+    file,
+    transform.encoding,
+    transformedContent
+  )
 
   if (req.headers['if-none-match'] === transformHeaders['ETag']) {
     res.writeHead(304)
@@ -209,8 +222,9 @@ export function serveStaticCopyMiddleware(
       res.setHeader('Content-Type', 'application/javascript')
     }
 
-    if (data.transform) {
-      const sent = await sendTransform(req, res, data.filepath, data.transform)
+    const transformOption = resolveTransformOption(data.transform)
+    if (transformOption) {
+      const sent = await sendTransform(req, res, data.filepath, transformOption)
       if (!sent) {
         return404(res, next)
         return
