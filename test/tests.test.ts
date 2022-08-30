@@ -40,14 +40,6 @@ const fetchBufferContent = async (
   return content
 }
 
-const fetchEtagHeader = async (
-  server: ViteDevServer | PreviewServer,
-  path: string
-) => {
-  const res = await fetchFromServer(server, path)
-  return res.headers.get('ETag')
-}
-
 describe('serve', () => {
   for (const [configFile, tests] of Object.entries(testcases)) {
     describe(configFile, () => {

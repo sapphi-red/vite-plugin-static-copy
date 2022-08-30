@@ -70,6 +70,7 @@
     "etag": "^1.8.1",
     "fast-glob": "^3.2.11",
     "fs-extra": "^10.1.0",
-    "picocolors": "^1.0.0"
+    "picocolors": "^1.0.0",
+    "to-array-buffer": "^3.2.0"
   }
 }
