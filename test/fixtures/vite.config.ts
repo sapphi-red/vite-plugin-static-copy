@@ -53,7 +53,7 @@ export default defineConfig({
           dest: 'fixture9',
           transform: {
             handler: content => content,
-            encoding: 'binary'
+            encoding: 'buffer'
           }
         }
       ]

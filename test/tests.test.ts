@@ -57,7 +57,7 @@ describe('serve', () => {
           const expected =
             src === null ? null : await loadFileContent(src, encoding)
           const actual =
-            encoding === 'binary'
+            encoding === 'buffer'
               ? await fetchBufferContent(server, dest)
               : await fetchTextContent(server, dest)
           expect(actual).toStrictEqual(transformedContent ?? expected)
@@ -102,7 +102,7 @@ describe('build', () => {
           const expected =
             src === null ? null : await loadFileContent(src, encoding)
           const actual =
-            encoding === 'binary'
+            encoding === 'buffer'
               ? await fetchBufferContent(server, dest)
               : await fetchTextContent(server, dest)
           expect(actual).toStrictEqual(transformedContent ?? expected)

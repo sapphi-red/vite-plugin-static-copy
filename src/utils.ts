@@ -61,9 +61,12 @@ async function transformCopy(
   transform: TransformOptionObject['handler'],
   src: string,
   dest: string,
-  encoding: BufferEncoding
+  encoding: BufferEncoding | 'buffer'
 ) {
-  const content = (await fs.readFile(src, encoding)) as string & Buffer
+  const content = (await fs.readFile(
+    src,
+    (encoding === 'buffer' ? null : encoding) as BufferEncoding
+  )) as Buffer & string
   const transformedContent = transform(content, src)
   if (transformedContent !== null) {
     await fs.outputFile(dest, transformedContent)

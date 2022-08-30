@@ -14,15 +14,15 @@ export const getConfig = (filename: string): InlineConfig => ({
 
 export const loadFileContent = async (
   path: string,
-  encoding: BufferEncoding = 'utf8'
+  encoding: BufferEncoding | 'buffer' = 'utf8'
 ): Promise<string | ArrayBuffer> => {
   const absolutePath = new URL(path, root)
   const content = await readFile(
     absolutePath,
-    encoding === 'binary' ? null : encoding
+    encoding === 'buffer' ? null : encoding
   )
 
-  if (encoding === 'binary') {
+  if (encoding === 'buffer') {
     return (content as Buffer).buffer
   }
   return content

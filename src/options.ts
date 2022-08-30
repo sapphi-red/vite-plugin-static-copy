@@ -16,7 +16,7 @@ export type TransformOptionObject =
       handler: TransformFunc<string>
     }
   | {
-      encoding: 'binary'
+      encoding: 'buffer'
       handler: TransformFunc<Buffer>
     }
 

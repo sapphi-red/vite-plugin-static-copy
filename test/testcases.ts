@@ -3,7 +3,7 @@ type Testcase = {
   src: string | null
   dest: string
   transformedContent?: string
-  encoding?: BufferEncoding
+  encoding?: BufferEncoding | 'buffer'
 }
 
 export const testcases: Record<string, Testcase[]> = {
@@ -69,10 +69,10 @@ export const testcases: Record<string, Testcase[]> = {
       dest: '/fixture8/foo.txt'
     },
     {
-      name: 'binary file',
+      name: 'binary file read as buffer',
       src: './global.wasm',
       dest: '/fixture9/global.wasm',
-      encoding: 'binary'
+      encoding: 'buffer'
     }
   ],
   'vite.absolute.config.ts': [

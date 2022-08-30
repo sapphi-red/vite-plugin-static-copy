@@ -148,8 +148,12 @@ async function sendTransform(
   file: string,
   transform: TransformOptionObject
 ): Promise<boolean> {
-  const content = (await fs.readFile(file, transform.encoding)) as string &
-    Buffer
+  const content = (await fs.readFile(
+    file,
+    (transform.encoding === 'buffer'
+      ? null
+      : transform.encoding) as BufferEncoding
+  )) as string & Buffer
   const transformedContent = transform.handler(content, file)
   if (transformedContent === null) {
     return false
