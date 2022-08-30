@@ -12,7 +12,6 @@ import { parse } from '@polka/url'
 import { lookup } from 'mrmime'
 import { statSync, createReadStream, Stats } from 'node:fs'
 import type { Connect } from 'vite'
-import fs from 'fs-extra'
 import type {
   IncomingMessage,
   OutgoingHttpHeaders,
@@ -21,7 +20,11 @@ import type {
 import { resolve } from 'node:path'
 import type { FileMap } from './serve'
 import type { TransformOptionObject } from './options'
-import { calculateMd5Base64, resolveTransformOption } from './utils'
+import {
+  calculateMd5Base64,
+  getTransformedContent,
+  resolveTransformOption
+} from './utils'
 
 function viaLocal(root: string, fileMap: FileMap, uri: string) {
   if (uri.endsWith('/')) {
@@ -148,13 +151,7 @@ async function sendTransform(
   file: string,
   transform: TransformOptionObject
 ): Promise<boolean> {
-  const content = (await fs.readFile(
-    file,
-    (transform.encoding === 'buffer'
-      ? null
-      : transform.encoding) as BufferEncoding
-  )) as string & Buffer
-  const transformedContent = transform.handler(content, file)
+  const transformedContent = await getTransformedContent(file, transform)
   if (transformedContent === null) {
     return false
   }

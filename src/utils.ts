@@ -57,17 +57,25 @@ export const collectCopyTargets = async (
   return copyTargets
 }
 
-async function transformCopy(
-  transform: TransformOptionObject['handler'],
-  src: string,
-  dest: string,
-  encoding: BufferEncoding | 'buffer'
+export async function getTransformedContent(
+  file: string,
+  transform: TransformOptionObject
 ) {
-  const content = (await fs.readFile(
-    src,
-    (encoding === 'buffer' ? null : encoding) as BufferEncoding
-  )) as Buffer & string
-  const transformedContent = transform(content, src)
+  if (transform.encoding === 'buffer') {
+    const content = await fs.readFile(file)
+    return transform.handler(content, file)
+  }
+
+  const content = await fs.readFile(file, transform.encoding)
+  return transform.handler(content, file)
+}
+
+async function transformCopy(
+  transform: TransformOptionObject,
+  src: string,
+  dest: string
+) {
+  const transformedContent = getTransformedContent(src, transform)
   if (transformedContent !== null) {
     await fs.outputFile(dest, transformedContent)
   }
@@ -86,12 +94,7 @@ export const copyAll = async (
     const resolvedDest = path.resolve(rootSrc, rootDest, dest)
     const transformOption = resolveTransformOption(transform)
     if (transformOption) {
-      await transformCopy(
-        transformOption.handler,
-        resolvedSrc,
-        resolvedDest,
-        transformOption.encoding
-      )
+      await transformCopy(transformOption, resolvedSrc, resolvedDest)
     } else {
       await fs.copy(resolvedSrc, resolvedDest, { preserveTimestamps })
     }
