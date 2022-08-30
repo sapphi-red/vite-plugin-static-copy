@@ -223,7 +223,6 @@ export function serveStaticCopyMiddleware(
     }
 
     const transformOption = resolveTransformOption(data.transform)
-
     if (transformOption) {
       const sent = await sendTransform(req, res, data.filepath, transformOption)
       if (!sent) {

@@ -22,8 +22,8 @@ export const loadFileContent = async (
     encoding === 'buffer' ? null : encoding
   )
 
-  if (encoding === 'buffer') {
-    return (content as Buffer).buffer
+  if (typeof content !== 'string') {
+    return content.buffer
   }
   return content
 }

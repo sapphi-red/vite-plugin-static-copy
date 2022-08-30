@@ -41,7 +41,6 @@ export type Target = {
    * `src` should only include files when this option is used
    */
   transform?: TransformOption
-
   /**
    * Should timestamps on copied files be presered?
    *

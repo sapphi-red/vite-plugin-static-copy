@@ -174,8 +174,7 @@ export function resolveTransformOption(
     return {
       handler: transformOption,
       encoding: 'utf8'
-    } as TransformOptionObject
-  } else {
-    return transformOption
+    }
   }
+  return transformOption
 }
