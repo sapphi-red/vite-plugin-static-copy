@@ -1,8 +1,6 @@
 import { readFile } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
 import { InlineConfig, normalizePath } from 'vite'
-// @ts-expect-error missing types
-import toArrayBuffer from 'to-array-buffer'
 
 export const root = new URL('./fixtures/', import.meta.url)
 
@@ -19,10 +17,13 @@ export const loadFileContent = async (
   encoding: BufferEncoding = 'utf8'
 ): Promise<string | ArrayBuffer> => {
   const absolutePath = new URL(path, root)
-  const content = await readFile(absolutePath, encoding)
+  const content = await readFile(
+    absolutePath,
+    encoding === 'binary' ? null : encoding
+  )
 
   if (encoding === 'binary') {
-    return toArrayBuffer(content)
+    return (content as Buffer).buffer
   }
   return content
 }
