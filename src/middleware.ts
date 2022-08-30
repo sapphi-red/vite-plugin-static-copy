@@ -21,8 +21,7 @@ import type {
 import { resolve } from 'node:path'
 import type { FileMap } from './serve'
 import type { TransformOptionObject } from './options'
-import { resolveTransformOption } from './utils'
-import etag from 'etag'
+import { calculateMd5Base64, resolveTransformOption } from './utils'
 
 function viaLocal(root: string, fileMap: FileMap, uri: string) {
   if (uri.endsWith('/')) {
@@ -79,7 +78,7 @@ function getTransformHeaders(name: string, content: string | Buffer) {
   const headers: OutgoingHttpHeaders = {
     'Content-Length': Buffer.byteLength(content, 'utf8'),
     'Content-Type': ctype,
-    ETag: etag(content, { weak: true }),
+    ETag: `W/"${calculateMd5Base64(content)}"`,
     'Cache-Control': 'no-cache'
   }
 
