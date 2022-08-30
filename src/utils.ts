@@ -75,7 +75,7 @@ async function transformCopy(
   src: string,
   dest: string
 ) {
-  const transformedContent = getTransformedContent(src, transform)
+  const transformedContent = await getTransformedContent(src, transform)
   if (transformedContent !== null) {
     await fs.outputFile(dest, transformedContent)
   }
