@@ -74,12 +74,19 @@ function getStaticHeaders(name: string, stats: Stats) {
   return headers
 }
 
-function getTransformHeaders(name: string, content: string | Buffer) {
+function getTransformHeaders(
+  name: string,
+  encoding: BufferEncoding | 'buffer',
+  content: string | Buffer
+) {
   let ctype = lookup(name) || ''
   if (ctype === 'text/html') ctype += ';charset=utf-8'
 
   const headers: OutgoingHttpHeaders = {
-    'Content-Length': Buffer.byteLength(content, 'utf8'),
+    'Content-Length': Buffer.byteLength(
+      content,
+      encoding === 'buffer' ? undefined : encoding
+    ),
     'Content-Type': ctype,
     ETag: `W/"${calculateMd5Base64(content)}"`,
     'Cache-Control': 'no-cache'
@@ -156,7 +163,11 @@ async function sendTransform(
     return false
   }
 
-  const transformHeaders = getTransformHeaders(file, transformedContent)
+  const transformHeaders = getTransformHeaders(
+    file,
+    transform.encoding,
+    transformedContent
+  )
 
   if (req.headers['if-none-match'] === transformHeaders['ETag']) {
     res.writeHead(304)
