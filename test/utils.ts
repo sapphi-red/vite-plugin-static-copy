@@ -17,7 +17,7 @@ export const getConfig = (filename: string): InlineConfig => ({
 export const loadFileContent = async (
   path: string,
   encoding: BufferEncoding = 'utf8'
-) => {
+): Promise<string | ArrayBuffer> => {
   const absolutePath = new URL(path, root)
   const content = await readFile(absolutePath, encoding)
 
