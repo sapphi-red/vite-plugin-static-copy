@@ -1,4 +1,3 @@
-import etag from 'etag'
 import { readFile } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
 import { InlineConfig, normalizePath } from 'vite'
@@ -13,14 +12,11 @@ export const getConfig = (filename: string): InlineConfig => ({
   configFile: fileURLToNormalizedPath(new URL(`./${filename}`, root))
 })
 
-export const loadFileContent = async (path: string) => {
-  const absolutePath = new URL(path, root)
-  const content = await readFile(absolutePath, 'utf8')
-  return content
-}
-
-export const loadFileETag = async (path: string, encoding: BufferEncoding) => {
+export const loadFileContent = async (
+  path: string,
+  encoding: BufferEncoding = 'utf8'
+) => {
   const absolutePath = new URL(path, root)
   const content = await readFile(absolutePath, encoding)
-  return etag(content, { weak: true })
+  return content
 }

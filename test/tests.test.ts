@@ -8,7 +8,7 @@ import {
 } from 'vite'
 import fetch from 'node-fetch'
 import { testcases } from './testcases'
-import { getConfig, loadFileContent, loadFileETag } from './utils'
+import { getConfig, loadFileContent } from './utils'
 import type { AddressInfo } from 'node:net'
 
 const fetchFromServer = async (
@@ -28,6 +28,15 @@ const fetchTextContent = async (
 ) => {
   const res = await fetchFromServer(server, path)
   const content = res.status === 200 ? await res.text() : null
+  return content
+}
+
+const fetchBufferContent = async (
+  server: ViteDevServer | PreviewServer,
+  path: string
+) => {
+  const res = await fetchFromServer(server, path)
+  const content = res.status === 200 ? await res.arrayBuffer() : null
   return content
 }
 
@@ -53,18 +62,13 @@ describe('serve', () => {
 
       for (const { name, src, dest, transformedContent, encoding } of tests) {
         test.concurrent(name, async () => {
-          // If we are testing a binary file we want to use the Etag header to
-          // check if the file is identitcal.
-          if (encoding === 'binary') {
-            const actualETag = await fetchEtagHeader(server, dest)
-            const expectedETag =
-              src === null ? null : await loadFileETag(src, 'binary')
-            expect(actualETag).toBe(expectedETag)
-          } else {
-            const actual = await fetchTextContent(server, dest)
-            const expected = src === null ? null : await loadFileContent(src)
-            expect(actual).toBe(transformedContent ?? expected)
-          }
+          const expected =
+            src === null ? null : await loadFileContent(src, encoding)
+          const actual =
+            encoding === 'binary'
+              ? await fetchBufferContent(server, dest)
+              : await fetchTextContent(server, dest)
+          expect(actual).toStrictEqual(transformedContent ?? expected)
         })
       }
     })
@@ -103,16 +107,13 @@ describe('build', () => {
 
       for (const { name, src, dest, transformedContent, encoding } of tests) {
         test.concurrent(name, async () => {
-          if (encoding === 'binary') {
-            const actualETag = await fetchEtagHeader(server, dest)
-            const expectedETag =
-              src === null ? null : await loadFileETag(src, 'binary')
-            expect(actualETag).toBe(expectedETag)
-          } else {
-            const actual = await fetchTextContent(server, dest)
-            const expected = src === null ? null : await loadFileContent(src)
-            expect(actual).toBe(transformedContent ?? expected)
-          }
+          const expected =
+            src === null ? null : await loadFileContent(src, encoding)
+          const actual =
+            encoding === 'binary'
+              ? await fetchBufferContent(server, dest)
+              : await fetchTextContent(server, dest)
+          expect(actual).toStrictEqual(transformedContent ?? expected)
         })
       }
     })
