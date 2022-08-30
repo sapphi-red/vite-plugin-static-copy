@@ -57,11 +57,11 @@ export const collectCopyTargets = async (
   return copyTargets
 }
 
-async function transformCopy<E extends BufferEncoding>(
+async function transformCopy(
   transform: TransformOptionObject['handler'],
   src: string,
   dest: string,
-  encoding: E
+  encoding: BufferEncoding
 ) {
   const content = (await fs.readFile(src, encoding)) as string & Buffer
   const transformedContent = transform(content, src)
