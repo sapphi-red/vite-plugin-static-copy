@@ -14,6 +14,14 @@ export type SimpleTarget = {
   preserveTimestamps: boolean
 }
 
+function renameTarget(target, rename, src) {
+  const parsedPath = path.parse(target)
+
+  return typeof rename === 'string'
+    ? rename
+    : rename(parsedPath.name, parsedPath.ext.replace('.', ''), src)
+}
+
 export const collectCopyTargets = async (
   root: string,
   targets: Target[],
@@ -48,7 +56,10 @@ export const collectCopyTargets = async (
 
       copyTargets.push({
         src: matchedPath,
-        dest: path.join(destDir, rename ?? base),
+        dest: path.join(
+          destDir,
+          rename ? renameTarget(base, rename, matchedPath) : base
+        ),
         transform,
         preserveTimestamps: preserveTimestamps ?? false
       })

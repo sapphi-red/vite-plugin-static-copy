@@ -34,7 +34,7 @@ export type Target = {
   /**
    * rename
    */
-  rename?: string
+  rename?: string | (() => string)
   /**
    * transform
    *
