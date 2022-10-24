@@ -1,4 +1,4 @@
-/// <reference types="vitest" />
+/// <reference types="vitest/config" />
 
 import { defineConfig } from 'vite'
 import GithubActionsReporter from 'vitest-github-actions-reporter'
