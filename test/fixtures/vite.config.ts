@@ -55,6 +55,18 @@ export default defineConfig({
             handler: content => content,
             encoding: 'buffer'
           }
+        },
+        {
+          src: 'foo.txt',
+          dest: 'fixture10',
+          rename: 'foo2.txt'
+        },
+        {
+          src: 'foo.txt',
+          dest: 'fixture10',
+          rename: (fileName, fileExtension) => {
+            return `/v1/${fileName}.${fileExtension}`
+          }
         }
       ]
     })

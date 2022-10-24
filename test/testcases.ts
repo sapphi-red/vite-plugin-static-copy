@@ -73,6 +73,17 @@ export const testcases: Record<string, Testcase[]> = {
       src: './global.wasm',
       dest: '/fixture9/global.wasm',
       encoding: 'buffer'
+    },
+
+    {
+      name: 'rename string',
+      src: './foo.txt',
+      dest: '/fixture10/foo2.txt'
+    },
+    {
+      name: 'rename function',
+      src: './foo.txt',
+      dest: '/fixture10/v1/foo.txt'
     }
   ],
   'vite.absolute.config.ts': [

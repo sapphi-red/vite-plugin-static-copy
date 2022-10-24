@@ -2,7 +2,12 @@ import fastglob from 'fast-glob'
 import path from 'node:path'
 import fs from 'fs-extra'
 import pc from 'picocolors'
-import type { Target, TransformOption, TransformOptionObject } from './options'
+import type {
+  RenameFunc,
+  Target,
+  TransformOption,
+  TransformOptionObject
+} from './options'
 import type { Logger } from 'vite'
 import type { FileMap } from './serve'
 import { createHash } from 'node:crypto'
@@ -12,6 +17,18 @@ export type SimpleTarget = {
   dest: string
   transform?: TransformOption
   preserveTimestamps: boolean
+}
+
+function renameTarget(
+  target: string,
+  rename: string | RenameFunc,
+  src: string
+): string {
+  const parsedPath = path.parse(target)
+
+  return typeof rename === 'string'
+    ? rename
+    : rename(parsedPath.name, parsedPath.ext.replace('.', ''), src)
 }
 
 export const collectCopyTargets = async (
@@ -48,7 +65,10 @@ export const collectCopyTargets = async (
 
       copyTargets.push({
         src: matchedPath,
-        dest: path.join(destDir, rename ?? base),
+        dest: path.join(
+          destDir,
+          rename ? renameTarget(base, rename, matchedPath) : base
+        ),
         transform,
         preserveTimestamps: preserveTimestamps ?? false
       })
