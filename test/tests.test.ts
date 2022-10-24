@@ -78,18 +78,8 @@ describe('serve', () => {
 
     test.concurrent('cors', async () => {
       const res = await fetchFromServer(server, '/fixture1/foo.txt')
-      const renameRes = await fetchFromServer(server, '/fixture2/foo2.txt')
-      const renameFuncRes1 = await fetchFromServer(
-        server,
-        '/fixture3/v1/foo.txt'
-      )
-      // without renaming
       expect(res.status).toBe(200)
       expect(res.headers.get('Access-Control-Allow-Origin')).toBe('*')
-      // with simple renaming
-      expect(renameRes.status).toBe(200)
-      // with renaming as a function
-      expect(renameFuncRes1.status).toBe(200)
     })
   })
 })
