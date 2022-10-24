@@ -10,6 +10,12 @@ type TransformFunc<T extends string | Buffer> = (
   filename: string
 ) => T | null
 
+export type RenameFunc = (
+  fileName: string,
+  fileExtension: string,
+  fullPath: string
+) => string
+
 export type TransformOptionObject =
   | {
       encoding: Exclude<BufferEncoding, 'binary'>
@@ -34,7 +40,7 @@ export type Target = {
   /**
    * rename
    */
-  rename?: string | (() => string)
+  rename?: string | RenameFunc
   /**
    * transform
    *
