@@ -13,6 +13,11 @@ export const testcases: Record<string, Testcase[]> = {
       src: './foo.txt',
       dest: '/fixture1/foo.txt'
     },
+    {
+      name: 'noext file copy',
+      src: './noext',
+      dest: '/fixture1/noext'
+    },
 
     {
       name: 'dir copy (1)',

@@ -10,6 +10,10 @@ export default defineConfig({
           dest: 'fixture1'
         },
         {
+          src: 'noext',
+          dest: 'fixture1'
+        },
+        {
           src: 'foo.*',
           dest: 'fixture2'
         },

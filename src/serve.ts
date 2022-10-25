@@ -1,4 +1,4 @@
-import type { Plugin, ResolvedConfig } from 'vite'
+import type { Connect, Plugin, ResolvedConfig } from 'vite'
 import type { ResolvedViteStaticCopyOptions, TransformOption } from './options'
 import { serveStaticCopyMiddleware } from './middleware'
 import {
@@ -105,7 +105,28 @@ export const servePlugin = ({
       })
 
       return () => {
+        // insert serveStaticCopyMiddleware before transformMiddleware
         middlewares.use(serveStaticCopyMiddleware(config.root, fileMap))
+        const transformMiddlewareIndex = findMiddlewareIndex(
+          middlewares.stack,
+          'viteTransformMiddleware'
+        )
+        const serveStaticCopyMiddlewareIndex = findMiddlewareIndex(
+          middlewares.stack,
+          'viteServeStaticCopyMiddleware'
+        )
+
+        const serveStaticCopyMiddlewareItem = middlewares.stack.splice(
+          serveStaticCopyMiddlewareIndex,
+          1
+        )[0]
+        if (serveStaticCopyMiddlewareItem === undefined) throw new Error()
+
+        middlewares.stack.splice(
+          transformMiddlewareIndex,
+          0,
+          serveStaticCopyMiddlewareItem
+        )
       }
     },
     async closeBundle() {
@@ -113,3 +134,9 @@ export const servePlugin = ({
     }
   }
 }
+
+const findMiddlewareIndex = (stack: Connect.ServerStackItem[], name: string) =>
+  stack.findIndex(
+    middleware =>
+      typeof middleware.handle === 'function' && middleware.handle.name === name
+  )
