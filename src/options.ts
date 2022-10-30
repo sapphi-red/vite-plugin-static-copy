@@ -50,7 +50,7 @@ export type Target = {
    */
   transform?: TransformOption
   /**
-   * Should timestamps on copied files be presered?
+   * Should timestamps on copied files be preserved?
    *
    * When false, timestamp behavior is OS-dependent.
    * Ignored for transformed files.
