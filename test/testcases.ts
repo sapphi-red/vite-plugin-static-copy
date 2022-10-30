@@ -48,6 +48,12 @@ export const testcases: Record<string, Testcase[]> = {
       transformedContent: 'foo\ntransform file'
     },
     {
+      name: 'async transform file',
+      src: './foo.txt',
+      dest: '/fixture4/foo.js',
+      transformedContent: "console.log('foo')\ntransform file"
+    },
+    {
       name: 'transform glob.*',
       src: './foo.js',
       dest: '/fixture5/foo.js',
@@ -89,6 +95,11 @@ export const testcases: Record<string, Testcase[]> = {
       name: 'rename function',
       src: './foo.txt',
       dest: '/fixture10/v1/foo.txt'
+    },
+    {
+      name: 'async rename function',
+      src: './foo.txt',
+      dest: '/fixture10/v2/foo.txt'
     }
   ],
   'vite.absolute.config.ts': [

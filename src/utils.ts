@@ -19,16 +19,18 @@ export type SimpleTarget = {
   preserveTimestamps: boolean
 }
 
-function renameTarget(
+async function renameTarget(
   target: string,
   rename: string | RenameFunc,
   src: string
-): string {
+): Promise<string> {
   const parsedPath = path.parse(target)
 
-  return typeof rename === 'string'
-    ? rename
-    : rename(parsedPath.name, parsedPath.ext.replace('.', ''), src)
+  if (typeof rename === 'string') {
+    return rename
+  }
+
+  return rename(parsedPath.name, parsedPath.ext.replace('.', ''), src)
 }
 
 export const collectCopyTargets = async (
@@ -67,7 +69,7 @@ export const collectCopyTargets = async (
         src: matchedPath,
         dest: path.join(
           destDir,
-          rename ? renameTarget(base, rename, matchedPath) : base
+          rename ? await renameTarget(base, rename, matchedPath) : base
         ),
         transform,
         preserveTimestamps: preserveTimestamps ?? false

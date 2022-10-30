@@ -1,6 +1,11 @@
 import { defineConfig } from 'vite'
 import { viteStaticCopy } from '../../dist'
 
+const wait = (delay: number) =>
+  new Promise(resolve => {
+    setTimeout(resolve, delay)
+  })
+
 export default defineConfig({
   plugins: [
     viteStaticCopy({
@@ -25,6 +30,14 @@ export default defineConfig({
           src: 'foo.txt',
           dest: 'fixture4',
           transform: contents => contents + 'transform file'
+        },
+        {
+          src: 'foo.js',
+          dest: 'fixture4',
+          transform: async contents => {
+            await wait(10)
+            return contents + 'transform file'
+          }
         },
         {
           src: 'foo.*',
@@ -70,6 +83,14 @@ export default defineConfig({
           dest: 'fixture10',
           rename: (fileName, fileExtension) => {
             return `/v1/${fileName}.${fileExtension}`
+          }
+        },
+        {
+          src: 'foo.txt',
+          dest: 'fixture10',
+          rename: async (fileName, fileExtension) => {
+            await wait(10)
+            return `/v2/${fileName}.${fileExtension}`
           }
         }
       ]

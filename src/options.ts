@@ -1,5 +1,7 @@
 import type { WatchOptions } from 'chokidar'
 
+type MaybePromise<T> = T | Promise<T>
+
 /**
  * @param content content of file
  * @param filename absolute path to the file
@@ -8,13 +10,13 @@ import type { WatchOptions } from 'chokidar'
 type TransformFunc<T extends string | Buffer> = (
   content: T,
   filename: string
-) => T | null
+) => MaybePromise<T | null>
 
 export type RenameFunc = (
   fileName: string,
   fileExtension: string,
   fullPath: string
-) => string
+) => MaybePromise<string>
 
 export type TransformOptionObject =
   | {
