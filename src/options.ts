@@ -2,21 +2,21 @@ import type { WatchOptions } from 'chokidar'
 
 type MaybePromise<T> = T | Promise<T>
 
-/**
- * @param content content of file
- * @param filename absolute path to the file
- * @returns the transformed content. when `null` is returned, the file won't be created.
- */
-type TransformFunc<T extends string | Buffer> = (
-  content: T,
-  filename: string
-) => MaybePromise<T | null>
-
 export type RenameFunc = (
   fileName: string,
   fileExtension: string,
   fullPath: string
 ) => MaybePromise<string>
+
+/**
+ * @param content content of file
+ * @param filename absolute path to the file
+ * @returns the transformed content. when `null` is returned, the file won't be created.
+ */
+export type TransformFunc<T extends string | Buffer> = (
+  content: T,
+  filename: string
+) => MaybePromise<T | null>
 
 export type TransformOptionObject =
   | {
