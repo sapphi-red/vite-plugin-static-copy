@@ -57,6 +57,14 @@ export type Target = {
    * @default false
    */
   preserveTimestamps?: boolean
+  /**
+   * Whether to dereference symlinks.
+   *
+   * When true, symlinks will be dereferenced.
+   * When false, symlinks will not be dereferenced.
+   * @default true
+   */
+  dereference?: boolean
 }
 
 export type ViteStaticCopyOptions = {
