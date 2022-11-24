@@ -87,6 +87,11 @@ export type ViteStaticCopyOptions = {
      * @default false
      */
     reloadPageOnChange?: boolean
+    /**
+     * Copy files to the dist on change
+     * @default false
+     */
+    copyToDest?: boolean
   }
 }
 
@@ -96,6 +101,7 @@ export type ResolvedViteStaticCopyOptions = {
   watch: {
     options: WatchOptions
     reloadPageOnChange: boolean
+    copyToDest: boolean
   }
 }
 
@@ -106,6 +112,7 @@ export const resolveOptions = (
   flatten: options.flatten ?? true,
   watch: {
     options: options.watch?.options ?? {},
-    reloadPageOnChange: options.watch?.reloadPageOnChange ?? false
+    reloadPageOnChange: options.watch?.reloadPageOnChange ?? false,
+    copyToDest: options.watch?.copyToDest ?? false
   }
 })
