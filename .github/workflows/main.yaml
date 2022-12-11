@@ -102,6 +102,7 @@ jobs:
         include:
           - node_version: 18.x
             os: windows-latest
+      fail-fast: false
     runs-on: ${{ matrix.os }}
     steps:
       - name: checkout
