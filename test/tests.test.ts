@@ -8,7 +8,7 @@ import {
 } from 'vite'
 import fetch from 'node-fetch'
 import { testcases } from './testcases'
-import { getConfig, loadFileContent } from './utils'
+import { getConfig, loadFileContent, normalizeLineBreak } from './utils'
 import type { AddressInfo } from 'node:net'
 
 const fetchFromServer = async (
@@ -28,7 +28,7 @@ const fetchTextContent = async (
 ) => {
   const res = await fetchFromServer(server, path)
   const content = res.status === 200 ? await res.text() : null
-  return content
+  return content ? normalizeLineBreak(content) : null
 }
 
 const fetchBufferContent = async (

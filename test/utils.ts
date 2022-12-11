@@ -25,5 +25,8 @@ export const loadFileContent = async (
   if (typeof content !== 'string') {
     return content.buffer
   }
-  return content
+  return normalizeLineBreak(content)
 }
+
+export const normalizeLineBreak = (input: string) =>
+  input.replace(/\r\n/g, '\n')
