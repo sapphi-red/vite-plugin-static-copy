@@ -1,0 +1,20 @@
+name: Setup Repo
+description: Prepare repo
+
+inputs:
+  node-version:
+    description: Version of Node to use
+    default: 18.x
+
+runs:
+  using: composite
+  steps:
+    - uses: pnpm/action-setup@v2
+    - name: setup Node
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: pnpm
+        registry-url: 'https://registry.npmjs.org'
+    - run: pnpm i --frozen-lockfile
+      shell: bash
