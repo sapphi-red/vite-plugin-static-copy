@@ -10,19 +10,10 @@ jobs:
     name: release
     runs-on: ubuntu-latest
     steps:
-      - name: checkout
-        uses: actions/checkout@v3
-      - name: setup Node
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18.x'
-          cache: 'npm'
-          registry-url: 'https://registry.npmjs.org'
-      - name: ci
-        run: npm ci
-      - name: build
-        run: npm run build
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/setup-repo
+      - run: pnpm run build
       - name: deploy
-        run: npm publish
+        run: pnpm publish --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
