@@ -4,7 +4,8 @@ import { copyAll, outputCopyLog } from './utils'
 
 export const buildPlugin = ({
   targets,
-  flatten
+  flatten,
+  silent
 }: ResolvedViteStaticCopyOptions): Plugin => {
   let config: ResolvedConfig
   let copyCount: number | undefined
@@ -24,7 +25,8 @@ export const buildPlugin = ({
       )
     },
     closeBundle() {
-      outputCopyLog(config.logger, copyCount)
+      if (!silent)
+        outputCopyLog(config.logger, copyCount)
     }
   }
 }
