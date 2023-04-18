@@ -25,8 +25,7 @@ export const buildPlugin = ({
       )
     },
     closeBundle() {
-      if (!silent)
-        outputCopyLog(config.logger, copyCount)
+      if (!silent) outputCopyLog(config.logger, copyCount)
     }
   }
 }

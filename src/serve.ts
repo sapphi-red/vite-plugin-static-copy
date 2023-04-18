@@ -1,5 +1,5 @@
 import type { Connect, Plugin, ResolvedConfig } from 'vite'
-import { ResolvedViteStaticCopyOptions, TransformOption } from './options'
+import type { ResolvedViteStaticCopyOptions, TransformOption } from './options'
 import { serveStaticCopyMiddleware } from './middleware'
 import {
   collectCopyTargets,
