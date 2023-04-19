@@ -1,6 +1,7 @@
 import { readFile } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
-import { InlineConfig, normalizePath } from 'vite'
+import type { InlineConfig } from 'vite'
+import { normalizePath } from 'vite'
 
 export const root = new URL('./fixtures/', import.meta.url)
 

@@ -10,7 +10,8 @@
 
 import { parse } from '@polka/url'
 import { lookup } from 'mrmime'
-import { statSync, createReadStream, Stats } from 'node:fs'
+import type { Stats } from 'node:fs'
+import { statSync, createReadStream } from 'node:fs'
 import type { Connect } from 'vite'
 import type {
   IncomingMessage,
