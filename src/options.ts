@@ -77,6 +77,11 @@ export type ViteStaticCopyOptions = {
    * @default true
    */
   flatten?: boolean
+  /**
+   * Suppress console output.
+   * @default false
+   */
+  silent?: boolean
   watch?: {
     /**
      * Watch options
@@ -93,6 +98,7 @@ export type ViteStaticCopyOptions = {
 export type ResolvedViteStaticCopyOptions = {
   targets: Target[]
   flatten: boolean
+  silent: boolean
   watch: {
     options: WatchOptions
     reloadPageOnChange: boolean
@@ -104,6 +110,7 @@ export const resolveOptions = (
 ): ResolvedViteStaticCopyOptions => ({
   targets: options.targets,
   flatten: options.flatten ?? true,
+  silent: options.silent ?? false,
   watch: {
     options: options.watch?.options ?? {},
     reloadPageOnChange: options.watch?.reloadPageOnChange ?? false

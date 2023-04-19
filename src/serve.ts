@@ -20,7 +20,8 @@ export type FileMap = Map<string, FileMapValue[]>
 export const servePlugin = ({
   targets,
   flatten,
-  watch
+  watch,
+  silent
 }: ResolvedViteStaticCopyOptions): Plugin => {
   let config: ResolvedConfig
   let watcher: chokidar.FSWatcher
@@ -66,12 +67,14 @@ export const servePlugin = ({
         }
       )
       watcher.on('add', async path => {
-        config.logger.info(
-          formatConsole(`${pc.green('detected new file')} ${path}`),
-          {
-            timestamp: true
-          }
-        )
+        if (!silent) {
+          config.logger.info(
+            formatConsole(`${pc.green('detected new file')} ${path}`),
+            {
+              timestamp: true
+            }
+          )
+        }
         await collectFileMapDebounce()
         if (watch.reloadPageOnChange) {
           reloadPage()
@@ -79,30 +82,36 @@ export const servePlugin = ({
       })
       if (watch.reloadPageOnChange) {
         watcher.on('change', path => {
-          config.logger.info(
-            formatConsole(`${pc.green('file changed')} ${path}`),
-            {
-              timestamp: true
-            }
-          )
+          if (!silent) {
+            config.logger.info(
+              formatConsole(`${pc.green('file changed')} ${path}`),
+              {
+                timestamp: true
+              }
+            )
+          }
           reloadPage()
         })
         watcher.on('unlink', path => {
-          config.logger.info(
-            formatConsole(`${pc.green('file deleted')} ${path}`),
-            {
-              timestamp: true
-            }
-          )
+          if (!silent) {
+            config.logger.info(
+              formatConsole(`${pc.green('file deleted')} ${path}`),
+              {
+                timestamp: true
+              }
+            )
+          }
           reloadPage()
         })
       }
 
-      httpServer?.once('listening', () => {
-        setTimeout(() => {
-          outputCollectedLog(config.logger, fileMap)
-        }, 0)
-      })
+      if (!silent) {
+        httpServer?.once('listening', () => {
+          setTimeout(() => {
+            outputCollectedLog(config.logger, fileMap)
+          }, 0)
+        })
+      }
 
       return () => {
         // insert serveStaticCopyMiddleware before transformMiddleware
