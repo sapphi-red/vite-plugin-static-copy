@@ -17,8 +17,5 @@
     "baseUrl": ".",
     "esModuleInterop": true,
     "skipLibCheck": true
-  },
-  "exclude": [
-    "test/fixtures"
-  ]
+  }
 }
