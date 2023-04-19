@@ -1,11 +1,6 @@
 import { describe, test, beforeAll, afterAll, expect } from 'vitest'
-import {
-  build,
-  createServer,
-  preview,
-  PreviewServer,
-  ViteDevServer
-} from 'vite'
+import type { PreviewServer, ViteDevServer } from 'vite'
+import { build, createServer, preview } from 'vite'
 import fetch from 'node-fetch'
 import { testcases } from './testcases'
 import { getConfig, loadFileContent, normalizeLineBreak } from './utils'

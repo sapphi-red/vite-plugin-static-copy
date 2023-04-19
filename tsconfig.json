@@ -12,7 +12,7 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedIndexedAccess": true,
-    "importsNotUsedAsValues": "error",
+    "verbatimModuleSyntax": true,
     "moduleResolution": "node",
     "baseUrl": ".",
     "esModuleInterop": true,
