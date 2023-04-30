@@ -39,6 +39,9 @@ devDependencies:
   eslint-config-prettier:
     specifier: ^8.8.0
     version: 8.8.0(eslint@8.38.0)
+  eslint-plugin-vitest:
+    specifier: ^0.1.4
+    version: 0.1.4(eslint@8.38.0)(typescript@5.0.4)
   mrmime:
     specifier: ^1.0.1
     version: 1.0.1
@@ -858,6 +861,19 @@ packages:
       eslint: '>=7.0.0'
     dependencies:
       eslint: 8.38.0
+    dev: true
+
+  /eslint-plugin-vitest@0.1.4(eslint@8.38.0)(typescript@5.0.4):
+    resolution: {integrity: sha512-R3/0Ch8KcQCZqKFfCxw+cQvUPdoQ6YF7yXV5/NZ9trQqoFDTUzu0vBYPSTJ7T8FLKi3nccR6ZsUvIBD2G0MXYg==}
+    engines: {node: 14.x || >= 16}
+    peerDependencies:
+      eslint: '>=8.0.0'
+    dependencies:
+      '@typescript-eslint/utils': 5.59.0(eslint@8.38.0)(typescript@5.0.4)
+      eslint: 8.38.0
+    transitivePeerDependencies:
+      - supports-color
+      - typescript
     dev: true
 
   /eslint-scope@5.1.1:
