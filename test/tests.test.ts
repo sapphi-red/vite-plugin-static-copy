@@ -37,6 +37,7 @@ const fetchBufferContent = async (
 
 describe('serve', () => {
   for (const [configFile, tests] of Object.entries(testcases)) {
+    // eslint-disable-next-line vitest/valid-title
     describe(configFile, () => {
       let server: ViteDevServer
       beforeAll(async () => {
@@ -48,6 +49,7 @@ describe('serve', () => {
       })
 
       for (const { name, src, dest, transformedContent, encoding } of tests) {
+        // eslint-disable-next-line vitest/valid-title
         test.concurrent(name, async () => {
           const expected =
             src === null ? null : await loadFileContent(src, encoding)
@@ -81,6 +83,7 @@ describe('serve', () => {
 
 describe('build', () => {
   for (const [configFile, tests] of Object.entries(testcases)) {
+    // eslint-disable-next-line vitest/valid-title
     describe(configFile, () => {
       let server: PreviewServer
       beforeAll(async () => {
@@ -93,6 +96,7 @@ describe('build', () => {
       })
 
       for (const { name, src, dest, transformedContent, encoding } of tests) {
+        // eslint-disable-next-line vitest/valid-title
         test.concurrent(name, async () => {
           const expected =
             src === null ? null : await loadFileContent(src, encoding)
