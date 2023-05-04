@@ -18,6 +18,8 @@ export type SimpleTarget = {
   transform?: TransformOption
   preserveTimestamps: boolean
   dereference: boolean
+  overwrite: boolean
+  errorOnExist: boolean
 }
 
 async function renameTarget(
@@ -42,8 +44,16 @@ export const collectCopyTargets = async (
   const copyTargets: Array<SimpleTarget> = []
 
   for (const target of targets) {
-    const { src, dest, rename, transform, preserveTimestamps, dereference } =
-      target
+    const {
+      src,
+      dest,
+      rename,
+      transform,
+      preserveTimestamps,
+      dereference,
+      overwrite,
+      errorOnExist
+    } = target
 
     const matchedPaths = await fastglob(src, {
       onlyFiles: false,
@@ -77,7 +87,9 @@ export const collectCopyTargets = async (
         ),
         transform,
         preserveTimestamps: preserveTimestamps ?? false,
-        dereference: dereference ?? true
+        dereference: dereference ?? true,
+        overwrite: overwrite ?? true,
+        errorOnExist: errorOnExist ?? false
       })
     }
   }
@@ -116,7 +128,15 @@ export const copyAll = async (
 ) => {
   const copyTargets = await collectCopyTargets(rootSrc, targets, flatten)
   for (const copyTarget of copyTargets) {
-    const { src, dest, transform, preserveTimestamps, dereference } = copyTarget
+    const {
+      src,
+      dest,
+      transform,
+      preserveTimestamps,
+      dereference,
+      overwrite,
+      errorOnExist
+    } = copyTarget
 
     // use `path.resolve` because rootSrc/rootDest maybe absolute path
     const resolvedSrc = path.resolve(rootSrc, src)
@@ -127,7 +147,9 @@ export const copyAll = async (
     } else {
       await fs.copy(resolvedSrc, resolvedDest, {
         preserveTimestamps,
-        dereference
+        dereference,
+        overwrite,
+        errorOnExist
       })
     }
   }
