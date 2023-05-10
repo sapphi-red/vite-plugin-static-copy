@@ -11,7 +11,7 @@
 import { parse } from '@polka/url'
 import { lookup } from 'mrmime'
 import type { Stats } from 'node:fs'
-import { statSync, createReadStream } from 'node:fs'
+import { statSync, createReadStream, existsSync } from 'node:fs'
 import type { Connect } from 'vite'
 import type {
   IncomingMessage,
@@ -27,7 +27,12 @@ import {
   resolveTransformOption
 } from './utils'
 
-function viaLocal(root: string, fileMap: FileMap, uri: string) {
+function viaLocal(
+  root: string,
+  publicDir: string,
+  fileMap: FileMap,
+  uri: string
+) {
   if (uri.endsWith('/')) {
     uri = uri.slice(0, -1)
   }
@@ -45,7 +50,18 @@ function viaLocal(root: string, fileMap: FileMap, uri: string) {
     if (!uri.startsWith(dir)) continue
 
     for (const val of vals) {
-      const filepath = resolve(root, val.src, uri.slice(dir.length))
+      let filepath = resolve(root, val.src, uri.slice(dir.length))
+      if (!val.overwrite) {
+        const destPath = resolve(
+          root,
+          publicDir || '.',
+          val.dest,
+          uri.slice(dir.length)
+        )
+        if (existsSync(destPath)) {
+          filepath = destPath
+        }
+      }
       try {
         const stats = statSync(filepath)
         return { filepath, stats }
@@ -194,9 +210,10 @@ function return404(res: ServerResponse, next: Connect.NextFunction) {
 }
 
 export function serveStaticCopyMiddleware(
-  root: string,
+  config: { root: string; publicDir: string },
   fileMap: FileMap
 ): Connect.NextHandleFunction {
+  const { root, publicDir } = config
   // Keep the named function. The name is visible in debug logs via `DEBUG=connect:dispatcher ...`
   return async function viteServeStaticCopyMiddleware(req, res, next) {
     let pathname = parse(req).pathname
@@ -208,7 +225,7 @@ export function serveStaticCopyMiddleware(
       }
     }
 
-    const data = viaLocal(root, fileMap, pathname)
+    const data = viaLocal(root, publicDir, fileMap, pathname)
     if (!data) {
       return404(res, next)
       return

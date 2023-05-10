@@ -174,6 +174,9 @@ export const updateFileMapFromTargets = (
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     fileMap.get(dest)!.push({
       src: target.src,
+      dest: target.dest,
+      overwrite: target.overwrite ?? true,
+      errorOnExist: target.errorOnExist ?? false,
       transform: target.transform
     })
   }

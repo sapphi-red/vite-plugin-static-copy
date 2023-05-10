@@ -13,6 +13,9 @@ import pc from 'picocolors'
 
 type FileMapValue = {
   src: string
+  dest: string
+  overwrite: boolean
+  errorOnExist: boolean
   transform?: TransformOption
 }
 export type FileMap = Map<string, FileMapValue[]>
@@ -115,7 +118,15 @@ export const servePlugin = ({
 
       return () => {
         // insert serveStaticCopyMiddleware before transformMiddleware
-        middlewares.use(serveStaticCopyMiddleware(config.root, fileMap))
+        // if viteServePublicMiddleware exists insert before it
+        const servePublicMiddlewareIndex = findMiddlewareIndex(
+          middlewares.stack,
+          'viteServePublicMiddleware'
+        )
+
+        const hasServePublicMiddleware = servePublicMiddlewareIndex !== -1
+
+        middlewares.use(serveStaticCopyMiddleware(config, fileMap))
         const transformMiddlewareIndex = findMiddlewareIndex(
           middlewares.stack,
           'viteTransformMiddleware'
@@ -131,11 +142,19 @@ export const servePlugin = ({
         )[0]
         if (serveStaticCopyMiddlewareItem === undefined) throw new Error()
 
-        middlewares.stack.splice(
-          transformMiddlewareIndex,
-          0,
-          serveStaticCopyMiddlewareItem
-        )
+        if (hasServePublicMiddleware) {
+          middlewares.stack.splice(
+            servePublicMiddlewareIndex,
+            0,
+            serveStaticCopyMiddlewareItem
+          )
+        } else {
+          middlewares.stack.splice(
+            transformMiddlewareIndex,
+            0,
+            serveStaticCopyMiddlewareItem
+          )
+        }
       }
     },
     async closeBundle() {
