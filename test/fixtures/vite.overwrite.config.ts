@@ -9,12 +9,12 @@ export default defineConfig({
     viteStaticCopy({
       targets: [
         {
-          src: 'foo.txt',
+          src: 'foo1.txt',
           dest: 'overwriteDir/',
           overwrite: true
         },
         {
-          src: 'foo.txt',
+          src: 'foo1.txt',
           dest: 'notOverwriteDir/',
           overwrite: false
         }

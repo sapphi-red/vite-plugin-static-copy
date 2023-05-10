@@ -91,12 +91,12 @@ describe('serve', () => {
     })
 
     test.concurrent('overwriteTrue', async () => {
-      const res = await fetchFromServer(server, '/overwriteDir/foo.txt')
+      const res = await fetchFromServer(server, '/overwriteDir/foo1.txt')
       const content = res.status === 200 ? await res.text() : null
-      expect(content).toBe('foo\n')
+      expect(content).toBe('foo')
     })
     test.concurrent('overwriteFalse', async () => {
-      const res = await fetchFromServer(server, '/notOverwriteDir/foo.txt')
+      const res = await fetchFromServer(server, '/notOverwriteDir/foo1.txt')
       const content = res.status === 200 ? await res.text() : null
       expect(content).toBe('fooNotOverwrite')
     })
@@ -138,15 +138,15 @@ describe('build', () => {
     })
     test.concurrent('notOverwriteDir', async () => {
       const content = await loadFileContent(
-        'dist-overwrite/notOverwriteDir/foo.txt'
+        'dist-overwrite/notOverwriteDir/foo1.txt'
       )
       expect(content).toBe('fooNotOverwrite')
     })
     test.concurrent('overwriteDir', async () => {
       const content = await loadFileContent(
-        'dist-overwrite/overwriteDir/foo.txt'
+        'dist-overwrite/overwriteDir/foo1.txt'
       )
-      expect(content).toBe('foo\n')
+      expect(content).toBe('foo')
     })
   })
 })
