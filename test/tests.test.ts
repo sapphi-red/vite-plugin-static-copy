@@ -131,4 +131,22 @@ describe('build', () => {
       }
     })
   }
+
+  describe('vite.overwrite.config.ts', () => {
+    beforeAll(async () => {
+      await build(getConfig('vite.overwrite.config.ts'))
+    })
+    test.concurrent('notOverwriteDir', async () => {
+      const content = await loadFileContent(
+        'dist-overwrite/notOverwriteDir/foo.txt'
+      )
+      expect(content).toBe('fooNotOverwrite')
+    })
+    test.concurrent('overwriteDir', async () => {
+      const content = await loadFileContent(
+        'dist-overwrite/overwriteDir/foo.txt'
+      )
+      expect(content).toBe('foo\n')
+    })
+  })
 })
