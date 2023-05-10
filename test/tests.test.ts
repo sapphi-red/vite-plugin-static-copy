@@ -79,6 +79,28 @@ describe('serve', () => {
       expect(res.headers.get('Access-Control-Allow-Origin')).toBe('*')
     })
   })
+
+  describe('vite.overwrite.config.ts', () => {
+    let server: ViteDevServer
+    beforeAll(async () => {
+      server = await createServer(getConfig('vite.overwrite.config.ts'))
+      server = await server.listen()
+    })
+    afterAll(async () => {
+      await server.close()
+    })
+
+    test.concurrent('overwriteTrue', async () => {
+      const res = await fetchFromServer(server, '/overwriteDir/foo.txt')
+      const content = res.status === 200 ? await res.text() : null
+      expect(content).toBe('foo\n')
+    })
+    test.concurrent('overwriteFalse', async () => {
+      const res = await fetchFromServer(server, '/notOverwriteDir/foo.txt')
+      const content = res.status === 200 ? await res.text() : null
+      expect(content).toBe('fooNotOverwrite')
+    })
+  })
 })
 
 describe('build', () => {
