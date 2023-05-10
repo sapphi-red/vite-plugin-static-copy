@@ -40,7 +40,16 @@ function viaLocal(
   const files = fileMap.get(uri)
   if (files && files[0]) {
     const file = files[0]
-    const filepath = resolve(root, file.src)
+    let filepath = resolve(root, file.src)
+    if (!file.overwrite) {
+      const destPath = resolve(root, publicDir || '.', file.dest)
+      if (existsSync(destPath)) {
+        if (file.errorOnExist && existsSync(filepath)) {
+          throw new Error(`File ${destPath} already exists`)
+        }
+        filepath = destPath
+      }
+    }
     const stats = statSync(filepath)
     return { filepath, stats, transform: file.transform }
   }
@@ -59,6 +68,9 @@ function viaLocal(
           uri.slice(dir.length)
         )
         if (existsSync(destPath)) {
+          if (val.errorOnExist && existsSync(filepath)) {
+            throw new Error(`File ${destPath} already exists`)
+          }
           filepath = destPath
         }
       }
