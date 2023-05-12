@@ -258,31 +258,44 @@ export function serveStaticCopyMiddleware(
       }
     }
 
-    const data = viaLocal(root, publicDir, fileMap, pathname)
-    if (!data) {
-      return404(res, next)
-      return
-    }
-
-    // Matches js, jsx, ts, tsx.
-    // The reason this is done, is that the .ts file extension is reserved
-    // for the MIME type video/mp2t. In almost all cases, we can expect
-    // these files to be TypeScript files, and for Vite to serve them with
-    // this Content-Type.
-    if (/\.[tj]sx?$/.test(pathname)) {
-      res.setHeader('Content-Type', 'application/javascript')
-    }
-
-    const transformOption = resolveTransformOption(data.transform)
-    if (transformOption) {
-      const sent = await sendTransform(req, res, data.filepath, transformOption)
-      if (!sent) {
+    try {
+      const data = viaLocal(root, publicDir, fileMap, pathname)
+      if (!data) {
         return404(res, next)
         return
       }
-      return
-    }
 
-    sendStatic(req, res, data.filepath, data.stats)
+      // Matches js, jsx, ts, tsx.
+      // The reason this is done, is that the .ts file extension is reserved
+      // for the MIME type video/mp2t. In almost all cases, we can expect
+      // these files to be TypeScript files, and for Vite to serve them with
+      // this Content-Type.
+      if (/\.[tj]sx?$/.test(pathname)) {
+        res.setHeader('Content-Type', 'application/javascript')
+      }
+
+      const transformOption = resolveTransformOption(data.transform)
+      if (transformOption) {
+        const sent = await sendTransform(
+          req,
+          res,
+          data.filepath,
+          transformOption
+        )
+        if (!sent) {
+          return404(res, next)
+          return
+        }
+        return
+      }
+
+      sendStatic(req, res, data.filepath, data.stats)
+    } catch (e) {
+      if (e instanceof Error) {
+        next(e)
+        return
+      }
+      throw e
+    }
   }
 }
