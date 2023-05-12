@@ -96,11 +96,9 @@ function viaLocal(
       if (overwriteCheck === false) {
         return undefined // public middleware will serve instead
       }
-      try {
-        const stats = statSync(filepath)
+      const stats = statSync(filepath, { throwIfNoEntry: false })
+      if (stats) {
         return { filepath, stats }
-      } catch {
-        // file not found
       }
     }
     // no entry matched for this prefix
