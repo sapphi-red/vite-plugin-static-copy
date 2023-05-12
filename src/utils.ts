@@ -18,6 +18,7 @@ export type SimpleTarget = {
   transform?: TransformOption
   preserveTimestamps: boolean
   dereference: boolean
+  overwrite: boolean | 'error'
 }
 
 async function renameTarget(
@@ -42,8 +43,15 @@ export const collectCopyTargets = async (
   const copyTargets: Array<SimpleTarget> = []
 
   for (const target of targets) {
-    const { src, dest, rename, transform, preserveTimestamps, dereference } =
-      target
+    const {
+      src,
+      dest,
+      rename,
+      transform,
+      preserveTimestamps,
+      dereference,
+      overwrite
+    } = target
 
     const matchedPaths = await fastglob(src, {
       onlyFiles: false,
@@ -80,7 +88,8 @@ export const collectCopyTargets = async (
         ),
         transform,
         preserveTimestamps: preserveTimestamps ?? false,
-        dereference: dereference ?? true
+        dereference: dereference ?? true,
+        overwrite: overwrite ?? true
       })
     }
   }
@@ -103,8 +112,21 @@ export async function getTransformedContent(
 async function transformCopy(
   transform: TransformOptionObject,
   src: string,
-  dest: string
+  dest: string,
+  overwrite: boolean | 'error'
 ) {
+  if (overwrite === false || overwrite === 'error') {
+    const exists = await fsExists(dest)
+    if (exists) {
+      if (overwrite === false) {
+        return // skip copy
+      }
+      if (overwrite === 'error') {
+        throw new Error(`File ${dest} already exists`)
+      }
+    }
+  }
+
   const transformedContent = await getTransformedContent(src, transform)
   if (transformedContent !== null) {
     await fs.outputFile(dest, transformedContent)
@@ -119,18 +141,21 @@ export const copyAll = async (
 ) => {
   const copyTargets = await collectCopyTargets(rootSrc, targets, flatten)
   for (const copyTarget of copyTargets) {
-    const { src, dest, transform, preserveTimestamps, dereference } = copyTarget
+    const { src, dest, transform, preserveTimestamps, dereference, overwrite } =
+      copyTarget
 
     // use `path.resolve` because rootSrc/rootDest maybe absolute path
     const resolvedSrc = path.resolve(rootSrc, src)
     const resolvedDest = path.resolve(rootSrc, rootDest, dest)
     const transformOption = resolveTransformOption(transform)
     if (transformOption) {
-      await transformCopy(transformOption, resolvedSrc, resolvedDest)
+      await transformCopy(transformOption, resolvedSrc, resolvedDest, overwrite)
     } else {
       await fs.copy(resolvedSrc, resolvedDest, {
         preserveTimestamps,
-        dereference
+        dereference,
+        overwrite: overwrite === true,
+        errorOnExist: overwrite === 'error'
       })
     }
   }
@@ -155,6 +180,8 @@ export const updateFileMapFromTargets = (
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     fileMap.get(dest)!.push({
       src: target.src,
+      dest: target.dest,
+      overwrite: target.overwrite,
       transform: target.transform
     })
   }
@@ -212,4 +239,16 @@ export function resolveTransformOption(
     }
   }
   return transformOption
+}
+
+async function fsExists(p: string): Promise<boolean> {
+  try {
+    await fs.stat(p)
+  } catch (e) {
+    if ((e as { code: string }).code === 'ENOENT') {
+      return false
+    }
+    throw e
+  }
+  return true
 }
