@@ -97,6 +97,11 @@ export const testcases: Record<string, Testcase[]> = {
       dest: '/fixture10/v1/foo.txt'
     },
     {
+      name: 'async rename function',
+      src: './foo.txt',
+      dest: '/fixture10/v2/foo.txt'
+    },
+    {
       name: 'overwrite=true',
       src: './foo.txt',
       dest: '/fixture11/overwriteDir/foo.txt'
