@@ -180,12 +180,16 @@ function sendStatic(
   if (req.headers.range) {
     code = 206
     const [x, y] = req.headers.range.replace('bytes=', '').split('-')
-    const end = (y ? parseInt(y, 10) : 0) || stats.size - 1
+    let end = (y ? parseInt(y, 10) : 0) || stats.size - 1
     const start = (x ? parseInt(x, 10) : 0) || 0
     opts.end = end
     opts.start = start
 
-    if (start >= stats.size || end >= stats.size) {
+    if (end >= stats.size) {
+      end = stats.size - 1
+    }
+
+    if (start >= stats.size) {
       res.setHeader('Content-Range', `bytes */${stats.size}`)
       res.statusCode = 416
       res.end()
