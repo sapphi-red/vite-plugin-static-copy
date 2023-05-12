@@ -18,7 +18,7 @@ import type {
   OutgoingHttpHeaders,
   ServerResponse
 } from 'node:http'
-import { resolve } from 'node:path'
+import { join, resolve } from 'node:path'
 import type { FileMap } from './serve'
 import type { TransformOptionObject } from './options'
 import {
@@ -26,6 +26,31 @@ import {
   getTransformedContent,
   resolveTransformOption
 } from './utils'
+
+function shouldServeOverwriteCheck(
+  overwrite: boolean | 'error',
+  srcAbsolutePath: string,
+  root: string,
+  publicDir: string,
+  dest: string
+) {
+  const publicDirDisabled = publicDir === ''
+  if (overwrite === true || publicDirDisabled) {
+    return true
+  }
+
+  const publicFile = resolve(publicDir, dest)
+  if (existsSync(publicFile)) {
+    if (overwrite === 'error' && existsSync(srcAbsolutePath)) {
+      const destAbsolutePath = resolve(root, dest)
+      throw new Error(
+        `File ${destAbsolutePath} will be copied from ${publicFile} (overwrite option is set to "error")`
+      )
+    }
+    return false
+  }
+  return true
+}
 
 function viaLocal(
   root: string,
@@ -41,14 +66,15 @@ function viaLocal(
   if (files && files[0]) {
     const file = files[0]
     const filepath = resolve(root, file.src)
-    if (file.overwrite === false || file.overwrite === 'error') {
-      const destPath = resolve(root, publicDir || '.', file.dest)
-      if (existsSync(destPath)) {
-        if (file.overwrite === 'error' && existsSync(filepath)) {
-          throw new Error(`File ${destPath} already exists`)
-        }
-        return undefined // public middleware will serve instead
-      }
+    const overwriteCheck = shouldServeOverwriteCheck(
+      file.overwrite,
+      filepath,
+      root,
+      publicDir,
+      file.dest
+    )
+    if (overwriteCheck === false) {
+      return undefined // public middleware will serve instead
     }
     const stats = statSync(filepath)
     return { filepath, stats, transform: file.transform }
@@ -60,19 +86,15 @@ function viaLocal(
 
     for (const val of vals) {
       const filepath = resolve(root, val.src, uri.slice(dir.length))
-      if (val.overwrite === false || val.overwrite === 'error') {
-        const destPath = resolve(
-          root,
-          publicDir || '.',
-          val.dest,
-          uri.slice(dir.length)
-        )
-        if (existsSync(destPath)) {
-          if (val.overwrite === 'error' && existsSync(filepath)) {
-            throw new Error(`File ${destPath} already exists`)
-          }
-          return undefined // public middleware will serve instead
-        }
+      const overwriteCheck = shouldServeOverwriteCheck(
+        val.overwrite,
+        filepath,
+        root,
+        publicDir,
+        join(val.dest, uri.slice(dir.length))
+      )
+      if (overwriteCheck === false) {
+        return undefined // public middleware will serve instead
       }
       try {
         const stats = statSync(filepath)
