@@ -8,7 +8,6 @@ export const buildPlugin = ({
   silent
 }: ResolvedViteStaticCopyOptions): Plugin => {
   let config: ResolvedConfig
-  let copyCount: number | undefined
 
   return {
     name: 'vite-plugin-static-copy:build',
@@ -17,14 +16,12 @@ export const buildPlugin = ({
       config = _config
     },
     async writeBundle() {
-      copyCount = await copyAll(
+      const copyCount = await copyAll(
         config.root,
         config.build.outDir,
         targets,
         flatten
       )
-    },
-    closeBundle() {
       if (!silent) outputCopyLog(config.logger, copyCount)
     }
   }

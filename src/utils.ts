@@ -213,13 +213,8 @@ export const outputCollectedLog = (logger: Logger, collectedMap: FileMap) => {
   }
 }
 
-export const outputCopyLog = (
-  logger: Logger,
-  copyCount: number | undefined
-) => {
-  if (copyCount === undefined) {
-    logger.error(formatConsole(pc.yellow('Copy count was not set.')))
-  } else if (copyCount > 0) {
+export const outputCopyLog = (logger: Logger, copyCount: number) => {
+  if (copyCount > 0) {
     logger.info(formatConsole(pc.green(`Copied ${copyCount} items.`)))
   } else {
     logger.warn(formatConsole(pc.yellow('No items to copy.')))
