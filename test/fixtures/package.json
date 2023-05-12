@@ -8,5 +8,9 @@
     "build:absolute": "vite --config vite.absolute.config.ts build",
     "dev:base": "vite --config vite.base.config.ts",
     "build:base": "vite --config vite.base.config.ts build"
+  },
+  "devDependencies": {
+    "vite": "^4.3.5",
+    "vite-plugin-static-copy": "workspace:*"
   }
 }
