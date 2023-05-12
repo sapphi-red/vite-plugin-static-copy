@@ -40,14 +40,14 @@ function viaLocal(
   const files = fileMap.get(uri)
   if (files && files[0]) {
     const file = files[0]
-    let filepath = resolve(root, file.src)
+    const filepath = resolve(root, file.src)
     if (file.overwrite === false || file.overwrite === 'error') {
       const destPath = resolve(root, publicDir || '.', file.dest)
       if (existsSync(destPath)) {
         if (file.overwrite === 'error' && existsSync(filepath)) {
           throw new Error(`File ${destPath} already exists`)
         }
-        filepath = destPath
+        return undefined // public middleware will serve instead
       }
     }
     const stats = statSync(filepath)
@@ -59,7 +59,7 @@ function viaLocal(
     if (!uri.startsWith(dir)) continue
 
     for (const val of vals) {
-      let filepath = resolve(root, val.src, uri.slice(dir.length))
+      const filepath = resolve(root, val.src, uri.slice(dir.length))
       if (val.overwrite === false || val.overwrite === 'error') {
         const destPath = resolve(
           root,
@@ -71,7 +71,7 @@ function viaLocal(
           if (val.overwrite === 'error' && existsSync(filepath)) {
             throw new Error(`File ${destPath} already exists`)
           }
-          filepath = destPath
+          return undefined // public middleware will serve instead
         }
       }
       try {
@@ -222,10 +222,9 @@ function return404(res: ServerResponse, next: Connect.NextFunction) {
 }
 
 export function serveStaticCopyMiddleware(
-  config: { root: string; publicDir: string },
+  { root, publicDir }: { root: string; publicDir: string },
   fileMap: FileMap
 ): Connect.NextHandleFunction {
-  const { root, publicDir } = config
   // Keep the named function. The name is visible in debug logs via `DEBUG=connect:dispatcher ...`
   return async function viteServeStaticCopyMiddleware(req, res, next) {
     let pathname = parse(req).pathname

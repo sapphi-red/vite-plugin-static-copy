@@ -109,8 +109,21 @@ export async function getTransformedContent(
 async function transformCopy(
   transform: TransformOptionObject,
   src: string,
-  dest: string
+  dest: string,
+  overwrite: boolean | 'error'
 ) {
+  if (overwrite === false || overwrite === 'error') {
+    const exists = await fsExists(dest)
+    if (exists) {
+      if (overwrite === false) {
+        return // skip copy
+      }
+      if (overwrite === 'error') {
+        throw new Error(`File ${dest} already exists`)
+      }
+    }
+  }
+
   const transformedContent = await getTransformedContent(src, transform)
   if (transformedContent !== null) {
     await fs.outputFile(dest, transformedContent)
@@ -125,21 +138,15 @@ export const copyAll = async (
 ) => {
   const copyTargets = await collectCopyTargets(rootSrc, targets, flatten)
   for (const copyTarget of copyTargets) {
-    const {
-      src,
-      dest,
-      transform,
-      preserveTimestamps,
-      dereference,
-      overwrite
-    } = copyTarget
+    const { src, dest, transform, preserveTimestamps, dereference, overwrite } =
+      copyTarget
 
     // use `path.resolve` because rootSrc/rootDest maybe absolute path
     const resolvedSrc = path.resolve(rootSrc, src)
     const resolvedDest = path.resolve(rootSrc, rootDest, dest)
     const transformOption = resolveTransformOption(transform)
     if (transformOption) {
-      await transformCopy(transformOption, resolvedSrc, resolvedDest)
+      await transformCopy(transformOption, resolvedSrc, resolvedDest, overwrite)
     } else {
       await fs.copy(resolvedSrc, resolvedDest, {
         preserveTimestamps,
@@ -229,4 +236,16 @@ export function resolveTransformOption(
     }
   }
   return transformOption
+}
+
+async function fsExists(p: string): Promise<boolean> {
+  try {
+    await fs.stat(p)
+  } catch (e) {
+    if ((e as { code: string }).code === 'ENOENT') {
+      return false
+    }
+    throw e
+  }
+  return true
 }

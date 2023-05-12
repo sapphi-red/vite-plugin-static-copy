@@ -102,6 +102,14 @@ export default defineConfig({
           src: 'foo.txt',
           dest: 'fixture11/notOverwriteDir/',
           overwrite: false
+        },
+        {
+          src: 'dir/bar.txt',
+          dest: 'fixture11/notOverwriteDir/',
+          overwrite: false,
+          transform(content) {
+            return content + '1'
+          }
         }
       ]
     })

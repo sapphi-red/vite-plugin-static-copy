@@ -105,6 +105,11 @@ export const testcases: Record<string, Testcase[]> = {
       name: 'overwrite=false',
       src: './public/fixture11/notOverwriteDir/foo.txt',
       dest: '/fixture11/notOverwriteDir/foo.txt'
+    },
+    {
+      name: 'overwrite=false with transform',
+      src: './public/fixture11/notOverwriteDir/bar.txt',
+      dest: '/fixture11/notOverwriteDir/bar.txt'
     }
   ],
   'vite.absolute.config.ts': [
