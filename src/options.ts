@@ -68,19 +68,13 @@ export type Target = {
   /**
    * Whether to overwrite existing file or directory.
    *
-   * Note that the copy operation will silently fail if you set this to false and the destination exists.
-   * Use the errorOnExist option to change this behavior.
+   * When true, it will overwrite existing file or directory.
+   * When false, it will skip those files/directories.
+   * When 'error', it will throw an error.
    *
    * @default true
    */
-  overwrite?: boolean
-
-  /**
-   * Whether to throw an error when overwrite is false and the destination exists.
-   *
-   * @default false
-   */
-  errorOnExist?: boolean
+  overwrite?: boolean | 'error'
 }
 
 export type ViteStaticCopyOptions = {

@@ -18,8 +18,7 @@ export type SimpleTarget = {
   transform?: TransformOption
   preserveTimestamps: boolean
   dereference: boolean
-  overwrite: boolean
-  errorOnExist: boolean
+  overwrite: boolean | 'error'
 }
 
 async function renameTarget(
@@ -51,8 +50,7 @@ export const collectCopyTargets = async (
       transform,
       preserveTimestamps,
       dereference,
-      overwrite,
-      errorOnExist
+      overwrite
     } = target
 
     const matchedPaths = await fastglob(src, {
@@ -88,8 +86,7 @@ export const collectCopyTargets = async (
         transform,
         preserveTimestamps: preserveTimestamps ?? false,
         dereference: dereference ?? true,
-        overwrite: overwrite ?? true,
-        errorOnExist: errorOnExist ?? false
+        overwrite: overwrite ?? true
       })
     }
   }
@@ -134,8 +131,7 @@ export const copyAll = async (
       transform,
       preserveTimestamps,
       dereference,
-      overwrite,
-      errorOnExist
+      overwrite
     } = copyTarget
 
     // use `path.resolve` because rootSrc/rootDest maybe absolute path
@@ -148,8 +144,8 @@ export const copyAll = async (
       await fs.copy(resolvedSrc, resolvedDest, {
         preserveTimestamps,
         dereference,
-        overwrite,
-        errorOnExist
+        overwrite: overwrite === true,
+        errorOnExist: overwrite === 'error'
       })
     }
   }
@@ -175,8 +171,7 @@ export const updateFileMapFromTargets = (
     fileMap.get(dest)!.push({
       src: target.src,
       dest: target.dest,
-      overwrite: target.overwrite ?? true,
-      errorOnExist: target.errorOnExist ?? false,
+      overwrite: target.overwrite,
       transform: target.transform
     })
   }

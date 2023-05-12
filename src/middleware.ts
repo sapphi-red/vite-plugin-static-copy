@@ -41,10 +41,10 @@ function viaLocal(
   if (files && files[0]) {
     const file = files[0]
     let filepath = resolve(root, file.src)
-    if (!file.overwrite) {
+    if (file.overwrite === false || file.overwrite === 'error') {
       const destPath = resolve(root, publicDir || '.', file.dest)
       if (existsSync(destPath)) {
-        if (file.errorOnExist && existsSync(filepath)) {
+        if (file.overwrite === 'error' && existsSync(filepath)) {
           throw new Error(`File ${destPath} already exists`)
         }
         filepath = destPath
@@ -60,7 +60,7 @@ function viaLocal(
 
     for (const val of vals) {
       let filepath = resolve(root, val.src, uri.slice(dir.length))
-      if (!val.overwrite) {
+      if (val.overwrite === false || val.overwrite === 'error') {
         const destPath = resolve(
           root,
           publicDir || '.',
@@ -68,7 +68,7 @@ function viaLocal(
           uri.slice(dir.length)
         )
         if (existsSync(destPath)) {
-          if (val.errorOnExist && existsSync(filepath)) {
+          if (val.overwrite === 'error' && existsSync(filepath)) {
             throw new Error(`File ${destPath} already exists`)
           }
           filepath = destPath

@@ -14,8 +14,7 @@ import pc from 'picocolors'
 type FileMapValue = {
   src: string
   dest: string
-  overwrite: boolean
-  errorOnExist: boolean
+  overwrite: boolean | 'error'
   transform?: TransformOption
 }
 export type FileMap = Map<string, FileMapValue[]>
