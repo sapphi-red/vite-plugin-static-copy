@@ -97,9 +97,14 @@ export const testcases: Record<string, Testcase[]> = {
       dest: '/fixture10/v1/foo.txt'
     },
     {
-      name: 'async rename function',
+      name: 'overwrite=true',
       src: './foo.txt',
-      dest: '/fixture10/v2/foo.txt'
+      dest: '/fixture11/overwriteDir/foo.txt'
+    },
+    {
+      name: 'overwrite=false',
+      src: './public/fixture11/notOverwriteDir/foo.txt',
+      dest: '/fixture11/notOverwriteDir/foo.txt'
     }
   ],
   'vite.absolute.config.ts': [

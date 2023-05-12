@@ -79,28 +79,6 @@ describe('serve', () => {
       expect(res.headers.get('Access-Control-Allow-Origin')).toBe('*')
     })
   })
-
-  describe('vite.overwrite.config.ts', () => {
-    let server: ViteDevServer
-    beforeAll(async () => {
-      server = await createServer(getConfig('vite.overwrite.config.ts'))
-      server = await server.listen()
-    })
-    afterAll(async () => {
-      await server.close()
-    })
-
-    test.concurrent('overwriteTrue', async () => {
-      const res = await fetchFromServer(server, '/overwriteDir/foo1.txt')
-      const content = res.status === 200 ? await res.text() : null
-      expect(content).toBe('foo')
-    })
-    test.concurrent('overwriteFalse', async () => {
-      const res = await fetchFromServer(server, '/notOverwriteDir/foo1.txt')
-      const content = res.status === 200 ? await res.text() : null
-      expect(content).toBe('fooNotOverwrite')
-    })
-  })
 })
 
 describe('build', () => {
@@ -131,22 +109,4 @@ describe('build', () => {
       }
     })
   }
-
-  describe('vite.overwrite.config.ts', () => {
-    beforeAll(async () => {
-      await build(getConfig('vite.overwrite.config.ts'))
-    })
-    test.concurrent('notOverwriteDir', async () => {
-      const content = await loadFileContent(
-        'dist-overwrite/notOverwriteDir/foo1.txt'
-      )
-      expect(content).toBe('fooNotOverwrite')
-    })
-    test.concurrent('overwriteDir', async () => {
-      const content = await loadFileContent(
-        'dist-overwrite/overwriteDir/foo1.txt'
-      )
-      expect(content).toBe('foo')
-    })
-  })
 })
