@@ -202,7 +202,7 @@ export function serveStaticCopyMiddleware(
     let pathname = parse(req).pathname
     if (pathname.includes('%')) {
       try {
-        pathname = decodeURIComponent(pathname)
+        pathname = decodeURI(pathname)
       } catch (err) {
         /* malform uri */
       }
