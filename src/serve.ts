@@ -116,20 +116,13 @@ export const servePlugin = ({
       }
 
       return () => {
-        // insert serveStaticCopyMiddleware before transformMiddleware
-        // if viteServePublicMiddleware exists insert before it
-        const servePublicMiddlewareIndex = findMiddlewareIndex(
-          middlewares.stack,
-          'viteServePublicMiddleware'
-        )
-
-        const hasServePublicMiddleware = servePublicMiddlewareIndex !== -1
-
+        // insert serveStaticCopyMiddleware before viteServePublicMiddleware
+        // if viteServePublicMiddleware didn't exist use transformMiddleware instead
         middlewares.use(serveStaticCopyMiddleware(config, fileMap))
-        const transformMiddlewareIndex = findMiddlewareIndex(
-          middlewares.stack,
+        const targetMiddlewareIndex = findMiddlewareIndex(middlewares.stack, [
+          'viteServePublicMiddleware',
           'viteTransformMiddleware'
-        )
+        ])
         const serveStaticCopyMiddlewareIndex = findMiddlewareIndex(
           middlewares.stack,
           'viteServeStaticCopyMiddleware'
@@ -141,19 +134,11 @@ export const servePlugin = ({
         )[0]
         if (serveStaticCopyMiddlewareItem === undefined) throw new Error()
 
-        if (hasServePublicMiddleware) {
-          middlewares.stack.splice(
-            servePublicMiddlewareIndex,
-            0,
-            serveStaticCopyMiddlewareItem
-          )
-        } else {
-          middlewares.stack.splice(
-            transformMiddlewareIndex,
-            0,
-            serveStaticCopyMiddlewareItem
-          )
-        }
+        middlewares.stack.splice(
+          targetMiddlewareIndex,
+          0,
+          serveStaticCopyMiddlewareItem
+        )
       }
     },
     async closeBundle() {
@@ -162,8 +147,20 @@ export const servePlugin = ({
   }
 }
 
-const findMiddlewareIndex = (stack: Connect.ServerStackItem[], name: string) =>
-  stack.findIndex(
-    middleware =>
-      typeof middleware.handle === 'function' && middleware.handle.name === name
-  )
+const findMiddlewareIndex = (
+  stack: Connect.ServerStackItem[],
+  names: string | string[]
+) => {
+  const ns = Array.isArray(names) ? names : [names]
+  for (const name of ns) {
+    const index = stack.findIndex(
+      middleware =>
+        typeof middleware.handle === 'function' &&
+        middleware.handle.name === name
+    )
+    if (index > 0) {
+      return index
+    }
+  }
+  return -1
+}
