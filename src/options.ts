@@ -65,6 +65,16 @@ export type Target = {
    * @default true
    */
   dereference?: boolean
+  /**
+   * Whether to overwrite existing file or directory.
+   *
+   * When true, it will overwrite existing file or directory.
+   * When false, it will skip those files/directories.
+   * When 'error', it will throw an error.
+   *
+   * @default true
+   */
+  overwrite?: boolean | 'error'
 }
 
 export type ViteStaticCopyOptions = {

@@ -92,6 +92,24 @@ export default defineConfig({
             await wait(10)
             return `/v2/${fileName}.${fileExtension}`
           }
+        },
+        {
+          src: 'foo.txt',
+          dest: 'fixture11/overwriteDir/',
+          overwrite: true
+        },
+        {
+          src: 'foo.txt',
+          dest: 'fixture11/notOverwriteDir/',
+          overwrite: false
+        },
+        {
+          src: 'dir/bar.txt',
+          dest: 'fixture11/notOverwriteDir/',
+          overwrite: false,
+          transform(content) {
+            return content + '1'
+          }
         }
       ]
     })

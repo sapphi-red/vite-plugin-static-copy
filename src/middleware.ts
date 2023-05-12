@@ -11,14 +11,14 @@
 import { parse } from '@polka/url'
 import { lookup } from 'mrmime'
 import type { Stats } from 'node:fs'
-import { statSync, createReadStream } from 'node:fs'
+import { statSync, createReadStream, existsSync } from 'node:fs'
 import type { Connect } from 'vite'
 import type {
   IncomingMessage,
   OutgoingHttpHeaders,
   ServerResponse
 } from 'node:http'
-import { resolve } from 'node:path'
+import { join, resolve } from 'node:path'
 import type { FileMap } from './serve'
 import type { TransformOptionObject } from './options'
 import {
@@ -27,7 +27,37 @@ import {
   resolveTransformOption
 } from './utils'
 
-function viaLocal(root: string, fileMap: FileMap, uri: string) {
+function shouldServeOverwriteCheck(
+  overwrite: boolean | 'error',
+  srcAbsolutePath: string,
+  root: string,
+  publicDir: string,
+  dest: string
+) {
+  const publicDirDisabled = publicDir === ''
+  if (overwrite === true || publicDirDisabled) {
+    return true
+  }
+
+  const publicFile = resolve(publicDir, dest)
+  if (existsSync(publicFile)) {
+    if (overwrite === 'error' && existsSync(srcAbsolutePath)) {
+      const destAbsolutePath = resolve(root, dest)
+      throw new Error(
+        `File ${destAbsolutePath} will be copied from ${publicFile} (overwrite option is set to "error")`
+      )
+    }
+    return false
+  }
+  return true
+}
+
+function viaLocal(
+  root: string,
+  publicDir: string,
+  fileMap: FileMap,
+  uri: string
+) {
   if (uri.endsWith('/')) {
     uri = uri.slice(0, -1)
   }
@@ -36,6 +66,16 @@ function viaLocal(root: string, fileMap: FileMap, uri: string) {
   if (files && files[0]) {
     const file = files[0]
     const filepath = resolve(root, file.src)
+    const overwriteCheck = shouldServeOverwriteCheck(
+      file.overwrite,
+      filepath,
+      root,
+      publicDir,
+      file.dest
+    )
+    if (overwriteCheck === false) {
+      return undefined // public middleware will serve instead
+    }
     const stats = statSync(filepath)
     return { filepath, stats, transform: file.transform }
   }
@@ -46,6 +86,16 @@ function viaLocal(root: string, fileMap: FileMap, uri: string) {
 
     for (const val of vals) {
       const filepath = resolve(root, val.src, uri.slice(dir.length))
+      const overwriteCheck = shouldServeOverwriteCheck(
+        val.overwrite,
+        filepath,
+        root,
+        publicDir,
+        join(val.dest, uri.slice(dir.length))
+      )
+      if (overwriteCheck === false) {
+        return undefined // public middleware will serve instead
+      }
       try {
         const stats = statSync(filepath)
         return { filepath, stats }
@@ -194,7 +244,7 @@ function return404(res: ServerResponse, next: Connect.NextFunction) {
 }
 
 export function serveStaticCopyMiddleware(
-  root: string,
+  { root, publicDir }: { root: string; publicDir: string },
   fileMap: FileMap
 ): Connect.NextHandleFunction {
   // Keep the named function. The name is visible in debug logs via `DEBUG=connect:dispatcher ...`
@@ -208,31 +258,44 @@ export function serveStaticCopyMiddleware(
       }
     }
 
-    const data = viaLocal(root, fileMap, pathname)
-    if (!data) {
-      return404(res, next)
-      return
-    }
-
-    // Matches js, jsx, ts, tsx.
-    // The reason this is done, is that the .ts file extension is reserved
-    // for the MIME type video/mp2t. In almost all cases, we can expect
-    // these files to be TypeScript files, and for Vite to serve them with
-    // this Content-Type.
-    if (/\.[tj]sx?$/.test(pathname)) {
-      res.setHeader('Content-Type', 'application/javascript')
-    }
-
-    const transformOption = resolveTransformOption(data.transform)
-    if (transformOption) {
-      const sent = await sendTransform(req, res, data.filepath, transformOption)
-      if (!sent) {
+    try {
+      const data = viaLocal(root, publicDir, fileMap, pathname)
+      if (!data) {
         return404(res, next)
         return
       }
-      return
-    }
 
-    sendStatic(req, res, data.filepath, data.stats)
+      // Matches js, jsx, ts, tsx.
+      // The reason this is done, is that the .ts file extension is reserved
+      // for the MIME type video/mp2t. In almost all cases, we can expect
+      // these files to be TypeScript files, and for Vite to serve them with
+      // this Content-Type.
+      if (/\.[tj]sx?$/.test(pathname)) {
+        res.setHeader('Content-Type', 'application/javascript')
+      }
+
+      const transformOption = resolveTransformOption(data.transform)
+      if (transformOption) {
+        const sent = await sendTransform(
+          req,
+          res,
+          data.filepath,
+          transformOption
+        )
+        if (!sent) {
+          return404(res, next)
+          return
+        }
+        return
+      }
+
+      sendStatic(req, res, data.filepath, data.stats)
+    } catch (e) {
+      if (e instanceof Error) {
+        next(e)
+        return
+      }
+      throw e
+    }
   }
 }

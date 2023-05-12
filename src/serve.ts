@@ -13,6 +13,8 @@ import pc from 'picocolors'
 
 type FileMapValue = {
   src: string
+  dest: string
+  overwrite: boolean | 'error'
   transform?: TransformOption
 }
 export type FileMap = Map<string, FileMapValue[]>
@@ -114,12 +116,13 @@ export const servePlugin = ({
       }
 
       return () => {
-        // insert serveStaticCopyMiddleware before transformMiddleware
-        middlewares.use(serveStaticCopyMiddleware(config.root, fileMap))
-        const transformMiddlewareIndex = findMiddlewareIndex(
-          middlewares.stack,
+        // insert serveStaticCopyMiddleware before viteServePublicMiddleware
+        // if viteServePublicMiddleware didn't exist use transformMiddleware instead
+        middlewares.use(serveStaticCopyMiddleware(config, fileMap))
+        const targetMiddlewareIndex = findMiddlewareIndex(middlewares.stack, [
+          'viteServePublicMiddleware',
           'viteTransformMiddleware'
-        )
+        ])
         const serveStaticCopyMiddlewareIndex = findMiddlewareIndex(
           middlewares.stack,
           'viteServeStaticCopyMiddleware'
@@ -132,7 +135,7 @@ export const servePlugin = ({
         if (serveStaticCopyMiddlewareItem === undefined) throw new Error()
 
         middlewares.stack.splice(
-          transformMiddlewareIndex,
+          targetMiddlewareIndex,
           0,
           serveStaticCopyMiddlewareItem
         )
@@ -144,8 +147,20 @@ export const servePlugin = ({
   }
 }
 
-const findMiddlewareIndex = (stack: Connect.ServerStackItem[], name: string) =>
-  stack.findIndex(
-    middleware =>
-      typeof middleware.handle === 'function' && middleware.handle.name === name
-  )
+const findMiddlewareIndex = (
+  stack: Connect.ServerStackItem[],
+  names: string | string[]
+) => {
+  const ns = Array.isArray(names) ? names : [names]
+  for (const name of ns) {
+    const index = stack.findIndex(
+      middleware =>
+        typeof middleware.handle === 'function' &&
+        middleware.handle.name === name
+    )
+    if (index > 0) {
+      return index
+    }
+  }
+  return -1
+}
