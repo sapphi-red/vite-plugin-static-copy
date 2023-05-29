@@ -130,5 +130,22 @@ export const testcases: Record<string, Testcase[]> = {
       src: './foo.txt',
       dest: '/base/fixture1/foo.txt'
     }
+  ],
+  'vite.noflatten.config.ts': [
+    {
+      name: 'glob without dir',
+      src: './foo.txt',
+      dest: '/fixture1/foo.txt'
+    },
+    {
+      name: 'glob with dir',
+      src: './dir/bar.txt',
+      dest: '/fixture2/bar.txt'
+    },
+    {
+      name: 'glob with parent dir',
+      src: '../fixtures2/baz.txt',
+      dest: '/fixture3/fixtures2/baz.txt'
+    }
   ]
 }
