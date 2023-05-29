@@ -16,13 +16,13 @@ export const buildPlugin = ({
       config = _config
     },
     async writeBundle() {
-      const copyCount = await copyAll(
+      const result = await copyAll(
         config.root,
         config.build.outDir,
         targets,
         flatten
       )
-      if (!silent) outputCopyLog(config.logger, copyCount)
+      if (!silent) outputCopyLog(config.logger, result)
     }
   }
 }
