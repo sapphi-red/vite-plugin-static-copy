@@ -111,12 +111,13 @@ async function transformCopy(
   src: string,
   dest: string,
   overwrite: boolean | 'error'
-) {
+): Promise<{ copied: boolean }> {
   if (overwrite === false || overwrite === 'error') {
     const exists = await fsExists(dest)
     if (exists) {
       if (overwrite === false) {
-        return // skip copy
+        // skip copy
+        return { copied: false }
       }
       if (overwrite === 'error') {
         throw new Error(`File ${dest} already exists`)
@@ -125,9 +126,11 @@ async function transformCopy(
   }
 
   const transformedContent = await getTransformedContent(src, transform)
-  if (transformedContent !== null) {
-    await fs.outputFile(dest, transformedContent)
+  if (transformedContent === null) {
+    return { copied: false }
   }
+  await fs.outputFile(dest, transformedContent)
+  return { copied: true }
 }
 
 export const copyAll = async (
@@ -137,6 +140,8 @@ export const copyAll = async (
   flatten: boolean
 ) => {
   const copyTargets = await collectCopyTargets(rootSrc, targets, flatten)
+  let copiedCount = 0
+
   for (const copyTarget of copyTargets) {
     const { src, dest, transform, preserveTimestamps, dereference, overwrite } =
       copyTarget
@@ -146,7 +151,15 @@ export const copyAll = async (
     const resolvedDest = path.resolve(rootSrc, rootDest, dest)
     const transformOption = resolveTransformOption(transform)
     if (transformOption) {
-      await transformCopy(transformOption, resolvedSrc, resolvedDest, overwrite)
+      const result = await transformCopy(
+        transformOption,
+        resolvedSrc,
+        resolvedDest,
+        overwrite
+      )
+      if (result.copied) {
+        copiedCount++
+      }
     } else {
       await fs.copy(resolvedSrc, resolvedDest, {
         preserveTimestamps,
@@ -154,10 +167,11 @@ export const copyAll = async (
         overwrite: overwrite === true,
         errorOnExist: overwrite === 'error'
       })
+      copiedCount++
     }
   }
 
-  return copyTargets.length
+  return { targets: copyTargets.length, copied: copiedCount }
 }
 
 export const updateFileMapFromTargets = (
@@ -213,9 +227,16 @@ export const outputCollectedLog = (logger: Logger, collectedMap: FileMap) => {
   }
 }
 
-export const outputCopyLog = (logger: Logger, copyCount: number) => {
-  if (copyCount > 0) {
-    logger.info(formatConsole(pc.green(`Copied ${copyCount} items.`)))
+export const outputCopyLog = (
+  logger: Logger,
+  result: { targets: number; copied: number }
+) => {
+  if (result.targets > 0) {
+    const copiedMessage = pc.green(`Copied ${result.copied} items.`)
+    const skipped = result.targets - result.copied
+    const skippedMessage =
+      skipped > 0 ? ` ${pc.gray(`(Skipped ${skipped} items.)`)}` : ''
+    logger.info(formatConsole(`${copiedMessage}${skippedMessage}`))
   } else {
     logger.warn(formatConsole(pc.yellow('No items to copy.')))
   }
