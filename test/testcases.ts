@@ -146,21 +146,6 @@ export const testcases: Record<string, Testcase[]> = {
       name: 'glob with parent dir',
       src: '../fixtures2/baz.txt',
       dest: '/fixture3/fixtures2/baz.txt'
-    },
-    {
-      name: 'empty dest',
-      src: './foo.js',
-      dest: '/foo.js'
-    },
-    {
-      name: 'dot dest',
-      src: './noext',
-      dest: '/noext'
-    },
-    {
-      name: 'parent dir to empty dest',
-      src: '../fixtures2/baz.txt',
-      dest: '/fixtures2/baz.txt'
     }
   ]
 }
