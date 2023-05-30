@@ -140,7 +140,7 @@ export const testcases: Record<string, Testcase[]> = {
     {
       name: 'glob with dir',
       src: './dir/bar.txt',
-      dest: '/fixture2/bar.txt'
+      dest: '/fixture2/dir/bar.txt'
     },
     {
       name: 'glob with parent dir',

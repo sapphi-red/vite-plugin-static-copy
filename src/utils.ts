@@ -71,11 +71,10 @@ export const collectCopyTargets = async (
 
       // https://github.com/vladshcherbin/rollup-plugin-copy/blob/507bf5e99aa2c6d0d858821e627cb7617a1d9a6d/src/index.js#L32-L35
       const { base, dir } = path.parse(matchedPath)
-      const destDir =
-        flatten || (!flatten && !dir)
-          ? dest
-          : // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            dir.replace(dir.split('/')[0]!, dest)
+
+      const dirClean = dir.replace(/^(?:\.\.\/)+/, '')
+      const destClean = `${dest}/${dirClean}`.replace(/^\/+|\/+$/g, '')
+      const destDir = flatten || (!flatten && !dir) ? dest : destClean
 
       copyTargets.push({
         src: matchedPath,
