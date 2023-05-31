@@ -158,9 +158,9 @@ export const testcases: Record<string, Testcase[]> = {
       dest: '/noext'
     },
     {
-      name: 'parent dir to empty dest',
-      src: '../fixtures2/baz.txt',
-      dest: '/fixtures2/baz.txt'
+      name: 'dir to empty dest',
+      src: './dir/bar.txt',
+      dest: '/dir/bar.txt'
     }
   ]
 }

@@ -29,9 +29,9 @@ export default defineConfig({
           dest: '.'
         },
         {
-          src: '../fixtures2/baz.txt',
+          src: 'dir/bar.txt',
           dest: ''
-        },
+        }
       ],
       flatten: false
     })
