@@ -19,7 +19,19 @@ export default defineConfig({
         {
           src: '../fixtures2/*.txt',
           dest: 'fixture3'
-        }
+        },
+        {
+          src: 'foo.js',
+          dest: ''
+        },
+        {
+          src: 'noext',
+          dest: '.'
+        },
+        {
+          src: '../fixtures2/baz.txt',
+          dest: ''
+        },
       ],
       flatten: false
     })
