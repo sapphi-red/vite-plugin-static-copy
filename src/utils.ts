@@ -38,7 +38,7 @@ async function renameTarget(
 export const collectCopyTargets = async (
   root: string,
   targets: Target[],
-  flatten: boolean
+  structured: boolean
 ) => {
   const copyTargets: Array<SimpleTarget> = []
 
@@ -74,7 +74,7 @@ export const collectCopyTargets = async (
 
       const dirClean = dir.replace(/^(?:\.\.\/)+/, '')
       const destClean = `${dest}/${dirClean}`.replace(/^\/+|\/+$/g, '')
-      const destDir = flatten || (!flatten && !dir) ? dest : destClean
+      const destDir = !structured || (structured && !dir) ? dest : destClean
 
       copyTargets.push({
         src: matchedPath,
@@ -136,9 +136,9 @@ export const copyAll = async (
   rootSrc: string,
   rootDest: string,
   targets: Target[],
-  flatten: boolean
+  structured: boolean
 ) => {
-  const copyTargets = await collectCopyTargets(rootSrc, targets, flatten)
+  const copyTargets = await collectCopyTargets(rootSrc, targets, structured)
   let copiedCount = 0
 
   for (const copyTarget of copyTargets) {

@@ -21,7 +21,7 @@ export type FileMap = Map<string, FileMapValue[]>
 
 export const servePlugin = ({
   targets,
-  flatten,
+  structured,
   watch,
   silent
 }: ResolvedViteStaticCopyOptions): Plugin => {
@@ -34,7 +34,7 @@ export const servePlugin = ({
       const copyTargets = await collectCopyTargets(
         config.root,
         targets,
-        flatten
+        structured
       )
       updateFileMapFromTargets(copyTargets, fileMap)
     } catch (e) {

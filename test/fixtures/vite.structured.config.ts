@@ -3,7 +3,7 @@ import { viteStaticCopy } from 'vite-plugin-static-copy'
 
 export default defineConfig({
   build: {
-    outDir: './dist-noflatten'
+    outDir: './dist-structured'
   },
   plugins: [
     viteStaticCopy({
@@ -33,7 +33,7 @@ export default defineConfig({
           dest: ''
         }
       ],
-      flatten: false
+      structured: true
     })
   ]
 })

@@ -70,3 +70,4 @@ See [options.ts](https://github.com/sapphi-red/vite-plugin-static-copy/blob/main
   - Because `fast-glob` is used inside `vite`.
 - `transform` could return `null` as a way to tell the plugin not to copy the file, this is similar to the [CopyWebpackPlugin#filter](https://webpack.js.org/plugins/copy-webpack-plugin/#filter) option, but it expects `transform` to return the original content in case you want it to be copied.
 - `transform` can optionally be an object, with a `handler` property (with the same signature of the `rollup-plugin-copy` transform option) and an `encoding` property (`BufferEncoding | 'buffer'`) that will be used to read the file content so that the `handler`'s content argument will reflect the correct encoding (could be Buffer);
+- `structured: true` preserves the directory structure. It is similar to `flatten: false` in `rollup-plugin-copy`, but it covers more edge cases.

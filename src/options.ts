@@ -83,10 +83,10 @@ export type ViteStaticCopyOptions = {
    */
   targets: Target[]
   /**
-   * Remove the directory structure.
-   * @default true
+   * Preserve the directory structure.
+   * @default false
    */
-  flatten?: boolean
+  structured?: boolean
   /**
    * Suppress console output.
    * @default false
@@ -107,7 +107,7 @@ export type ViteStaticCopyOptions = {
 
 export type ResolvedViteStaticCopyOptions = {
   targets: Target[]
-  flatten: boolean
+  structured: boolean
   silent: boolean
   watch: {
     options: WatchOptions
@@ -119,7 +119,7 @@ export const resolveOptions = (
   options: ViteStaticCopyOptions
 ): ResolvedViteStaticCopyOptions => ({
   targets: options.targets,
-  flatten: options.flatten ?? true,
+  structured: options.structured ?? false,
   silent: options.silent ?? false,
   watch: {
     options: options.watch?.options ?? {},

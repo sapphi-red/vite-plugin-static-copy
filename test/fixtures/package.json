@@ -8,8 +8,8 @@
     "build:absolute": "vite --config vite.absolute.config.ts build",
     "dev:base": "vite --config vite.base.config.ts",
     "build:base": "vite --config vite.base.config.ts build",
-    "dev:noflatten": "vite --config vite.noflatten.config.ts",
-    "build:noflatten": "vite --config vite.noflatten.config.ts build"
+    "dev:structured": "vite --config vite.structured.config.ts",
+    "build:structured": "vite --config vite.structured.config.ts build"
   },
   "devDependencies": {
     "vite": "^4.3.5",
