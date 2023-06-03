@@ -38,7 +38,7 @@ async function renameTarget(
 export const collectCopyTargets = async (
   root: string,
   targets: Target[],
-  flatten: boolean
+  structured: boolean
 ) => {
   const copyTargets: Array<SimpleTarget> = []
 
@@ -69,13 +69,16 @@ export const collectCopyTargets = async (
         }
       }
 
-      // https://github.com/vladshcherbin/rollup-plugin-copy/blob/507bf5e99aa2c6d0d858821e627cb7617a1d9a6d/src/index.js#L32-L35
       const { base, dir } = path.parse(matchedPath)
-      const destDir =
-        flatten || (!flatten && !dir)
-          ? dest
-          : // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            dir.replace(dir.split('/')[0]!, dest)
+
+      let destDir: string
+      if (!structured || !dir) {
+        destDir = dest
+      } else {
+        const dirClean = dir.replace(/^(?:\.\.\/)+/, '')
+        const destClean = `${dest}/${dirClean}`.replace(/^\/+|\/+$/g, '')
+        destDir = destClean
+      }
 
       copyTargets.push({
         src: matchedPath,
@@ -137,9 +140,9 @@ export const copyAll = async (
   rootSrc: string,
   rootDest: string,
   targets: Target[],
-  flatten: boolean
+  structured: boolean
 ) => {
-  const copyTargets = await collectCopyTargets(rootSrc, targets, flatten)
+  const copyTargets = await collectCopyTargets(rootSrc, targets, structured)
   let copiedCount = 0
 
   for (const copyTarget of copyTargets) {

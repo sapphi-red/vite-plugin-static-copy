@@ -3,7 +3,7 @@ import { viteStaticCopy } from 'vite-plugin-static-copy'
 
 export default defineConfig({
   build: {
-    outDir: './dist-noflatten'
+    outDir: './dist-structured'
   },
   plugins: [
     viteStaticCopy({
@@ -19,9 +19,21 @@ export default defineConfig({
         {
           src: '../fixtures2/*.txt',
           dest: 'fixture3'
+        },
+        {
+          src: 'foo.js',
+          dest: ''
+        },
+        {
+          src: 'noext',
+          dest: '.'
+        },
+        {
+          src: 'dir/bar.txt',
+          dest: ''
         }
       ],
-      flatten: false
+      structured: true
     })
   ]
 })
