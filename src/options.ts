@@ -84,6 +84,8 @@ export type ViteStaticCopyOptions = {
   targets: Target[]
   /**
    * Preserve the directory structure.
+   *
+   * Similar to `flatten: false` in rollup-plugin-copy
    * @default false
    */
   structured?: boolean

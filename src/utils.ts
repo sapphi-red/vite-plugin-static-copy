@@ -69,12 +69,16 @@ export const collectCopyTargets = async (
         }
       }
 
-      // https://github.com/vladshcherbin/rollup-plugin-copy/blob/507bf5e99aa2c6d0d858821e627cb7617a1d9a6d/src/index.js#L32-L35
       const { base, dir } = path.parse(matchedPath)
 
-      const dirClean = dir.replace(/^(?:\.\.\/)+/, '')
-      const destClean = `${dest}/${dirClean}`.replace(/^\/+|\/+$/g, '')
-      const destDir = !structured || (structured && !dir) ? dest : destClean
+      let destDir: string
+      if (!structured || !dir) {
+        destDir = dest
+      } else {
+        const dirClean = dir.replace(/^(?:\.\.\/)+/, '')
+        const destClean = `${dest}/${dirClean}`.replace(/^\/+|\/+$/g, '')
+        destDir = destClean
+      }
 
       copyTargets.push({
         src: matchedPath,
