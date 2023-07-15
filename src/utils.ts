@@ -40,7 +40,7 @@ export const collectCopyTargets = async (
   targets: Target[],
   structured: boolean
 ) => {
-  const copyTargets: Array<SimpleTarget> = []
+  const copyTargets: SimpleTarget[] = []
 
   for (const target of targets) {
     const {
@@ -191,7 +191,6 @@ export const updateFileMapFromTargets = (
     if (!fileMap.has(dest)) {
       fileMap.set(dest, [])
     }
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     fileMap.get(dest)!.push({
       src: target.src,
       dest: target.dest,

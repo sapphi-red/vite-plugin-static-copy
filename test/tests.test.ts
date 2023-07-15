@@ -10,7 +10,6 @@ const fetchFromServer = async (
   server: ViteDevServer | PreviewServer,
   path: string
 ) => {
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const port = (server.httpServer!.address() as AddressInfo).port
   const url = `http://localhost:${port}${path}`
   const res = await fetch(url)

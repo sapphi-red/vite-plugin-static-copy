@@ -6,12 +6,14 @@ module.exports = {
   extends: [
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
+    'plugin:@typescript-eslint/stylistic',
     'plugin:vitest/recommended',
     'prettier'
   ],
   rules: {
     '@typescript-eslint/member-delimiter-style': 'off',
-    '@typescript-eslint/consistent-type-imports': 'error'
+    '@typescript-eslint/consistent-type-imports': 'error',
+    '@typescript-eslint/consistent-type-definitions': ['error', 'type']
   },
   overrides: [
     {
