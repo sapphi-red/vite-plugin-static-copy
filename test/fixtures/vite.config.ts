@@ -7,6 +7,7 @@ const wait = (delay: number) =>
   })
 
 export default defineConfig({
+  appType: 'custom', // disable SPA/MPA fallback
   plugins: [
     viteStaticCopy({
       targets: [

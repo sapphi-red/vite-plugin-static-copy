@@ -88,10 +88,13 @@ describe('build', () => {
       beforeAll(async () => {
         await build(getConfig(configFile))
         server = await preview(getConfig(configFile))
-        server.printUrls
       })
-      afterAll(() => {
-        server.httpServer.close()
+      afterAll(async () => {
+        await new Promise<void>(resolve => {
+          server.httpServer.close(() => {
+            resolve()
+          })
+        })
       })
 
       for (const { name, src, dest, transformedContent, encoding } of tests) {

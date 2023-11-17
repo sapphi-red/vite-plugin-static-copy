@@ -3,6 +3,7 @@ import { defineConfig } from 'vite'
 import { viteStaticCopy } from 'vite-plugin-static-copy'
 
 export default defineConfig({
+  appType: 'custom', // disable SPA/MPA fallback
   root: path.resolve(__dirname),
   build: {
     outDir: path.resolve(__dirname, './dist-absolute')
