@@ -41,6 +41,7 @@
     "vite": "^5.0.0"
   },
   "devDependencies": {
+    "@changesets/changelog-github": "^0.4.8",
     "@changesets/cli": "^2.26.2",
     "@polka/url": "^1.0.0-next.23",
     "@types/fs-extra": "^11.0.4",
