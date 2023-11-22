@@ -14,8 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/setup-repo
-      - name: run build
-        run: pnpm run -r --stream --filter=!./docs build
+      - run: pnpm run build
       - name: Create Release Pull Request or Publish to npm
         id: changesets
         uses: changesets/action@v1
