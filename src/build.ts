@@ -8,6 +8,7 @@ export const buildPlugin = ({
   silent
 }: ResolvedViteStaticCopyOptions): Plugin => {
   let config: ResolvedConfig
+  let output = false
 
   return {
     name: 'vite-plugin-static-copy:build',
@@ -15,7 +16,15 @@ export const buildPlugin = ({
     configResolved(_config) {
       config = _config
     },
+    buildEnd() {
+      // reset for watch mode
+      output = false
+    },
     async writeBundle() {
+      // run copy only once even if multiple bundles are generated
+      if (output) return
+      output = true
+
       const result = await copyAll(
         config.root,
         config.build.outDir,
