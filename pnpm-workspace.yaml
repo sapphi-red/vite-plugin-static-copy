@@ -1,2 +1,3 @@
 packages:
+  - '.' # https://github.com/changesets/changesets/issues/1217
   - 'test/fixtures'
