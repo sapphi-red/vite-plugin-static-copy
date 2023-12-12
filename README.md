@@ -4,7 +4,7 @@
 
 `rollup-plugin-copy` for Vite with dev server support.
 
-> **Note**
+> [!NOTE]
 > Before you use this plugin, consider using [public directory](https://vitejs.dev/guide/assets.html#the-public-directory) or [`import` in JavaScript](https://vitejs.dev/guide/features.html#static-assets).
 > In most cases, these will work.
 
@@ -39,7 +39,7 @@ export default {
 For example, if you use the config above, you will be able to fetch `bin/example.wasm` with `fetch('/wasm-files/example.wasm')`.
 So the file will be copied to `dist/wasm-files/example.wasm`.
 
-> **Warning**
+> [!WARNING]
 >
 > If you are using Windows, make sure to use `normalizePath` after doing `path.resolve` or else.
 > `\` is a escape charactor in `fast-glob` and you should use `/`.
