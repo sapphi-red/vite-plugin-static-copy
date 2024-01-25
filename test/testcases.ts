@@ -166,6 +166,6 @@ export const testcases: Record<string, Testcase[]> = {
       name: 'absolute path',
       src: './dir/bar.txt',
       dest: '/fixture4/dir/bar.txt'
-    },
+    }
   ]
 }
