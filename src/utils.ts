@@ -60,16 +60,21 @@ export const collectCopyTargets = async (
     })
 
     for (const matchedPath of matchedPaths) {
+      const relativeMatchedPath = path.isAbsolute(matchedPath)
+        ? path.relative(root, matchedPath)
+        : matchedPath
+      const absoluteMatchedPath = path.resolve(root, matchedPath)
+
       if (transform) {
-        const srcStat = await fs.stat(path.resolve(root, matchedPath))
+        const srcStat = await fs.stat(absoluteMatchedPath)
         if (!srcStat.isFile()) {
           throw new Error(
-            `"transform" option only supports a file: '${matchedPath}' is not a file`
+            `"transform" option only supports a file: '${relativeMatchedPath}' is not a file`
           )
         }
       }
 
-      const { base, dir } = path.parse(matchedPath)
+      const { base, dir } = path.parse(relativeMatchedPath)
 
       let destDir: string
       if (!structured || !dir) {
@@ -81,10 +86,10 @@ export const collectCopyTargets = async (
       }
 
       copyTargets.push({
-        src: matchedPath,
+        src: relativeMatchedPath,
         dest: path.join(
           destDir,
-          rename ? await renameTarget(base, rename, matchedPath) : base
+          rename ? await renameTarget(base, rename, absoluteMatchedPath) : base
         ),
         transform,
         preserveTimestamps: preserveTimestamps ?? false,
