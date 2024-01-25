@@ -1,5 +1,11 @@
 # vite-plugin-static-copy
 
+## 1.0.1
+
+### Patch Changes
+
+- [#79](https://github.com/sapphi-red/vite-plugin-static-copy/pull/79) [`19b9fca`](https://github.com/sapphi-red/vite-plugin-static-copy/commit/19b9fcade3a3a6b3249f27397a834d5a4c0321cb) Thanks [@sapphi-red](https://github.com/sapphi-red)! - using absolute path src with `structured: true` was not working
+
 ## 1.0.0
 
 ### Major Changes
