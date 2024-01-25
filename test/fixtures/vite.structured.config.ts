@@ -1,5 +1,10 @@
 import { defineConfig } from 'vite'
 import { viteStaticCopy } from 'vite-plugin-static-copy'
+import path from 'node:path'
+import url from 'node:url'
+import { normalizePath } from 'vite'
+
+const _dirname = path.dirname(url.fileURLToPath(import.meta.url))
 
 export default defineConfig({
   appType: 'custom', // disable SPA/MPA fallback
@@ -32,6 +37,10 @@ export default defineConfig({
         {
           src: 'dir/bar.txt',
           dest: ''
+        },
+        {
+          src: normalizePath(path.resolve(_dirname, 'dir/*.txt')),
+          dest: 'fixture4'
         }
       ],
       structured: true
