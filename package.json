@@ -41,26 +41,26 @@
     "vite": "^5.0.0"
   },
   "devDependencies": {
-    "@changesets/changelog-github": "^0.4.8",
-    "@changesets/cli": "^2.26.2",
-    "@polka/url": "^1.0.0-next.23",
+    "@changesets/changelog-github": "^0.5.0",
+    "@changesets/cli": "^2.27.1",
+    "@polka/url": "^1.0.0-next.24",
     "@types/fs-extra": "^11.0.4",
-    "@types/node": "^20.9.1",
+    "@types/node": "^20.11.6",
     "@types/throttle-debounce": "^5.0.2",
-    "@typescript-eslint/eslint-plugin": "^6.11.0",
-    "@typescript-eslint/parser": "^6.11.0",
-    "eslint": "^8.53.0",
-    "eslint-config-prettier": "^9.0.0",
-    "eslint-plugin-vitest": "^0.3.9",
+    "@typescript-eslint/eslint-plugin": "^6.19.1",
+    "@typescript-eslint/parser": "^6.19.1",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-vitest": "^0.3.20",
     "mrmime": "^1.0.1",
     "node-fetch": "^3.3.2",
-    "prettier": "^3.1.0",
+    "prettier": "^3.2.4",
     "throttle-debounce": "^5.0.0",
-    "tsup": "^7.3.0",
-    "typescript": "^5.2.2",
-    "vite": "^5.0.0",
-    "vitest": "^1.0.0-beta.4",
-    "vitest-github-actions-reporter": "^0.10.0"
+    "tsup": "^8.0.1",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.12",
+    "vitest": "^1.2.1",
+    "vitest-github-actions-reporter": "^0.11.1"
   },
   "dependencies": {
     "chokidar": "^3.5.3",
@@ -68,5 +68,5 @@
     "fs-extra": "^11.1.0",
     "picocolors": "^1.0.0"
   },
-  "packageManager": "pnpm@8.10.5"
+  "packageManager": "pnpm@8.14.3"
 }
