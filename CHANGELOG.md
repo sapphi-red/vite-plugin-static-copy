@@ -1,5 +1,11 @@
 # vite-plugin-static-copy
 
+## 1.0.2
+
+### Patch Changes
+
+- [`db73fb5`](https://github.com/sapphi-red/vite-plugin-static-copy/commit/db73fb50ed471b53cf6fd365443edd163a695e58) Thanks [@sapphi-red](https://github.com/sapphi-red)! - udpate mrmime to v2. align the used mime values with Vite 5.1. See https://github.com/lukeed/mrmime/releases/tag/v2.0.0 for the difference.
+
 ## 1.0.1
 
 ### Patch Changes
