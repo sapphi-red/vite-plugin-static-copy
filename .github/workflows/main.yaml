@@ -39,7 +39,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-repo
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: dist
           path: dist
@@ -61,7 +61,7 @@ jobs:
       - uses: ./.github/actions/setup-repo
         with:
           node-version: ${{ matrix.node_version }}
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: dist
           path: dist
