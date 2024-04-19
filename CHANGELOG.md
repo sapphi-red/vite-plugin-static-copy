@@ -1,5 +1,11 @@
 # vite-plugin-static-copy
 
+## 1.0.3
+
+### Patch Changes
+
+- [#105](https://github.com/sapphi-red/vite-plugin-static-copy/pull/105) [`32115f0`](https://github.com/sapphi-red/vite-plugin-static-copy/commit/32115f01abc98b9f128c427d1ffb4363860c5a95) Thanks [@daihuabin](https://github.com/daihuabin)! - don't crash when the requested path is mapped to a directory
+
 ## 1.0.2
 
 ### Patch Changes
