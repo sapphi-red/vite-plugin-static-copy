@@ -262,7 +262,7 @@ export function serveStaticCopyMiddleware(
 
     try {
       const data = viaLocal(root, publicDir, fileMap, pathname)
-      if (!data) {
+      if (!data || data.stats.isDirectory()) {
         return404(res, next)
         return
       }
