@@ -12,7 +12,7 @@ import { parse } from '@polka/url'
 import { lookup } from 'mrmime'
 import type { Stats } from 'node:fs'
 import { statSync, createReadStream, existsSync } from 'node:fs'
-import type { Connect } from 'vite'
+import type { Connect, ServerOptions } from 'vite'
 import type {
   IncomingMessage,
   OutgoingHttpHeaders,
@@ -163,9 +163,12 @@ function sendStatic(
   req: IncomingMessage,
   res: ServerResponse,
   file: string,
-  stats: Stats
+  stats: Stats,
+  server: ServerOptions
 ) {
   const staticHeaders = getStaticHeaders(file, stats)
+  if (server.headers) Object.assign(staticHeaders, server.headers)
+  console.log(server.headers, staticHeaders)
 
   if (req.headers['if-none-match'] === staticHeaders['ETag']) {
     res.writeHead(304)
@@ -209,7 +212,8 @@ async function sendTransform(
   req: IncomingMessage,
   res: ServerResponse,
   file: string,
-  transform: TransformOptionObject
+  transform: TransformOptionObject,
+  server: ServerOptions
 ): Promise<boolean> {
   const transformedContent = await getTransformedContent(file, transform)
   if (transformedContent === null) {
@@ -221,6 +225,7 @@ async function sendTransform(
     transform.encoding,
     transformedContent
   )
+  if (server.headers) Object.assign(transformHeaders, server.headers)
 
   if (req.headers['if-none-match'] === transformHeaders['ETag']) {
     res.writeHead(304)
@@ -246,7 +251,11 @@ function return404(res: ServerResponse, next: Connect.NextFunction) {
 }
 
 export function serveStaticCopyMiddleware(
-  { root, publicDir }: { root: string; publicDir: string },
+  {
+    root,
+    publicDir,
+    server
+  }: { root: string; publicDir: string; server: ServerOptions },
   fileMap: FileMap
 ): Connect.NextHandleFunction {
   // Keep the named function. The name is visible in debug logs via `DEBUG=connect:dispatcher ...`
@@ -282,7 +291,8 @@ export function serveStaticCopyMiddleware(
           req,
           res,
           data.filepath,
-          transformOption
+          transformOption,
+          server
         )
         if (!sent) {
           return404(res, next)
@@ -291,7 +301,7 @@ export function serveStaticCopyMiddleware(
         return
       }
 
-      sendStatic(req, res, data.filepath, data.stats)
+      sendStatic(req, res, data.filepath, data.stats, server)
     } catch (e) {
       if (e instanceof Error) {
         next(e)
