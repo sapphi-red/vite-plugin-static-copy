@@ -1,5 +1,11 @@
 # vite-plugin-static-copy
 
+## 1.0.4
+
+### Patch Changes
+
+- [#107](https://github.com/sapphi-red/vite-plugin-static-copy/pull/107) [`5206534`](https://github.com/sapphi-red/vite-plugin-static-copy/commit/520653429a0aa2122feee9edbacc2195fd2624e4) Thanks [@sverben](https://github.com/sverben)! - send headers set by `server.headers` in dev
+
 ## 1.0.3
 
 ### Patch Changes
