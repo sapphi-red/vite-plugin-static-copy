@@ -163,11 +163,9 @@ function sendStatic(
   req: IncomingMessage,
   res: ServerResponse,
   file: string,
-  stats: Stats,
-  server: ServerOptions
+  stats: Stats
 ) {
   const staticHeaders = getStaticHeaders(file, stats)
-  if (server.headers) Object.assign(staticHeaders, server.headers)
 
   if (req.headers['if-none-match'] === staticHeaders['ETag']) {
     res.writeHead(304)
@@ -207,29 +205,23 @@ function sendStatic(
   createReadStream(file, opts).pipe(res)
 }
 
-async function sendTransform(
+function sendTransform(
   req: IncomingMessage,
   res: ServerResponse,
   file: string,
   transform: TransformOptionObject,
-  server: ServerOptions
-): Promise<boolean> {
-  const transformedContent = await getTransformedContent(file, transform)
-  if (transformedContent === null) {
-    return false
-  }
-
+  transformedContent: string | Buffer
+): void {
   const transformHeaders = getTransformHeaders(
     file,
     transform.encoding,
     transformedContent
   )
-  if (server.headers) Object.assign(transformHeaders, server.headers)
 
   if (req.headers['if-none-match'] === transformHeaders['ETag']) {
     res.writeHead(304)
     res.end()
-    return true
+    return
   }
 
   const code = 200
@@ -237,7 +229,28 @@ async function sendTransform(
 
   res.writeHead(code, headers)
   res.end(transformedContent)
-  return true
+  return
+}
+
+function setHeaders(
+  res: ServerResponse,
+  pathname: string,
+  headers: OutgoingHttpHeaders | undefined
+) {
+  // Matches js, jsx, ts, tsx.
+  // The reason this is done, is that the .ts file extension is reserved
+  // for the MIME type video/mp2t. In almost all cases, we can expect
+  // these files to be TypeScript files, and for Vite to serve them with
+  // this Content-Type.
+  if (/\.[tj]sx?$/.test(pathname)) {
+    res.setHeader('Content-Type', 'application/javascript')
+  }
+
+  if (headers) {
+    for (const name in headers) {
+      res.setHeader(name, headers[name]!)
+    }
+  }
 }
 
 function return404(res: ServerResponse, next: Connect.NextFunction) {
@@ -275,32 +288,30 @@ export function serveStaticCopyMiddleware(
         return
       }
 
-      // Matches js, jsx, ts, tsx.
-      // The reason this is done, is that the .ts file extension is reserved
-      // for the MIME type video/mp2t. In almost all cases, we can expect
-      // these files to be TypeScript files, and for Vite to serve them with
-      // this Content-Type.
-      if (/\.[tj]sx?$/.test(pathname)) {
-        res.setHeader('Content-Type', 'application/javascript')
-      }
-
       const transformOption = resolveTransformOption(data.transform)
       if (transformOption) {
-        const sent = await sendTransform(
+        const transformedContent = await getTransformedContent(
+          data.filepath,
+          transformOption
+        )
+        if (transformedContent === null) {
+          return404(res, next)
+          return
+        }
+
+        setHeaders(res, pathname, server.headers)
+        sendTransform(
           req,
           res,
           data.filepath,
           transformOption,
-          server
+          transformedContent
         )
-        if (!sent) {
-          return404(res, next)
-          return
-        }
         return
       }
 
-      sendStatic(req, res, data.filepath, data.stats, server)
+      setHeaders(res, pathname, server.headers)
+      sendStatic(req, res, data.filepath, data.stats)
     } catch (e) {
       if (e instanceof Error) {
         next(e)
