@@ -77,17 +77,6 @@ describe('serve', () => {
       expect(res.status).toBe(200)
       expect(res.headers.get('Access-Control-Allow-Origin')).toBe('*')
     })
-  })
-
-  describe('vite.headers.config.ts', () => {
-    let server: ViteDevServer
-    beforeAll(async () => {
-      server = await createServer(getConfig('vite.headers.config.ts'))
-      server = await server.listen()
-    })
-    afterAll(async () => {
-      await server.close()
-    })
 
     test.concurrent('headers', async () => {
       const res = await fetchFromServer(server, '/fixture1/foo.txt')
