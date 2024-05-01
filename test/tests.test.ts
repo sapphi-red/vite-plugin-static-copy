@@ -92,7 +92,9 @@ describe('serve', () => {
     test.concurrent('headers', async () => {
       const res = await fetchFromServer(server, '/fixture1/foo.txt')
       expect(res.status).toBe(200)
-      expect(res.headers.get('Cross-Origin-Embedder-Policy')).toBe('require-corp')
+      expect(res.headers.get('Cross-Origin-Embedder-Policy')).toBe(
+        'require-corp'
+      )
       expect(res.headers.get('Cross-Origin-Opener-Policy')).toBe('same-origin')
     })
   })
