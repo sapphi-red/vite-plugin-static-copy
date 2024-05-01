@@ -26,7 +26,7 @@ export default tseslint.config(
   },
   {
     files: ['test/**'],
-    ...vitest.configs.recommended,
+    ...vitest.configs.recommended
   },
   eslintConfigPrettier,
   {
