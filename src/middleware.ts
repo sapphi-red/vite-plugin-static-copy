@@ -168,7 +168,6 @@ function sendStatic(
 ) {
   const staticHeaders = getStaticHeaders(file, stats)
   if (server.headers) Object.assign(staticHeaders, server.headers)
-  console.log(server.headers, staticHeaders)
 
   if (req.headers['if-none-match'] === staticHeaders['ETag']) {
     res.writeHead(304)
