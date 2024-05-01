@@ -2,4 +2,4 @@
 "vite-plugin-static-copy": patch
 ---
 
-fix: send server headers in dev
+send headers set by `server.headers` in dev
