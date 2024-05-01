@@ -49,7 +49,7 @@ jobs:
     needs: [build]
     strategy:
       matrix:
-        node_version: [18.x, 20.x]
+        node_version: [18.x, 20.x, 22.x]
         os: [ubuntu-latest]
         include:
           - node_version: 20.x
