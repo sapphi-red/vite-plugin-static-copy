@@ -1,5 +1,11 @@
 # vite-plugin-static-copy
 
+## 1.0.5
+
+### Patch Changes
+
+- [`311ce4d`](https://github.com/sapphi-red/vite-plugin-static-copy/commit/311ce4d0c253402820d1fccb8d59a9e8a71ce967) Thanks [@sapphi-red](https://github.com/sapphi-red)! - generate provenance statements for the package
+
 ## 1.0.4
 
 ### Patch Changes
