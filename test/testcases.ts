@@ -4,6 +4,7 @@ type Testcase = {
   dest: string
   transformedContent?: string
   encoding?: BufferEncoding | 'buffer'
+  contentType?: string
 }
 
 export const testcases: Record<string, Testcase[]> = {
@@ -115,6 +116,26 @@ export const testcases: Record<string, Testcase[]> = {
       name: 'overwrite=false with transform',
       src: './public/fixture11/notOverwriteDir/bar.txt',
       dest: '/fixture11/notOverwriteDir/bar.txt'
+    },
+    {
+      name: 'modified extension, not tranformed',
+      src: 'foo.js',
+      dest: '/fixture12/foo.mp3',
+      contentType: 'text/javascript'
+    },
+    {
+      name: 'modified extension, transformed, known content-type',
+      src: null,
+      dest: '/fixture13/foo.json',
+      transformedContent: '"foo\\n"',
+      contentType: 'application/json'
+    },
+    {
+      name: 'modified extension, transformed, unknown content-type',
+      src: null,
+      dest: '/fixture14/foo.foo',
+      transformedContent: "console.log('foo')\n+14",
+      contentType: 'text/javascript'
     }
   ],
   'vite.absolute.config.ts': [

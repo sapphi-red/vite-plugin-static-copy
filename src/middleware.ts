@@ -124,11 +124,12 @@ function getStaticHeaders(name: string, stats: Stats) {
 }
 
 function getTransformHeaders(
-  name: string,
+  srcName: string,
+  destName: string,
   encoding: BufferEncoding | 'buffer',
   content: string | Buffer
 ) {
-  let ctype = lookup(name) || ''
+  let ctype = lookup(destName) || lookup(srcName) || ''
   if (ctype === 'text/html') ctype += ';charset=utf-8'
 
   const headers: OutgoingHttpHeaders = {
@@ -208,12 +209,14 @@ function sendStatic(
 function sendTransform(
   req: IncomingMessage,
   res: ServerResponse,
-  file: string,
+  srcName: string,
+  destName: string,
   transform: TransformOptionObject,
   transformedContent: string | Buffer
 ): void {
   const transformHeaders = getTransformHeaders(
-    file,
+    srcName,
+    destName,
     transform.encoding,
     transformedContent
   )
@@ -243,7 +246,7 @@ function setHeaders(
   // these files to be TypeScript files, and for Vite to serve them with
   // this Content-Type.
   if (/\.[tj]sx?$/.test(pathname)) {
-    res.setHeader('Content-Type', 'application/javascript')
+    res.setHeader('Content-Type', 'text/javascript')
   }
 
   if (headers) {
@@ -304,6 +307,7 @@ export function serveStaticCopyMiddleware(
           req,
           res,
           data.filepath,
+          pathname,
           transformOption,
           transformedContent
         )
