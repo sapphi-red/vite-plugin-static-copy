@@ -118,10 +118,10 @@ export const testcases: Record<string, Testcase[]> = {
       dest: '/fixture11/notOverwriteDir/bar.txt'
     },
     {
-      name: 'modified extension, not tranformed',
+      name: 'modified extension, known content-type',
       src: 'foo.js',
-      dest: '/fixture12/foo.mp3',
-      contentType: 'text/javascript'
+      dest: '/fixture12/foo.txt',
+      contentType: 'text/plain'
     },
     {
       name: 'modified extension, transformed, known content-type',
@@ -131,11 +131,10 @@ export const testcases: Record<string, Testcase[]> = {
       contentType: 'application/json'
     },
     {
-      name: 'modified extension, transformed, unknown content-type',
-      src: null,
+      name: 'modified extension, unknown content-type',
+      src: 'foo.txt',
       dest: '/fixture14/foo.foo',
-      transformedContent: "console.log('foo')\n+14",
-      contentType: 'text/javascript'
+      contentType: ''
     }
   ],
   'vite.absolute.config.ts': [

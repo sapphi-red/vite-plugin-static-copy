@@ -115,13 +115,24 @@ describe('build', () => {
         })
       })
 
-      for (const { name, src, dest, transformedContent, encoding } of tests) {
+      for (const {
+        name,
+        src,
+        dest,
+        transformedContent,
+        encoding,
+        contentType
+      } of tests) {
         // eslint-disable-next-line vitest/valid-title
         test.concurrent(name, async () => {
           const expected =
             src === null ? null : await loadFileContent(src, encoding)
           const actual = await fetchContent(server, dest, encoding)
           expect(actual.content).toStrictEqual(transformedContent ?? expected)
+
+          if (contentType !== undefined) {
+            expect(actual.contentType).toStrictEqual(contentType)
+          }
         })
       }
     })

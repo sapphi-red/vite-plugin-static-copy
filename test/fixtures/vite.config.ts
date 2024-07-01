@@ -116,7 +116,7 @@ export default defineConfig({
           src: 'foo.js',
           dest: 'fixture12',
           rename: filename => {
-            return `${filename}.mp3`
+            return `${filename}.txt`
           }
         },
         {
@@ -130,11 +130,8 @@ export default defineConfig({
           }
         },
         {
-          src: 'foo.js',
+          src: 'foo.txt',
           dest: 'fixture14',
-          transform(content) {
-            return `${content}+14`
-          },
           rename: filename => {
             return `${filename}.foo`
           }

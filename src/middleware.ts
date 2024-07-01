@@ -108,41 +108,27 @@ function viaLocal(
   return undefined
 }
 
-function getStaticHeaders(name: string, stats: Stats) {
-  let ctype = lookup(name) || ''
-  if (ctype === 'text/html') ctype += ';charset=utf-8'
-
-  const headers: OutgoingHttpHeaders = {
+function getStaticHeaders(stats: Stats): OutgoingHttpHeaders {
+  return {
     'Content-Length': stats.size,
-    'Content-Type': ctype,
     'Last-Modified': stats.mtime.toUTCString(),
     ETag: `W/"${stats.size}-${stats.mtime.getTime()}"`,
     'Cache-Control': 'no-cache'
   }
-
-  return headers
 }
 
 function getTransformHeaders(
-  srcName: string,
-  destName: string,
   encoding: BufferEncoding | 'buffer',
   content: string | Buffer
-) {
-  let ctype = lookup(destName) || lookup(srcName) || ''
-  if (ctype === 'text/html') ctype += ';charset=utf-8'
-
-  const headers: OutgoingHttpHeaders = {
+): OutgoingHttpHeaders {
+  return {
     'Content-Length': Buffer.byteLength(
       content,
       encoding === 'buffer' ? undefined : encoding
     ),
-    'Content-Type': ctype,
     ETag: `W/"${calculateMd5Base64(content)}"`,
     'Cache-Control': 'no-cache'
   }
-
-  return headers
 }
 
 function getMergeHeaders(headers: OutgoingHttpHeaders, res: ServerResponse) {
@@ -166,7 +152,7 @@ function sendStatic(
   file: string,
   stats: Stats
 ) {
-  const staticHeaders = getStaticHeaders(file, stats)
+  const staticHeaders = getStaticHeaders(stats)
 
   if (req.headers['if-none-match'] === staticHeaders['ETag']) {
     res.writeHead(304)
@@ -209,14 +195,10 @@ function sendStatic(
 function sendTransform(
   req: IncomingMessage,
   res: ServerResponse,
-  srcName: string,
-  destName: string,
   transform: TransformOptionObject,
   transformedContent: string | Buffer
 ): void {
   const transformHeaders = getTransformHeaders(
-    srcName,
-    destName,
     transform.encoding,
     transformedContent
   )
@@ -247,6 +229,10 @@ function setHeaders(
   // this Content-Type.
   if (/\.[tj]sx?$/.test(pathname)) {
     res.setHeader('Content-Type', 'text/javascript')
+  } else {
+    let ctype = lookup(pathname) || ''
+    if (ctype === 'text/html') ctype += ';charset=utf-8'
+    res.setHeader('Content-Type', ctype)
   }
 
   if (headers) {
@@ -303,14 +289,7 @@ export function serveStaticCopyMiddleware(
         }
 
         setHeaders(res, pathname, server.headers)
-        sendTransform(
-          req,
-          res,
-          data.filepath,
-          pathname,
-          transformOption,
-          transformedContent
-        )
+        sendTransform(req, res, transformOption, transformedContent)
         return
       }
 
