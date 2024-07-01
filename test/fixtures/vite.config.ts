@@ -123,7 +123,7 @@ export default defineConfig({
           src: 'foo.txt',
           dest: 'fixture13',
           transform(content) {
-            return JSON.stringify(content)
+            return JSON.stringify({ value: content.trim() })
           },
           rename: filename => {
             return `${filename}.json`
