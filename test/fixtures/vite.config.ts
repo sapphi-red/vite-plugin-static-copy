@@ -121,7 +121,7 @@ export default defineConfig({
         },
         {
           src: 'foo.txt',
-          dest: 'fixture13',
+          dest: 'fixture12',
           transform(content) {
             return JSON.stringify({ value: content.trim() })
           },
@@ -131,7 +131,7 @@ export default defineConfig({
         },
         {
           src: 'foo.txt',
-          dest: 'fixture14',
+          dest: 'fixture12',
           rename: filename => {
             return `${filename}.foo`
           }

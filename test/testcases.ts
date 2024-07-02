@@ -126,14 +126,14 @@ export const testcases: Record<string, Testcase[]> = {
     {
       name: 'modified extension, transformed, known content-type',
       src: null,
-      dest: '/fixture13/foo.json',
+      dest: '/fixture12/foo.json',
       transformedContent: '{"value":"foo"}',
       contentType: 'application/json'
     },
     {
       name: 'modified extension, unknown content-type',
       src: 'foo.txt',
-      dest: '/fixture14/foo.foo',
+      dest: '/fixture12/foo.foo',
       contentType: ''
     }
   ],
