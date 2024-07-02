@@ -42,26 +42,26 @@
   },
   "devDependencies": {
     "@changesets/changelog-github": "^0.5.0",
-    "@changesets/cli": "^2.27.1",
-    "@eslint/js": "^9.1.1",
+    "@changesets/cli": "^2.27.7",
+    "@eslint/js": "^9.6.0",
     "@polka/url": "^1.0.0-next.25",
     "@types/eslint-config-prettier": "^6.11.3",
     "@types/eslint__js": "^8.42.3",
     "@types/fs-extra": "^11.0.4",
-    "@types/node": "^20.12.7",
+    "@types/node": "^20.14.9",
     "@types/throttle-debounce": "^5.0.2",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-vitest": "^0.5.4",
     "mrmime": "^2.0.0",
     "node-fetch": "^3.3.2",
-    "prettier": "^3.2.5",
-    "throttle-debounce": "^5.0.0",
-    "tsup": "^8.0.2",
-    "typescript": "^5.4.5",
-    "typescript-eslint": "^7.8.0",
-    "vite": "^5.2.10",
-    "vitest": "^1.5.3",
+    "prettier": "^3.3.2",
+    "throttle-debounce": "^5.0.2",
+    "tsup": "^8.1.0",
+    "typescript": "^5.5.3",
+    "typescript-eslint": "^7.15.0",
+    "vite": "^5.3.2",
+    "vitest": "^1.6.0",
     "vitest-github-actions-reporter": "^0.11.1"
   },
   "dependencies": {
@@ -70,5 +70,5 @@
     "fs-extra": "^11.1.0",
     "picocolors": "^1.0.0"
   },
-  "packageManager": "pnpm@9.0.6"
+  "packageManager": "pnpm@9.4.0"
 }
