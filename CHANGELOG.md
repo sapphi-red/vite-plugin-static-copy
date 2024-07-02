@@ -1,5 +1,11 @@
 # vite-plugin-static-copy
 
+## 1.0.6
+
+### Patch Changes
+
+- [#121](https://github.com/sapphi-red/vite-plugin-static-copy/pull/121) [`d68aec9`](https://github.com/sapphi-red/vite-plugin-static-copy/commit/d68aec950e58b16bac0f5621bf5d9636340109c8) Thanks [@tobz1000](https://github.com/tobz1000)! - The value of `Content-Type` header was inferred and set from the src file extension. It is now infered from the dest file extension.
+
 ## 1.0.5
 
 ### Patch Changes
