@@ -111,6 +111,30 @@ export default defineConfig({
           transform(content) {
             return content + '1'
           }
+        },
+        {
+          src: 'foo.js',
+          dest: 'fixture12',
+          rename: filename => {
+            return `${filename}.txt`
+          }
+        },
+        {
+          src: 'foo.txt',
+          dest: 'fixture12',
+          transform(content) {
+            return JSON.stringify({ value: content.trim() })
+          },
+          rename: filename => {
+            return `${filename}.json`
+          }
+        },
+        {
+          src: 'foo.txt',
+          dest: 'fixture12',
+          rename: filename => {
+            return `${filename}.foo`
+          }
         }
       ]
     })

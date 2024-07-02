@@ -16,22 +16,23 @@ const fetchFromServer = async (
   return res
 }
 
-const fetchTextContent = async (
+const fetchContent = async (
   server: ViteDevServer | PreviewServer,
-  path: string
+  path: string,
+  encoding?: BufferEncoding | 'buffer'
 ) => {
   const res = await fetchFromServer(server, path)
-  const content = res.status === 200 ? await res.text() : null
-  return content ? normalizeLineBreak(content) : null
-}
+  let content: string | ArrayBuffer | null = null
 
-const fetchBufferContent = async (
-  server: ViteDevServer | PreviewServer,
-  path: string
-) => {
-  const res = await fetchFromServer(server, path)
-  const content = res.status === 200 ? await res.arrayBuffer() : null
-  return content
+  if (res.status === 200) {
+    content =
+      encoding === 'buffer'
+        ? await res.arrayBuffer()
+        : normalizeLineBreak(await res.text())
+  }
+
+  const contentType = res.headers.get('content-type')
+  return { content, contentType }
 }
 
 describe('serve', () => {
@@ -47,16 +48,24 @@ describe('serve', () => {
         await server.close()
       })
 
-      for (const { name, src, dest, transformedContent, encoding } of tests) {
+      for (const {
+        name,
+        src,
+        dest,
+        transformedContent,
+        encoding,
+        contentType
+      } of tests) {
         // eslint-disable-next-line vitest/valid-title
         test.concurrent(name, async () => {
           const expected =
             src === null ? null : await loadFileContent(src, encoding)
-          const actual =
-            encoding === 'buffer'
-              ? await fetchBufferContent(server, dest)
-              : await fetchTextContent(server, dest)
-          expect(actual).toStrictEqual(transformedContent ?? expected)
+          const actual = await fetchContent(server, dest, encoding)
+          expect(actual.content).toStrictEqual(transformedContent ?? expected)
+
+          if (contentType !== undefined) {
+            expect(actual.contentType).toStrictEqual(contentType)
+          }
         })
       }
     })
@@ -106,16 +115,24 @@ describe('build', () => {
         })
       })
 
-      for (const { name, src, dest, transformedContent, encoding } of tests) {
+      for (const {
+        name,
+        src,
+        dest,
+        transformedContent,
+        encoding,
+        contentType
+      } of tests) {
         // eslint-disable-next-line vitest/valid-title
         test.concurrent(name, async () => {
           const expected =
             src === null ? null : await loadFileContent(src, encoding)
-          const actual =
-            encoding === 'buffer'
-              ? await fetchBufferContent(server, dest)
-              : await fetchTextContent(server, dest)
-          expect(actual).toStrictEqual(transformedContent ?? expected)
+          const actual = await fetchContent(server, dest, encoding)
+          expect(actual.content).toStrictEqual(transformedContent ?? expected)
+
+          if (contentType !== undefined) {
+            expect(actual.contentType).toStrictEqual(contentType)
+          }
         })
       }
     })
