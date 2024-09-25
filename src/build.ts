@@ -29,7 +29,8 @@ export const buildPlugin = ({
         config.root,
         config.build.outDir,
         targets,
-        structured
+        structured,
+        silent
       )
       if (!silent) outputCopyLog(config.logger, result)
     }
