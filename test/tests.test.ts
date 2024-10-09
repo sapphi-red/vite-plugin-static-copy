@@ -145,9 +145,9 @@ describe('build', () => {
       } catch (error: unknown) {
         result = (error as Error).message
       }
-      expect(
-        result.includes('No file was found to copy on does-not-exist.txt src.')
-      ).toBeTruthy()
+      expect(result).toContain(
+        'No file was found to copy on does-not-exist.txt src.'
+      )
     })
 
     test('should not throw error when it does not find the file on given src as silent=true', async () => {
