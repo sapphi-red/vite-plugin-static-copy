@@ -90,7 +90,7 @@ export type ViteStaticCopyOptions = {
    */
   structured?: boolean
   /**
-   * Suppress console output.
+   * Suppress console output and ignore validation errors.
    * @default false
    */
   silent?: boolean
