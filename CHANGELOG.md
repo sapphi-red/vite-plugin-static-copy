@@ -1,5 +1,11 @@
 # vite-plugin-static-copy
 
+## 2.0.0
+
+### Major Changes
+
+- [#127](https://github.com/sapphi-red/vite-plugin-static-copy/pull/127) [`21304df`](https://github.com/sapphi-red/vite-plugin-static-copy/commit/21304df03f6ad668d316653ee9d48c4fbc633bde) Thanks [@tassioFront](https://github.com/tassioFront)! - feat: throw an error when does not find file
+
 ## 1.0.6
 
 ### Patch Changes
