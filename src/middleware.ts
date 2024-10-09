@@ -265,7 +265,7 @@ export function serveStaticCopyMiddleware(
     if (pathname.includes('%')) {
       try {
         pathname = decodeURI(pathname)
-      } catch (err) {
+      } catch {
         /* malform uri */
       }
     }
