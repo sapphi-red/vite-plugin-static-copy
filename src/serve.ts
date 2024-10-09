@@ -39,8 +39,9 @@ export const servePlugin = ({
       )
       updateFileMapFromTargets(copyTargets, fileMap)
     } catch (e) {
-      !silent &&
+      if (!silent) {
         config.logger.error(formatConsole(pc.red((e as Error).toString())))
+      }
     }
   }
   const collectFileMapDebounce = debounce(100, async () => {
