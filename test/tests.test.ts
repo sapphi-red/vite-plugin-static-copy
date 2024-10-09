@@ -137,4 +137,27 @@ describe('build', () => {
       }
     })
   }
+  describe('on error', () => {
+    test('should throw error when it does not find the file on given src', async () => {
+      let result = ''
+      try {
+        await build(getConfig('vite.error.config.ts'))
+      } catch (error: unknown) {
+        result = (error as Error).message
+      }
+      expect(result).toContain(
+        'No file was found to copy on does-not-exist.txt src.'
+      )
+    })
+
+    test('should not throw error when it does not find the file on given src as silent=true', async () => {
+      let result = ''
+      try {
+        await build(getConfig('vite.error-silent.config.ts'))
+      } catch (error: unknown) {
+        result = (error as Error).message
+      }
+      expect(result).toBe('')
+    })
+  })
 })

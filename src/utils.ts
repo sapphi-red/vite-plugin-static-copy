@@ -38,7 +38,8 @@ async function renameTarget(
 export const collectCopyTargets = async (
   root: string,
   targets: Target[],
-  structured: boolean
+  structured: boolean,
+  silent: boolean
 ) => {
   const copyTargets: SimpleTarget[] = []
 
@@ -59,6 +60,9 @@ export const collectCopyTargets = async (
       cwd: root
     })
 
+    if (matchedPaths.length === 0 && !silent) {
+      throw new Error(`No file was found to copy on ${src} src.`)
+    }
     for (const matchedPath of matchedPaths) {
       const relativeMatchedPath = path.isAbsolute(matchedPath)
         ? path.relative(root, matchedPath)
@@ -145,9 +149,15 @@ export const copyAll = async (
   rootSrc: string,
   rootDest: string,
   targets: Target[],
-  structured: boolean
+  structured: boolean,
+  silent: boolean
 ) => {
-  const copyTargets = await collectCopyTargets(rootSrc, targets, structured)
+  const copyTargets = await collectCopyTargets(
+    rootSrc,
+    targets,
+    structured,
+    silent
+  )
   let copiedCount = 0
 
   for (const copyTarget of copyTargets) {
@@ -244,8 +254,6 @@ export const outputCopyLog = (
     const skippedMessage =
       skipped > 0 ? ` ${pc.gray(`(Skipped ${skipped} items.)`)}` : ''
     logger.info(formatConsole(`${copiedMessage}${skippedMessage}`))
-  } else {
-    logger.warn(formatConsole(pc.yellow('No items to copy.')))
   }
 }
 
