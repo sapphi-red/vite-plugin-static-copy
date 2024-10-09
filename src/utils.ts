@@ -39,7 +39,7 @@ export const collectCopyTargets = async (
   root: string,
   targets: Target[],
   structured: boolean,
-  silent = false
+  silent: boolean
 ) => {
   const copyTargets: SimpleTarget[] = []
 
@@ -150,7 +150,7 @@ export const copyAll = async (
   rootDest: string,
   targets: Target[],
   structured: boolean,
-  silent = false
+  silent: boolean
 ) => {
   const copyTargets = await collectCopyTargets(
     rootSrc,
