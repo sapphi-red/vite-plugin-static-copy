@@ -192,6 +192,76 @@ export const copyAll = async (
   return { targets: copyTargets.length, copied: copiedCount }
 }
 
+export const copyFile = async (
+  file: string,
+  rootSrc: string,
+  rootDest: string,
+  targets: Target[],
+  flatten: boolean
+) => {
+  const copyTargets = await collectCopyTargets(rootSrc, targets, flatten)
+  const changedFiles: string[] = []
+  for (const copyTarget of copyTargets) {
+    const { src, dest, transform, preserveTimestamps, dereference } = copyTarget
+    const relative = path.relative(file, src)
+    if (
+      relative.length == 0 ||
+      (relative.startsWith('..') && relative.endsWith('..'))
+    ) {
+      const resolvedSrc = path.resolve(rootSrc, file)
+      let resolvedDest = path.resolve(rootSrc, rootDest, dest)
+      const transformOption = resolveTransformOption(transform)
+      if (fs.statSync(resolvedDest).isDirectory()) {
+        resolvedDest = resolvedDest + '/' + path.relative(src, file)
+      }
+
+      if (transformOption) {
+        await transformCopy(transformOption, resolvedSrc, resolvedDest)
+      } else {
+        await fs.copy(resolvedSrc, resolvedDest, {
+          preserveTimestamps,
+          dereference
+        })
+      }
+
+      changedFiles.push(
+        path.normalize(rootDest + '/' + dest + '/' + path.relative(src, file))
+      )
+    }
+  }
+  return changedFiles
+}
+
+export const removeFile = async (
+  file: string,
+  rootSrc: string,
+  rootDest: string,
+  targets: Target[],
+  flatten: boolean
+) => {
+  const copyTargets = await collectCopyTargets(rootSrc, targets, flatten)
+  const changedFiles: string[] = []
+  for (const copyTarget of copyTargets) {
+    const { src, dest } = copyTarget
+    const relative = path.relative(file, src)
+    if (
+      relative.length == 0 ||
+      (relative.startsWith('..') && relative.endsWith('..'))
+    ) {
+      let resolvedDest = path.resolve(rootSrc, rootDest, dest)
+      if (fs.statSync(resolvedDest).isDirectory()) {
+        resolvedDest = resolvedDest + '/' + path.relative(src, file)
+      }
+      await fs.remove(resolvedDest)
+
+      changedFiles.push(
+        path.normalize(rootDest + '/' + dest + '/' + path.relative(src, file))
+      )
+    }
+  }
+  return changedFiles
+}
+
 export const updateFileMapFromTargets = (
   targets: SimpleTarget[],
   fileMap: FileMap

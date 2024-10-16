@@ -5,7 +5,11 @@ import {
   collectCopyTargets,
   updateFileMapFromTargets,
   outputCollectedLog,
-  formatConsole
+  formatConsole,
+  copyAll,
+  copyFile,
+  removeFile,
+  outputCopyLog
 } from './utils'
 import { debounce } from 'throttle-debounce'
 import chokidar from 'chokidar'
@@ -62,6 +66,14 @@ export const servePlugin = ({
         ws.send({ type: 'full-reload', path: '*' })
       }
 
+      if (watch.copyToDest) {
+        copyAll(config.root, config.build.outDir, targets, flatten).then(
+          copyCount => {
+            outputCopyLog(config.logger, copyCount)
+          }
+        )
+      }
+
       // cannot use server.watcher since disableGlobbing is true
       watcher = chokidar.watch(
         targets.flatMap(target => target.src),
@@ -81,11 +93,78 @@ export const servePlugin = ({
           )
         }
         await collectFileMapDebounce()
-        if (watch.reloadPageOnChange) {
+        if (watch.copyToDest) {
+          const dest = await copyFile(
+            path,
+            config.root,
+            config.build.outDir,
+            targets,
+            flatten
+          )
+          config.logger.info(
+            formatConsole(
+              `${pc.green('file added and copied')} ${path} ${pc.green(
+                '->'
+              )} ${dest.join(pc.green(', '))}`
+            ),
+            {
+              timestamp: true
+            }
+          )
+          if (watch.reloadPageOnChange) {
+            reloadPage()
+          }
+        }
+        if (watch.reloadPageOnChange && !watch.copyToDest) {
           reloadPage()
         }
       })
-      if (watch.reloadPageOnChange) {
+      if (watch.copyToDest) {
+        watcher.on('change', async path => {
+          const dest = await copyFile(
+            path,
+            config.root,
+            config.build.outDir,
+            targets,
+            flatten
+          )
+          if (watch.reloadPageOnChange) {
+            reloadPage()
+          }
+          config.logger.info(
+            formatConsole(
+              `${pc.green('file changed and copied')} ${path} ${pc.green(
+                '->'
+              )} ${dest.join(pc.green(', '))}`
+            ),
+            {
+              timestamp: true
+            }
+          )
+        })
+        watcher.on('unlink', async path => {
+          const dest = await removeFile(
+            path,
+            config.root,
+            config.build.outDir,
+            targets,
+            flatten
+          )
+          if (dest.length) {
+            config.logger.info(
+              formatConsole(
+                `${pc.green('file deleted and removed')} ${path} ${pc.green(
+                  'and'
+                )} ${dest.join(pc.green(', '))}`
+              ),
+              {
+                timestamp: true
+              }
+            )
+          }
+        })
+      }
+      if (watch.reloadPageOnChange && !watch.copyToDest) {
         watcher.on('change', path => {
           if (!silent) {
             config.logger.info(
