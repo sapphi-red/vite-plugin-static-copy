@@ -22,6 +22,7 @@ export type TransformOptionObject =
   | {
       encoding: Exclude<BufferEncoding, 'binary'>
       handler: TransformFunc<string>
+      compress?: 'gzip' | 'brotli' | 'deflate'
     }
   | {
       encoding: 'buffer'

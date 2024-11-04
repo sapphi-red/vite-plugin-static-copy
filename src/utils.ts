@@ -105,6 +105,32 @@ export const collectCopyTargets = async (
   return copyTargets
 }
 
+async function getCompressedContent(
+  file: string,
+  transform: TransformOptionObject
+) {
+  let destExt;
+  switch(transform.compress){
+    case 'brotliCompress': destExt = '.br'; break;
+    case 'deflate': destExt = '.zz'; break;
+    case 'gzip': destExt = '.gz'; break;
+    default: destExt = ''; break;
+  }
+  //unknown encoding, return empty compressed
+  if(destExt == ""){
+    return { destExt, transformedContent: null };
+  }
+
+  const content = await fs.readFile(file)
+
+  const data = await new Promise((resolve, reject) => {
+    zlib[transform.compress](content, {}, (err, result) => {
+      if (err) reject(err); else resolve(result);
+    })});
+
+  return { destExt, data }
+}
+
 export async function getTransformedContent(
   file: string,
   transform: TransformOptionObject
@@ -137,7 +163,12 @@ async function transformCopy(
     }
   }
 
-  const transformedContent = await getTransformedContent(src, transform)
+  const compressed = await getCompressedContent(src, transform)
+  // if this worked, adjust dest and use, else retry with getTransformedContent()
+  if( compressed.destExt ){
+    dest += compressed.destExt;
+  }
+  const transformedContent = compressed.data ? compressed.data : await getTransformedContent(src, transform)
   if (transformedContent === null) {
     return { copied: false }
   }

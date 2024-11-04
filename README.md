@@ -56,6 +56,29 @@ So the file will be copied to `dist/wasm-files/example.wasm`.
 >
 > See [`fast-glob` documentation about this](https://github.com/mrmlnc/fast-glob#how-to-write-patterns-on-windows) for more details.
 
+## Usage (Compressing Content)
+
+Add `viteStaticCopy` plugin to `vite.config.js` / `vite.config.ts`. Destination files will now be compressed with selected algorithm (gzip, brotli, deflate) and have corresponding extension.
+
+```js
+// vite.config.js / vite.config.ts
+import { viteStaticCopy } from 'vite-plugin-static-copy'
+
+export default {
+  plugins: [
+    viteStaticCopy({
+      targets: [
+        {
+          src: 'images/*.svg',
+          dest: 'assets', 
+          transform: { compress: 'gzip' }
+        }
+      ]
+    })
+  ]
+}
+```
+
 ### Options
 
 See [options.ts](https://github.com/sapphi-red/vite-plugin-static-copy/blob/main/src/options.ts).
