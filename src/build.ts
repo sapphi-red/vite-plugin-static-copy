@@ -5,7 +5,8 @@ import { copyAll, outputCopyLog } from './utils'
 export const buildPlugin = ({
   targets,
   structured,
-  silent
+  silent,
+  hook
 }: ResolvedViteStaticCopyOptions): Plugin => {
   let config: ResolvedConfig
   let output = false
@@ -20,7 +21,7 @@ export const buildPlugin = ({
       // reset for watch mode
       output = false
     },
-    async writeBundle() {
+    async [hook]() {
       // run copy only once even if multiple bundles are generated
       if (output) return
       output = true

@@ -105,6 +105,11 @@ export type ViteStaticCopyOptions = {
      */
     reloadPageOnChange?: boolean
   }
+  /**
+   * Rollup hook the plugin should use during build.
+   * @default 'writeBundle'
+   */
+  hook?: string
 }
 
 export type ResolvedViteStaticCopyOptions = {
@@ -115,6 +120,7 @@ export type ResolvedViteStaticCopyOptions = {
     options: WatchOptions
     reloadPageOnChange: boolean
   }
+  hook: string
 }
 
 export const resolveOptions = (
@@ -126,5 +132,6 @@ export const resolveOptions = (
   watch: {
     options: options.watch?.options ?? {},
     reloadPageOnChange: options.watch?.reloadPageOnChange ?? false
-  }
+  },
+  hook: options.hook ?? 'writeBundle'
 })
