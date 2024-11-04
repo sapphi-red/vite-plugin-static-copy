@@ -21,11 +21,13 @@ export type TransformFunc<T extends string | Buffer> = (
 export type TransformOptionObject =
   | {
       encoding: Exclude<BufferEncoding, 'binary'>
-      handler: TransformFunc<string>
+      handler: TransformFunc<string>,
+      options?: Record<string, any>
     }
   | {
       encoding: 'buffer'
       handler: TransformFunc<Buffer>
+      options?: Record<string, any>
     }
 
 export type TransformOption = TransformFunc<string> | TransformOptionObject

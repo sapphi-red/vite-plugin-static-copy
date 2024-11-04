@@ -11,6 +11,7 @@ import type {
 import type { Logger } from 'vite'
 import type { FileMap } from './serve'
 import { createHash } from 'node:crypto'
+import zlib from 'zlib'
 
 export type SimpleTarget = {
   src: string
@@ -118,6 +119,31 @@ export async function getTransformedContent(
   return transform.handler(content, file)
 }
 
+async function getCompressedContent(
+  file: string,
+  transform: TransformOptionObject
+) {
+  //unknown encoding, return empty compressed
+  if(!['gzip', 'brotliCompress', 'deflate'].includes(transform.encoding))
+    return { destExt: "", transformedContent: null };
+
+  const content = await fs.readFile(file)
+
+  const transformedContent = await new Promise((resolve, reject) => {
+    zlib.gzip(content, transform.options || {}, (err, result) => {
+      if (err) reject(err); else resolve(result);
+    })});
+
+  let destExt = ""
+  switch(transform.encoding){
+    case 'gzip': destExt = '.gz'; break;
+    case 'brotliCompress': destExt = '.br'; break;
+    case 'deflate': destExt = '.zz'; break;
+  }
+
+  return { destExt, transformedContent }
+}
+
 async function transformCopy(
   transform: TransformOptionObject,
   src: string,
@@ -137,11 +163,18 @@ async function transformCopy(
     }
   }
 
-  const transformedContent = await getTransformedContent(src, transform)
+  let { destExt, transformedContent }= await getCompressedContent(src, transform)
+  // if this worked, adjust dest and use, else retry with getTransformedContent()
+  if( destExt )
+    dest += destExt;
+  else
+    transformedContent = await getTransformedContent(src, transform)
+
   if (transformedContent === null) {
     return { copied: false }
   }
   await fs.outputFile(dest, transformedContent)
+
   return { copied: true }
 }
 
