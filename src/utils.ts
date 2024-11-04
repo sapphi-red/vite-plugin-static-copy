@@ -11,7 +11,7 @@ import type {
 import type { Logger } from 'vite'
 import type { FileMap } from './serve'
 import { createHash } from 'node:crypto'
-import zlib from 'zlib';
+import zlib from 'zlib'
 
 export type SimpleTarget = {
   src: string
