@@ -22,12 +22,12 @@ export type TransformOptionObject =
   | {
       encoding: Exclude<BufferEncoding, 'binary'>
       handler: TransformFunc<string>
-      compress?: 'gzip' | 'brotli' | 'deflate'
+      compress?: 'gzip' | 'brotliCompress' | 'deflate'
     }
   | {
       encoding: 'buffer'
       handler: TransformFunc<Buffer>
-      compress?: 'gzip' | 'brotli' | 'deflate'
+      compress?: 'gzip' | 'brotliCompress' | 'deflate'
     }
 
 export type TransformOption = TransformFunc<string> | TransformOptionObject
