@@ -27,6 +27,7 @@ export type TransformOptionObject =
   | {
       encoding: 'buffer'
       handler: TransformFunc<Buffer>
+      compress?: 'gzip' | 'brotli' | 'deflate'
     }
 
 export type TransformOption = TransformFunc<string> | TransformOptionObject
