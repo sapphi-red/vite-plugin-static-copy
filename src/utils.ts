@@ -134,10 +134,10 @@ async function getCompressedContent(
 
   const data = await new Promise<Buffer>((resolve, reject) => {
     zlib[transform.compress](content, (err: Error | null, result: Buffer) => {
-      if (err) reject(err);
-      else resolve(result);
-    });
-  });
+      if (err) reject(err)
+      else resolve(result)
+    })
+  })
 
   return { destExt, data }
 }
