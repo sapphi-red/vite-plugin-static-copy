@@ -127,12 +127,12 @@ async function getCompressedContent(
   }
   //unknown encoding, return empty compressed
   if (destExt == '') {
-    return { destExt, data: null }
+    return { destExt, compressedData: null }
   }
 
   const content = await fs.readFile(file)
 
-  const data = await new Promise<Buffer>((resolve, reject) => {
+  const compressedData = await new Promise<Buffer>((resolve, reject) => {
     zlib[transform.compress || 'gzip'](
       content,
       (err: Error | null, result: Buffer) => {
@@ -142,7 +142,7 @@ async function getCompressedContent(
     )
   })
 
-  return { destExt, data }
+  return { destExt, compressedData }
 }
 
 export async function getTransformedContent(
@@ -177,18 +177,20 @@ async function transformCopy(
     }
   }
 
-  const { destExt, data } = await getCompressedContent(src, transform)
+  const { destExt, compressedData } = await getCompressedContent(src, transform)
   // if this worked, adjust dest and use, else retry with getTransformedContent()
   if (destExt) {
-    dest += destExt
+    if (compressedData === null) {
+      return { copied: false }
+    }
+    await fs.outputFile(dest + destExt, compressedData)
+  } else {
+    const transformedContent = await getTransformedContent(src, transform)
+    if (transformedContent === null) {
+      return { copied: false }
+    }
+    await fs.outputFile(dest, transformedContent)
   }
-  const transformedContent = destExt
-    ? data
-    : await getTransformedContent(src, transform)
-  if (transformedContent === null) {
-    return { copied: false }
-  }
-  await fs.outputFile(dest, transformedContent)
   return { copied: true }
 }
 
