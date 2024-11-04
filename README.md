@@ -70,7 +70,7 @@ export default {
       targets: [
         {
           src: 'images/*.svg',
-          dest: 'assets', 
+          dest: 'assets',
           transform: { compress: 'gzip' }
         }
       ]
