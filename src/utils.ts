@@ -11,6 +11,7 @@ import type {
 import type { Logger } from 'vite'
 import type { FileMap } from './serve'
 import { createHash } from 'node:crypto'
+import zlib from 'zlib';
 
 export type SimpleTarget = {
   src: string
@@ -126,17 +127,17 @@ async function getCompressedContent(
   }
   //unknown encoding, return empty compressed
   if (destExt == '') {
-    return { destExt, transformedContent: null }
+    return { destExt, data: null }
   }
 
   const content = await fs.readFile(file)
 
-  const data = await new Promise((resolve, reject) => {
-    zlib[transform.compress](content, {}, (err, result) => {
-      if (err) reject(err)
-      else resolve(result)
-    })
-  })
+  const data = await new Promise<Buffer>((resolve, reject) => {
+    zlib[transform.compress](content, (err: Error | null, result: Buffer) => {
+      if (err) reject(err);
+      else resolve(result);
+    });
+  });
 
   return { destExt, data }
 }
