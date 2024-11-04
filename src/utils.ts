@@ -177,13 +177,13 @@ async function transformCopy(
     }
   }
 
-  const compressed = await getCompressedContent(src, transform)
+  const { destExt, data } = await getCompressedContent(src, transform)
   // if this worked, adjust dest and use, else retry with getTransformedContent()
-  if (compressed.destExt) {
-    dest += compressed.destExt
+  if (destExt) {
+    dest += destExt
   }
-  const transformedContent = compressed.data
-    ? compressed.data
+  const transformedContent = destExt
+    ? data
     : await getTransformedContent(src, transform)
   if (transformedContent === null) {
     return { copied: false }
