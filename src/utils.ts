@@ -133,10 +133,13 @@ async function getCompressedContent(
   const content = await fs.readFile(file)
 
   const data = await new Promise<Buffer>((resolve, reject) => {
-    zlib[transform.compress](content, (err: Error | null, result: Buffer) => {
-      if (err) reject(err)
-      else resolve(result)
-    })
+    zlib[transform.compress || 'gzip'](
+      content,
+      (err: Error | null, result: Buffer) => {
+        if (err) reject(err)
+        else resolve(result)
+      }
+    )
   })
 
   return { destExt, data }
