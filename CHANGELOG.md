@@ -1,5 +1,11 @@
 # vite-plugin-static-copy
 
+## 2.1.0
+
+### Minor Changes
+
+- [#133](https://github.com/sapphi-red/vite-plugin-static-copy/pull/133) [`b9c09bd`](https://github.com/sapphi-red/vite-plugin-static-copy/commit/b9c09bd80d6706113bd4715c3cd68e6819e19f58) Thanks [@rschristian](https://github.com/rschristian)! - Allows user to optionally configure when the plugin is ran by passing in a Rollup hook name
+
 ## 2.0.0
 
 ### Major Changes
