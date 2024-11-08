@@ -48,7 +48,7 @@
     "@types/eslint-config-prettier": "^6.11.3",
     "@types/eslint__js": "^8.42.3",
     "@types/fs-extra": "^11.0.4",
-    "@types/node": "^20.17.6",
+    "@types/node": "^22.9.0",
     "@types/throttle-debounce": "^5.0.2",
     "@vitest/eslint-plugin": "^1.1.7",
     "eslint": "^9.12.0",
