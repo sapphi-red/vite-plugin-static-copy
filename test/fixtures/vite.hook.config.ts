@@ -1,6 +1,6 @@
 import { defineConfig, normalizePath } from 'vite'
 import { viteStaticCopy } from 'vite-plugin-static-copy'
-import { promises as fs } from 'node:fs'
+import fs from 'node:fs/promises'
 import path from 'node:path'
 import url from 'node:url'
 
