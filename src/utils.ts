@@ -11,6 +11,7 @@ import type {
 import type { Logger } from 'vite'
 import type { FileMap } from './serve'
 import { createHash } from 'node:crypto'
+import zlib from 'zlib'
 
 export type SimpleTarget = {
   src: string
@@ -105,6 +106,45 @@ export const collectCopyTargets = async (
   return copyTargets
 }
 
+async function getCompressedContent(
+  file: string,
+  transform: TransformOptionObject
+) {
+  let destExt
+  switch (transform.compress) {
+    case 'brotliCompress':
+      destExt = '.br'
+      break
+    case 'deflate':
+      destExt = '.zz'
+      break
+    case 'gzip':
+      destExt = '.gz'
+      break
+    default:
+      destExt = ''
+      break
+  }
+  //unknown encoding, return empty compressed
+  if (destExt == '') {
+    return { destExt, compressedData: null }
+  }
+
+  const content = await fs.readFile(file)
+
+  const compressedData = await new Promise<Buffer>((resolve, reject) => {
+    zlib[transform.compress || 'gzip'](
+      content,
+      (err: Error | null, result: Buffer) => {
+        if (err) reject(err)
+        else resolve(result)
+      }
+    )
+  })
+
+  return { destExt, compressedData }
+}
+
 export async function getTransformedContent(
   file: string,
   transform: TransformOptionObject
@@ -137,11 +177,20 @@ async function transformCopy(
     }
   }
 
-  const transformedContent = await getTransformedContent(src, transform)
-  if (transformedContent === null) {
-    return { copied: false }
+  const { destExt, compressedData } = await getCompressedContent(src, transform)
+  // if this worked, adjust dest and use, else retry with getTransformedContent()
+  if (destExt) {
+    if (compressedData === null) {
+      return { copied: false }
+    }
+    await fs.outputFile(dest + destExt, compressedData)
+  } else {
+    const transformedContent = await getTransformedContent(src, transform)
+    if (transformedContent === null) {
+      return { copied: false }
+    }
+    await fs.outputFile(dest, transformedContent)
   }
-  await fs.outputFile(dest, transformedContent)
   return { copied: true }
 }
 
