@@ -137,6 +137,17 @@ describe('build', () => {
       }
     })
   }
+
+  test('should support hook option', async () => {
+    let result = ''
+    try {
+      await build(getConfig('vite.hook.config.ts'))
+    } catch (error: unknown) {
+      result = (error as Error).message
+    }
+    expect(result).toBe('')
+  })
+
   describe('on error', () => {
     test('should throw error when it does not find the file on given src', async () => {
       let result = ''
