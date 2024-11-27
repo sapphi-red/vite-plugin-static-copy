@@ -1,5 +1,11 @@
 # vite-plugin-static-copy
 
+## 2.2.0
+
+### Minor Changes
+
+- [#141](https://github.com/sapphi-red/vite-plugin-static-copy/pull/141) [`88e513d`](https://github.com/sapphi-red/vite-plugin-static-copy/commit/88e513d37e7be5bc35c4f75737f1eabb230510a8) Thanks [@sapphi-red](https://github.com/sapphi-red)! - add Vite 6 to peer dep
+
 ## 2.1.0
 
 ### Minor Changes
