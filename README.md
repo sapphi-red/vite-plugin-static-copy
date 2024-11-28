@@ -2,7 +2,7 @@
 
 [![npm version](https://badge.fury.io/js/vite-plugin-static-copy.svg)](https://badge.fury.io/js/vite-plugin-static-copy) ![CI](https://github.com/sapphi-red/vite-plugin-static-copy/workflows/CI/badge.svg) [![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE)
 
-`rollup-plugin-copy` for Vite with dev server support.
+[`rollup-plugin-copy`](https://www.npmjs.com/package/rollup-plugin-copy) for Vite with dev server support.
 
 > [!NOTE]
 > Before you use this plugin, consider using [public directory](https://vitejs.dev/guide/assets.html#the-public-directory) or [`import` in JavaScript](https://vitejs.dev/guide/features.html#static-assets).
