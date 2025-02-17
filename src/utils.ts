@@ -11,6 +11,7 @@ import type {
 import type { Logger } from 'vite'
 import type { FileMap } from './serve'
 import { createHash } from 'node:crypto'
+import pMap from 'p-map'
 
 export type SimpleTarget = {
   src: string
@@ -160,34 +161,47 @@ export const copyAll = async (
   )
   let copiedCount = 0
 
-  for (const copyTarget of copyTargets) {
-    const { src, dest, transform, preserveTimestamps, dereference, overwrite } =
-      copyTarget
-
-    // use `path.resolve` because rootSrc/rootDest maybe absolute path
-    const resolvedSrc = path.resolve(rootSrc, src)
-    const resolvedDest = path.resolve(rootSrc, rootDest, dest)
-    const transformOption = resolveTransformOption(transform)
-    if (transformOption) {
-      const result = await transformCopy(
-        transformOption,
-        resolvedSrc,
-        resolvedDest,
-        overwrite
-      )
-      if (result.copied) {
-        copiedCount++
-      }
-    } else {
-      await fs.copy(resolvedSrc, resolvedDest, {
+  await pMap(
+    copyTargets,
+    async copyTarget => {
+      const {
+        src,
+        dest,
+        transform,
         preserveTimestamps,
         dereference,
-        overwrite: overwrite === true,
-        errorOnExist: overwrite === 'error'
-      })
-      copiedCount++
-    }
-  }
+        overwrite
+      } = copyTarget
+
+      // use `path.resolve` because rootSrc/rootDest maybe absolute path
+      const resolvedSrc = path.resolve(rootSrc, src)
+      const resolvedDest = path.resolve(rootSrc, rootDest, dest)
+      const transformOption = resolveTransformOption(transform)
+
+      await fs.ensureDir(path.dirname(resolvedDest))
+
+      if (transformOption) {
+        const result = await transformCopy(
+          transformOption,
+          resolvedSrc,
+          resolvedDest,
+          overwrite
+        )
+        if (result.copied) {
+          copiedCount++
+        }
+      } else {
+        await fs.copy(resolvedSrc, resolvedDest, {
+          preserveTimestamps,
+          dereference,
+          overwrite: overwrite === true,
+          errorOnExist: overwrite === 'error'
+        })
+        copiedCount++
+      }
+    },
+    { concurrency: 5 }
+  )
 
   return { targets: copyTargets.length, copied: copiedCount }
 }

@@ -68,6 +68,7 @@
     "chokidar": "^3.5.3",
     "fast-glob": "^3.2.11",
     "fs-extra": "^11.1.0",
+    "p-map": "^7.0.3",
     "picocolors": "^1.0.0"
   },
   "packageManager": "pnpm@9.12.3"
