@@ -13,6 +13,8 @@ import type { FileMap } from './serve'
 import { createHash } from 'node:crypto'
 import pMap from 'p-map'
 
+const CONCURRENCY = 5
+
 export type SimpleTarget = {
   src: string
   dest: string
@@ -42,68 +44,77 @@ export const collectCopyTargets = async (
   structured: boolean,
   silent: boolean
 ) => {
-  const copyTargets: SimpleTarget[] = []
-
-  for (const target of targets) {
-    const {
-      src,
-      dest,
-      rename,
-      transform,
-      preserveTimestamps,
-      dereference,
-      overwrite
-    } = target
-
-    const matchedPaths = await fastglob(src, {
-      onlyFiles: false,
-      dot: true,
-      cwd: root
-    })
-
-    if (matchedPaths.length === 0 && !silent) {
-      throw new Error(`No file was found to copy on ${src} src.`)
-    }
-    for (const matchedPath of matchedPaths) {
-      const relativeMatchedPath = path.isAbsolute(matchedPath)
-        ? path.relative(root, matchedPath)
-        : matchedPath
-      const absoluteMatchedPath = path.resolve(root, matchedPath)
-
-      if (transform) {
-        const srcStat = await fs.stat(absoluteMatchedPath)
-        if (!srcStat.isFile()) {
-          throw new Error(
-            `"transform" option only supports a file: '${relativeMatchedPath}' is not a file`
-          )
-        }
-      }
-
-      const { base, dir } = path.parse(relativeMatchedPath)
-
-      let destDir: string
-      if (!structured || !dir) {
-        destDir = dest
-      } else {
-        const dirClean = dir.replace(/^(?:\.\.\/)+/, '')
-        const destClean = `${dest}/${dirClean}`.replace(/^\/+|\/+$/g, '')
-        destDir = destClean
-      }
-
-      copyTargets.push({
-        src: relativeMatchedPath,
-        dest: path.join(
-          destDir,
-          rename ? await renameTarget(base, rename, absoluteMatchedPath) : base
-        ),
+  const copyTargets: SimpleTarget[][] = await pMap(
+    targets,
+    async target => {
+      const {
+        src,
+        dest,
+        rename,
         transform,
-        preserveTimestamps: preserveTimestamps ?? false,
-        dereference: dereference ?? true,
-        overwrite: overwrite ?? true
+        preserveTimestamps,
+        dereference,
+        overwrite
+      } = target
+
+      const matchedPaths = await fastglob(src, {
+        onlyFiles: false,
+        dot: true,
+        cwd: root
       })
-    }
-  }
-  return copyTargets
+
+      if (matchedPaths.length === 0 && !silent) {
+        throw new Error(`No file was found to copy on ${src} src.`)
+      }
+      return pMap(
+        matchedPaths,
+        async matchedPath => {
+          const relativeMatchedPath = path.isAbsolute(matchedPath)
+            ? path.relative(root, matchedPath)
+            : matchedPath
+          const absoluteMatchedPath = path.resolve(root, matchedPath)
+
+          if (transform) {
+            const srcStat = await fs.stat(absoluteMatchedPath)
+            if (!srcStat.isFile()) {
+              throw new Error(
+                `"transform" option only supports a file: '${relativeMatchedPath}' is not a file`
+              )
+            }
+          }
+
+          const { base, dir } = path.parse(relativeMatchedPath)
+
+          let destDir: string
+          if (!structured || !dir) {
+            destDir = dest
+          } else {
+            const dirClean = dir.replace(/^(?:\.\.\/)+/, '')
+            const destClean = `${dest}/${dirClean}`.replace(/^\/+|\/+$/g, '')
+            destDir = destClean
+          }
+
+          return {
+            src: relativeMatchedPath,
+            dest: path.join(
+              destDir,
+              rename
+                ? await renameTarget(base, rename, absoluteMatchedPath)
+                : base
+            ),
+            transform,
+            preserveTimestamps: preserveTimestamps ?? false,
+            dereference: dereference ?? true,
+            overwrite: overwrite ?? true
+          }
+        },
+        { concurrency: CONCURRENCY }
+      )
+    },
+    { concurrency: CONCURRENCY }
+  )
+
+  return copyTargets.flat()
 }
 
 export async function getTransformedContent(
@@ -214,7 +225,7 @@ export const copyAll = async (
         }
       }
     },
-    { concurrency: 5 }
+    { concurrency: CONCURRENCY }
   )
 
   return { targets: copyTargets.length, copied: copiedCount }
