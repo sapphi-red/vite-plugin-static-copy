@@ -161,43 +161,57 @@ export const copyAll = async (
   )
   let copiedCount = 0
 
-  await pMap(
-    copyTargets,
-    async copyTarget => {
-      const {
-        src,
-        dest,
-        transform,
-        preserveTimestamps,
-        dereference,
-        overwrite
-      } = copyTarget
-
-      // use `path.resolve` because rootSrc/rootDest maybe absolute path
-      const resolvedSrc = path.resolve(rootSrc, src)
+  // group copyTargets by dest to avoid race condition in #14
+  const groupedCopyTargets = copyTargets.reduce(
+    (acc, target) => {
+      const { dest } = target
       const resolvedDest = path.resolve(rootSrc, rootDest, dest)
-      const transformOption = resolveTransformOption(transform)
+      if (!acc[resolvedDest]) {
+        acc[resolvedDest] = []
+      }
+      acc[resolvedDest].push(target)
+      return acc
+    },
+    {} as Record<string, SimpleTarget[]>
+  )
 
-      await fs.ensureDir(path.dirname(resolvedDest))
-
-      if (transformOption) {
-        const result = await transformCopy(
-          transformOption,
-          resolvedSrc,
-          resolvedDest,
-          overwrite
-        )
-        if (result.copied) {
-          copiedCount++
-        }
-      } else {
-        await fs.copy(resolvedSrc, resolvedDest, {
+  await pMap(
+    Object.values(groupedCopyTargets),
+    async targetGroup => {
+      for (const copyTarget of targetGroup) {
+        const {
+          src,
+          dest,
+          transform,
           preserveTimestamps,
           dereference,
-          overwrite: overwrite === true,
-          errorOnExist: overwrite === 'error'
-        })
-        copiedCount++
+          overwrite
+        } = copyTarget
+
+        // use `path.resolve` because rootSrc/rootDest maybe absolute path
+        const resolvedSrc = path.resolve(rootSrc, src)
+        const resolvedDest = path.resolve(rootSrc, rootDest, dest)
+        const transformOption = resolveTransformOption(transform)
+
+        if (transformOption) {
+          const result = await transformCopy(
+            transformOption,
+            resolvedSrc,
+            resolvedDest,
+            overwrite
+          )
+          if (result.copied) {
+            copiedCount++
+          }
+        } else {
+          await fs.copy(resolvedSrc, resolvedDest, {
+            preserveTimestamps,
+            dereference,
+            overwrite: overwrite === true,
+            errorOnExist: overwrite === 'error'
+          })
+          copiedCount++
+        }
       }
     },
     { concurrency: 5 }
