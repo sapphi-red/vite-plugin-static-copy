@@ -22,6 +22,34 @@ export type SimpleTarget = {
   overwrite: boolean | 'error'
 }
 
+export type ResolvedTarget = SimpleTarget & {
+  resolvedDest: string
+  resolvedSrc: string
+  order: number
+}
+
+const isSubdirectoryOrEqual = (a: string, b: string) => {
+  const relative = path.relative(b, a)
+  return !relative || (!relative.startsWith('..') && !path.isAbsolute(relative))
+}
+
+const groupByDirectoryTree = (targets: ResolvedTarget[]) =>
+  targets.reduce(
+    (acc, target) => {
+      const { resolvedDest } = target
+      const parent = Object.keys(acc).find(key =>
+        isSubdirectoryOrEqual(key, resolvedDest)
+      )
+      if (parent) {
+        acc[parent]!.push(target)
+      } else {
+        acc[resolvedDest] = [target]
+      }
+      return acc
+    },
+    {} as Record<string, ResolvedTarget[]>
+  )
+
 async function renameTarget(
   target: string,
   rename: string | RenameFunc,
@@ -159,38 +187,37 @@ export const copyAll = async (
     structured,
     silent
   )
+
+  const resolvedTargets: ResolvedTarget[] = copyTargets
+    .map((target, order) => ({
+      ...target,
+      // use `path.resolve` because rootSrc/rootDest maybe absolute path
+      resolvedSrc: path.resolve(rootSrc, target.src),
+      resolvedDest: path.resolve(rootSrc, rootDest, target.dest),
+      order
+    }))
+    .sort((a, b) => a.resolvedDest.length - b.resolvedDest.length)
+
   let copiedCount = 0
 
-  // group copyTargets by dest to avoid race condition in #14
-  const groupedCopyTargets = copyTargets.reduce(
-    (acc, target) => {
-      const { dest } = target
-      const resolvedDest = path.resolve(rootSrc, rootDest, dest)
-      if (!acc[resolvedDest]) {
-        acc[resolvedDest] = []
-      }
-      acc[resolvedDest].push(target)
-      return acc
-    },
-    {} as Record<string, SimpleTarget[]>
-  )
+  // group targets to avoid race condition in #14
+  const groups = groupByDirectoryTree(resolvedTargets)
 
   await pMap(
-    Object.values(groupedCopyTargets),
+    Object.values(groups),
     async targetGroup => {
-      for (const copyTarget of targetGroup) {
+      for (const resolvedTarget of [...targetGroup].sort(
+        (a, b) => a.order - b.order
+      )) {
         const {
-          src,
-          dest,
+          resolvedSrc,
+          resolvedDest,
           transform,
           preserveTimestamps,
           dereference,
           overwrite
-        } = copyTarget
+        } = resolvedTarget
 
-        // use `path.resolve` because rootSrc/rootDest maybe absolute path
-        const resolvedSrc = path.resolve(rootSrc, src)
-        const resolvedDest = path.resolve(rootSrc, rootDest, dest)
         const transformOption = resolveTransformOption(transform)
 
         if (transformOption) {
