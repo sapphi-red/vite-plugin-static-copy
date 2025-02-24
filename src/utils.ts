@@ -56,9 +56,18 @@ export const groupTargetsByDirectoryTree = <T extends { resolvedDest: string }>(
     )
     if (parent) {
       groups[parent]!.push(target)
-    } else {
-      groups[resolvedDest] = [target]
+      continue
     }
+    const child = Object.keys(groups).find(key =>
+      isSubdirectoryOrEqual(resolvedDest, key)
+    )
+    if (child) {
+      groups[resolvedDest] = [target, ...groups[child]!]
+      delete groups[child]
+      continue
+    }
+
+    groups[resolvedDest] = [target]
   }
   const groupList = Object.values(groups)
   for (const g of groupList) {
