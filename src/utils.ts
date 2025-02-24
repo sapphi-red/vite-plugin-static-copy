@@ -48,7 +48,7 @@ export const groupTargetsByDirectoryTree = <T extends { resolvedDest: string }>(
           : -1
     )
 
-  const groups: Record<string, Array<T & { order: number }>> = {}
+  const groups: Record<string, (T & { order: number })[]> = {}
   for (const target of targetsWithOrder) {
     const { resolvedDest } = target
     const parent = Object.keys(groups).find(key =>

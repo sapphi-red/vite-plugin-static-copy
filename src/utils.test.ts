@@ -18,11 +18,11 @@ describe('groupTargetsByDirectoryTree', () => {
     defineCase(['a/b', 'a/b/c'], [['a/b', 'a/b/c']]),
     defineCase(['a/b/c', 'a/b'], [['a/b/c', 'a/b']]),
     defineCase(['a', 'a/b/d'], [['a', 'a/b/d']])
-  ] satisfies Array<{
+  ] satisfies {
     name: string
-    input: Array<{ resolvedDest: string }>
-    expected: Array<{ resolvedDest: string }>[]
-  }>
+    input: { resolvedDest: string }[]
+    expected: { resolvedDest: string }[][]
+  }[]
 
   for (const { name, input, expected } of cases) {
     test(`groupTargetsByDirectoryTree(${name})`, () => {
