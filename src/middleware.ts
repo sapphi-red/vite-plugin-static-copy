@@ -27,6 +27,8 @@ import {
   resolveTransformOption
 } from './utils'
 
+const knownJavascriptExtensionRE = /\.(?:[tj]sx?|[cm][tj]s)$/
+
 function shouldServeOverwriteCheck(
   overwrite: boolean | 'error',
   srcAbsolutePath: string,
@@ -222,12 +224,12 @@ function setHeaders(
   pathname: string,
   headers: OutgoingHttpHeaders | undefined
 ) {
-  // Matches js, jsx, ts, tsx.
-  // The reason this is done, is that the .ts file extension is reserved
-  // for the MIME type video/mp2t. In almost all cases, we can expect
+  // Matches js, jsx, ts, tsx, mts, mjs, cjs, cts, ctx, mtx
+  // The reason this is done, is that the .ts and .mts file extensions are
+  // reserved for the MIME type video/mp2t. In almost all cases, we can expect
   // these files to be TypeScript files, and for Vite to serve them with
   // this Content-Type.
-  if (/\.[tj]sx?$/.test(pathname)) {
+  if (knownJavascriptExtensionRE.test(pathname)) {
     res.setHeader('Content-Type', 'text/javascript')
   } else {
     let ctype = lookup(pathname) || ''
