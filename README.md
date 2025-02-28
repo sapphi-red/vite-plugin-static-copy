@@ -42,7 +42,7 @@ So the file will be copied to `dist/wasm-files/example.wasm`.
 > [!WARNING]
 >
 > If you are using Windows, make sure to use `normalizePath` after doing `path.resolve` or else.
-> `\` is a escape charactor in `fast-glob` and you should use `/`.
+> `\` is a escape charactor in `tinyglobby` and you should use `/`.
 >
 > ```js
 > import { normalizePath } from 'vite'
@@ -53,8 +53,6 @@ So the file will be copied to `dist/wasm-files/example.wasm`.
 > // instead of
 > path.resolve(__dirname, './foo') // C:\project\foo
 > ```
->
-> See [`fast-glob` documentation about this](https://github.com/mrmlnc/fast-glob#how-to-write-patterns-on-windows) for more details.
 
 ### Options
 
@@ -66,8 +64,8 @@ See [options.ts](https://github.com/sapphi-red/vite-plugin-static-copy/blob/main
   - Files are not copied and served directly from the server during dev to reduce start-up time.
 - `dest` is relative to [`build.outDir`](https://vitejs.dev/config/build-options.html#build-outdir).
   - If you are going to copy files outside `build.outDir`, you could use `rollup-plugin-copy` instead. Because that does not require dev server support.
-- [`fast-glob`](https://www.npmjs.com/package/fast-glob) is used instead of [`globby`](https://www.npmjs.com/package/globby).
-  - Because `fast-glob` is used inside `vite`.
+- [`tinyglobby`](https://www.npmjs.com/package/tinyglobby) is used instead of [`globby`](https://www.npmjs.com/package/globby).
+  - Because `tinyglobby` is used inside `vite`.
 - `transform` could return `null` as a way to tell the plugin not to copy the file, this is similar to the [CopyWebpackPlugin#filter](https://webpack.js.org/plugins/copy-webpack-plugin/#filter) option, but it expects `transform` to return the original content in case you want it to be copied.
 - `transform` can optionally be an object, with a `handler` property (with the same signature of the `rollup-plugin-copy` transform option) and an `encoding` property (`BufferEncoding | 'buffer'`) that will be used to read the file content so that the `handler`'s content argument will reflect the correct encoding (could be Buffer);
 - `structured: true` preserves the directory structure. This is similar to `flatten: false` in `rollup-plugin-copy`, but it covers more edge cases.
