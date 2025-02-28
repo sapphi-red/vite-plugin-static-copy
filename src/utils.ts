@@ -11,6 +11,7 @@ import type {
 import type { Logger } from 'vite'
 import type { FileMap } from './serve'
 import { createHash } from 'node:crypto'
+import pMap from 'p-map'
 
 export type SimpleTarget = {
   src: string
@@ -19,6 +20,61 @@ export type SimpleTarget = {
   preserveTimestamps: boolean
   dereference: boolean
   overwrite: boolean | 'error'
+}
+
+type ResolvedTarget = SimpleTarget & {
+  resolvedDest: string
+  resolvedSrc: string
+}
+
+const isSubdirectoryOrEqual = (a: string, b: string) => {
+  const relative = path.relative(b, a)
+  return (
+    !relative ||
+    (!relative.startsWith(`..${path.sep}`) && !path.isAbsolute(relative))
+  )
+}
+
+export const groupTargetsByDirectoryTree = <T extends { resolvedDest: string }>(
+  targets: T[]
+): T[][] => {
+  const targetsWithOrder = targets
+    .map((target, order) => ({ ...target, order }))
+    .sort((a, b) =>
+      a.resolvedDest === b.resolvedDest
+        ? 0
+        : a.resolvedDest > b.resolvedDest
+          ? 1
+          : -1
+    )
+
+  const groups: Record<string, (T & { order: number })[]> = {}
+  for (const target of targetsWithOrder) {
+    const { resolvedDest } = target
+    const parent = Object.keys(groups).find(key =>
+      isSubdirectoryOrEqual(key, resolvedDest)
+    )
+    if (parent) {
+      groups[parent]!.push(target)
+      continue
+    }
+    const child = Object.keys(groups).find(key =>
+      isSubdirectoryOrEqual(resolvedDest, key)
+    )
+    if (child) {
+      groups[resolvedDest] = [target, ...groups[child]!]
+      delete groups[child]
+      continue
+    }
+
+    groups[resolvedDest] = [target]
+  }
+  const groupList = Object.values(groups)
+  for (const g of groupList) {
+    g.sort((a, b) => a.order - b.order)
+  }
+
+  return groupList
 }
 
 async function renameTarget(
@@ -158,36 +214,55 @@ export const copyAll = async (
     structured,
     silent
   )
-  let copiedCount = 0
 
-  for (const copyTarget of copyTargets) {
-    const { src, dest, transform, preserveTimestamps, dereference, overwrite } =
-      copyTarget
-
+  const resolvedTargets: ResolvedTarget[] = copyTargets.map(target => ({
+    ...target,
     // use `path.resolve` because rootSrc/rootDest maybe absolute path
-    const resolvedSrc = path.resolve(rootSrc, src)
-    const resolvedDest = path.resolve(rootSrc, rootDest, dest)
-    const transformOption = resolveTransformOption(transform)
-    if (transformOption) {
-      const result = await transformCopy(
-        transformOption,
-        resolvedSrc,
-        resolvedDest,
-        overwrite
-      )
-      if (result.copied) {
-        copiedCount++
+    resolvedSrc: path.resolve(rootSrc, target.src),
+    resolvedDest: path.resolve(rootSrc, rootDest, target.dest)
+  }))
+  // group targets to avoid race condition in #14
+  const groups = groupTargetsByDirectoryTree(resolvedTargets)
+
+  let copiedCount = 0
+  await pMap(
+    groups,
+    async targetGroup => {
+      for (const resolvedTarget of targetGroup) {
+        const {
+          resolvedSrc,
+          resolvedDest,
+          transform,
+          preserveTimestamps,
+          dereference,
+          overwrite
+        } = resolvedTarget
+
+        const transformOption = resolveTransformOption(transform)
+
+        if (transformOption) {
+          const result = await transformCopy(
+            transformOption,
+            resolvedSrc,
+            resolvedDest,
+            overwrite
+          )
+          if (result.copied) {
+            copiedCount++
+          }
+        } else {
+          await fs.copy(resolvedSrc, resolvedDest, {
+            preserveTimestamps,
+            dereference,
+            overwrite: overwrite === true,
+            errorOnExist: overwrite === 'error'
+          })
+          copiedCount++
+        }
       }
-    } else {
-      await fs.copy(resolvedSrc, resolvedDest, {
-        preserveTimestamps,
-        dereference,
-        overwrite: overwrite === true,
-        errorOnExist: overwrite === 'error'
-      })
-      copiedCount++
-    }
-  }
+    },
+    { concurrency: 5 }
+  )
 
   return { targets: copyTargets.length, copied: copiedCount }
 }
