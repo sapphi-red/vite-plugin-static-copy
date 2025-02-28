@@ -1,5 +1,15 @@
 # vite-plugin-static-copy
 
+## 2.3.0
+
+### Minor Changes
+
+- [`281f5b2`](https://github.com/sapphi-red/vite-plugin-static-copy/commit/281f5b22aaa23a055af93553da8c84932ef31c41) Thanks [@sapphi-red](https://github.com/sapphi-red)! - improve performance by coping files concurrently when possible
+
+### Patch Changes
+
+- [#149](https://github.com/sapphi-red/vite-plugin-static-copy/pull/149) [`a9f35c9`](https://github.com/sapphi-red/vite-plugin-static-copy/commit/a9f35c9557b0ab710006c83418c3c982c2eb746e) Thanks [@sapphi-red](https://github.com/sapphi-red)! - ensure `.[cm]?[tj]sx?` static assets are JS mime to align with Vite. https://github.com/vitejs/vite/pull/19453
+
 ## 2.2.0
 
 ### Minor Changes
