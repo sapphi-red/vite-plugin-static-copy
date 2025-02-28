@@ -64,10 +64,10 @@
   },
   "dependencies": {
     "chokidar": "^3.5.3",
-    "fast-glob": "^3.2.11",
     "fs-extra": "^11.1.0",
     "p-map": "^7.0.3",
-    "picocolors": "^1.0.0"
+    "picocolors": "^1.0.0",
+    "tinyglobby": "^0.2.12"
   },
   "packageManager": "pnpm@10.5.2"
 }
