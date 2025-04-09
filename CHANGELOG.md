@@ -1,5 +1,11 @@
 # vite-plugin-static-copy
 
+## 2.3.1
+
+### Patch Changes
+
+- [#152](https://github.com/sapphi-red/vite-plugin-static-copy/pull/152) [`6aee6a3`](https://github.com/sapphi-red/vite-plugin-static-copy/commit/6aee6a3d8caf6d08bedeb4c97fb7580fd904b895) Thanks [@sapphi-red](https://github.com/sapphi-red)! - improve performance of internal `isSubdirectoryOrEqual` function
+
 ## 2.3.0
 
 ### Minor Changes

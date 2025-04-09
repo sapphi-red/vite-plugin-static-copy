@@ -1,6 +1,6 @@
 {
   "name": "vite-plugin-static-copy",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "description": "rollup-plugin-copy for vite with dev server support.",
   "type": "module",
   "main": "./dist/index.js",
