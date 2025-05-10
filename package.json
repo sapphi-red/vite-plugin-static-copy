@@ -67,7 +67,7 @@
     "fs-extra": "^11.3.0",
     "p-map": "^7.0.3",
     "picocolors": "^1.1.1",
-    "tinyglobby": "^0.2.12"
+    "tinyglobby": "^0.2.13"
   },
   "packageManager": "pnpm@10.5.2"
 }
