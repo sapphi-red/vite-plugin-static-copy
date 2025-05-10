@@ -1,4 +1,4 @@
-import fastglob from 'fast-glob'
+import { glob } from 'tinyglobby'
 import path from 'node:path'
 import fs from 'fs-extra'
 import pc from 'picocolors'
@@ -112,9 +112,10 @@ export const collectCopyTargets = async (
       overwrite
     } = target
 
-    const matchedPaths = await fastglob(src, {
+    const matchedPaths = await glob(src, {
       onlyFiles: false,
       dot: true,
+      expandDirectories: false,
       cwd: root
     })
 
