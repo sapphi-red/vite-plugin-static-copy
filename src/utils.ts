@@ -27,12 +27,14 @@ type ResolvedTarget = SimpleTarget & {
   resolvedSrc: string
 }
 
-const isSubdirectoryOrEqual = (a: string, b: string) => {
-  const relative = path.relative(b, a)
-  return (
-    !relative ||
-    (!relative.startsWith(`..${path.sep}`) && !path.isAbsolute(relative))
-  )
+/**
+ * Whether a is a subdirectory of b or equal to b
+ *
+ * @param a absolute path
+ * @param b absolute path
+ */
+export const isSubdirectoryOrEqual = (a: string, b: string) => {
+  return a.startsWith(b + path.sep) || a === b
 }
 
 export const groupTargetsByDirectoryTree = <T extends { resolvedDest: string }>(
