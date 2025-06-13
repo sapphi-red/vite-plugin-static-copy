@@ -135,7 +135,9 @@ export default defineConfig({
           rename: filename => {
             return `${filename}.foo`
           }
-        }
+        },
+        { src: 'eexist/*', dest: 'eexist' },
+        { src: 'eexist/*', dest: 'Eexist' }
       ]
     })
   ]

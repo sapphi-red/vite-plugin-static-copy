@@ -30,11 +30,18 @@ type ResolvedTarget = SimpleTarget & {
 /**
  * Whether a is a subdirectory of b or equal to b
  *
+ * Note: Uses case-insensitive comparison regardless of filesystem behavior
+ *
  * @param a absolute path
  * @param b absolute path
  */
 export const isSubdirectoryOrEqual = (a: string, b: string) => {
-  return a.startsWith(b + path.sep) || a === b
+  const normalizedA = a.toLowerCase()
+  const normalizedB = b.toLowerCase()
+  return (
+    normalizedA.startsWith(normalizedB + path.sep) ||
+    normalizedA === normalizedB
+  )
 }
 
 export const groupTargetsByDirectoryTree = <T extends { resolvedDest: string }>(
@@ -52,7 +59,7 @@ export const groupTargetsByDirectoryTree = <T extends { resolvedDest: string }>(
 
   const groups: Record<string, (T & { order: number })[]> = {}
   for (const target of targetsWithOrder) {
-    const { resolvedDest } = target
+    const resolvedDest = target.resolvedDest.toLowerCase()
     const parent = Object.keys(groups).find(key =>
       isSubdirectoryOrEqual(key, resolvedDest)
     )

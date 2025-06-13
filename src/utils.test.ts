@@ -20,6 +20,11 @@ describe('isSubdirectoryOrEqual', () => {
     ['../', './', false],
     ['../test', './', false],
     ['../test/', './', false],
+    // case-insensitive
+    ['./foo/bar', './FOO/BAR', true],
+    ['./FOO/BAR', './foo/bar', true],
+    ['./foo/bar', './foo/BAR', true],
+    ['./foo/bar', './foo/baz', false],
     ...(isWindows
       ? ([
           ['C:/', 'C:/', true],
@@ -54,7 +59,8 @@ describe('groupTargetsByDirectoryTree', () => {
     defineCase(['a', 'a/b/c'], [['a', 'a/b/c']]),
     defineCase(['a/b', 'a/b/c'], [['a/b', 'a/b/c']]),
     defineCase(['a/b/c', 'a/b'], [['a/b/c', 'a/b']]),
-    defineCase(['a', 'a/b/d'], [['a', 'a/b/d']])
+    defineCase(['a', 'a/b/d'], [['a', 'a/b/d']]),
+    defineCase(['foo/bar', 'FOO/BAR'], [['foo/bar', 'FOO/BAR']])
   ] satisfies {
     name: string
     input: { resolvedDest: string }[]
