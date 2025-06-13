@@ -10,6 +10,7 @@ import {
 import { debounce } from 'throttle-debounce'
 import chokidar from 'chokidar'
 import pc from 'picocolors'
+import path from 'node:path'
 
 type FileMapValue = {
   src: string
@@ -30,6 +31,7 @@ export const servePlugin = ({
   const fileMap: FileMap = new Map()
 
   const collectFileMap = async () => {
+    const absoluteBuildOutDir = path.resolve(config.root, config.build.outDir)
     try {
       const copyTargets = await collectCopyTargets(
         config.root,
@@ -37,7 +39,7 @@ export const servePlugin = ({
         structured,
         silent
       )
-      updateFileMapFromTargets(copyTargets, fileMap)
+      updateFileMapFromTargets(copyTargets, fileMap, absoluteBuildOutDir)
     } catch (e) {
       if (!silent) {
         config.logger.error(formatConsole(pc.red((e as Error).toString())))
