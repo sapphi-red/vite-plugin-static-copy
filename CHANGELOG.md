@@ -1,5 +1,13 @@
 # vite-plugin-static-copy
 
+## 3.0.1
+
+### Patch Changes
+
+- [#166](https://github.com/sapphi-red/vite-plugin-static-copy/pull/166) [`60409c5`](https://github.com/sapphi-red/vite-plugin-static-copy/commit/60409c55237399f5d37a417eaa124e8dfc1dfec7) Thanks [@sapphi-red](https://github.com/sapphi-red)! - fix absolute destination paths in copy targets incorrectly returning contents in dev
+
+- [#164](https://github.com/sapphi-red/vite-plugin-static-copy/pull/164) [`337f976`](https://github.com/sapphi-red/vite-plugin-static-copy/commit/337f976af1eb089cb0296c661dccceb717b3383f) Thanks [@sapphi-red](https://github.com/sapphi-red)! - fixes case-insensitive path conflicts causing copy failures (EEXIST error)
+
 ## 3.0.0
 
 ### Major Changes
