@@ -279,12 +279,22 @@ export const copyAll = async (
 
 export const updateFileMapFromTargets = (
   targets: SimpleTarget[],
-  fileMap: FileMap
+  fileMap: FileMap,
+  absoluteBuildOutDir: string
 ) => {
   fileMap.clear()
   for (const target of [...targets].reverse()) {
-    let dest = target.dest.replace(/\\/g, '/')
-    if (!dest.startsWith('/')) {
+    let dest = path.isAbsolute(target.dest)
+      ? path.relative(absoluteBuildOutDir, target.dest)
+      : target.dest
+    dest = dest.replace(/\\/g, '/')
+    if (path.isAbsolute(dest) || dest.startsWith('../')) {
+      // outside buildOutDir
+      continue
+    }
+    if (dest.startsWith('./')) {
+      dest = dest.slice(1)
+    } else if (!dest.startsWith('/')) {
       dest = `/${dest}`
     }
 

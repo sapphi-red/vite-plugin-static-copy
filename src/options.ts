@@ -36,7 +36,9 @@ export type Target = {
    */
   src: string | string[]
   /**
-   * destination
+   * destination path
+   *
+   * If a relative path is passed, it will be resolved from `build.outDir`.
    */
   dest: string
   /**

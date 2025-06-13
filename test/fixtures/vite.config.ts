@@ -1,5 +1,9 @@
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vite'
 import { viteStaticCopy } from 'vite-plugin-static-copy'
+
+const _dirname = path.dirname(fileURLToPath(import.meta.url))
 
 const wait = (delay: number) =>
   new Promise(resolve => {
@@ -135,6 +139,10 @@ export default defineConfig({
           rename: filename => {
             return `${filename}.foo`
           }
+        },
+        {
+          src: 'foo.txt',
+          dest: path.resolve(_dirname, 'dist/fixture13')
         },
         { src: 'eexist/*', dest: 'eexist' },
         { src: 'eexist/*', dest: 'Eexist' }

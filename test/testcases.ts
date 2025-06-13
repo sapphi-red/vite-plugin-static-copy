@@ -137,6 +137,11 @@ export const testcases: Record<string, Testcase[]> = {
       contentType: ''
     },
     {
+      name: 'absolute path dest',
+      src: './foo.txt',
+      dest: '/fixture13/foo.txt'
+    },
+    {
       name: 'parallel copy to same dir (1)',
       src: './eexist/a/1.txt',
       dest: '/eexist/a/1.txt'
