@@ -6,7 +6,7 @@ import { viteStaticCopy } from 'vite-plugin-static-copy'
 const _dirname = path.dirname(fileURLToPath(import.meta.url))
 
 const wait = (delay: number) =>
-  new Promise(resolve => {
+  new Promise((resolve) => {
     setTimeout(resolve, delay)
   })
 
@@ -17,78 +17,78 @@ export default defineConfig({
       targets: [
         {
           src: 'foo.txt',
-          dest: 'fixture1'
+          dest: 'fixture1',
         },
         {
           src: 'noext',
-          dest: 'fixture1'
+          dest: 'fixture1',
         },
         {
           src: 'foo.*',
-          dest: 'fixture2'
+          dest: 'fixture2',
         },
         {
           src: 'dir',
-          dest: 'fixture3'
+          dest: 'fixture3',
         },
         {
           src: 'foo.txt',
           dest: 'fixture4',
-          transform: contents => contents + 'transform file'
+          transform: (contents) => contents + 'transform file',
         },
         {
           src: 'foo.js',
           dest: 'fixture4',
-          transform: async contents => {
+          transform: async (contents) => {
             await wait(10)
             return contents + 'transform file'
-          }
+          },
         },
         {
           src: 'foo.*',
           dest: 'fixture5',
-          transform: contents => contents + 'transform glob'
+          transform: (contents) => contents + 'transform glob',
         },
         {
           src: 'dir/bar.txt',
-          dest: 'fixture6'
+          dest: 'fixture6',
         },
         {
           src: 'dir/deep/bar.txt',
-          dest: 'fixture6'
+          dest: 'fixture6',
         },
         {
           src: 'dir',
-          dest: 'fixture7'
+          dest: 'fixture7',
         },
         {
           src: 'dir2/dir',
-          dest: 'fixture7'
+          dest: 'fixture7',
         },
         {
           src: 'foo.txt',
           dest: 'fixture8',
-          transform: () => null
+          transform: () => null,
         },
         {
           src: 'global.wasm',
           dest: 'fixture9',
           transform: {
-            handler: content => content,
-            encoding: 'buffer'
-          }
+            handler: (content) => content,
+            encoding: 'buffer',
+          },
         },
         {
           src: 'foo.txt',
           dest: 'fixture10',
-          rename: 'foo2.txt'
+          rename: 'foo2.txt',
         },
         {
           src: 'foo.txt',
           dest: 'fixture10',
           rename: (fileName, fileExtension) => {
             return `/v1/${fileName}.${fileExtension}`
-          }
+          },
         },
         {
           src: 'foo.txt',
@@ -96,17 +96,17 @@ export default defineConfig({
           rename: async (fileName, fileExtension) => {
             await wait(10)
             return `/v2/${fileName}.${fileExtension}`
-          }
+          },
         },
         {
           src: 'foo.txt',
           dest: 'fixture11/overwriteDir/',
-          overwrite: true
+          overwrite: true,
         },
         {
           src: 'foo.txt',
           dest: 'fixture11/notOverwriteDir/',
-          overwrite: false
+          overwrite: false,
         },
         {
           src: 'dir/bar.txt',
@@ -114,14 +114,14 @@ export default defineConfig({
           overwrite: false,
           transform(content) {
             return content + '1'
-          }
+          },
         },
         {
           src: 'foo.js',
           dest: 'fixture12',
-          rename: filename => {
+          rename: (filename) => {
             return `${filename}.txt`
-          }
+          },
         },
         {
           src: 'foo.txt',
@@ -129,24 +129,24 @@ export default defineConfig({
           transform(content) {
             return JSON.stringify({ value: content.trim() })
           },
-          rename: filename => {
+          rename: (filename) => {
             return `${filename}.json`
-          }
+          },
         },
         {
           src: 'foo.txt',
           dest: 'fixture12',
-          rename: filename => {
+          rename: (filename) => {
             return `${filename}.foo`
-          }
+          },
         },
         {
           src: 'foo.txt',
-          dest: path.resolve(_dirname, 'dist/fixture13')
+          dest: path.resolve(_dirname, 'dist/fixture13'),
         },
         { src: 'eexist/*', dest: 'eexist' },
-        { src: 'eexist/*', dest: 'Eexist' }
-      ]
-    })
-  ]
+        { src: 'eexist/*', dest: 'Eexist' },
+      ],
+    }),
+  ],
 })

@@ -5,7 +5,7 @@ type MaybePromise<T> = T | Promise<T>
 export type RenameFunc = (
   fileName: string,
   fileExtension: string,
-  fullPath: string
+  fullPath: string,
 ) => MaybePromise<string>
 
 /**
@@ -15,7 +15,7 @@ export type RenameFunc = (
  */
 export type TransformFunc<T extends string | Buffer> = (
   content: T,
-  filename: string
+  filename: string,
 ) => MaybePromise<T | null>
 
 export type TransformOptionObject =
@@ -126,14 +126,14 @@ export type ResolvedViteStaticCopyOptions = {
 }
 
 export const resolveOptions = (
-  options: ViteStaticCopyOptions
+  options: ViteStaticCopyOptions,
 ): ResolvedViteStaticCopyOptions => ({
   targets: options.targets,
   structured: options.structured ?? false,
   silent: options.silent ?? false,
   watch: {
     options: options.watch?.options ?? {},
-    reloadPageOnChange: options.watch?.reloadPageOnChange ?? false
+    reloadPageOnChange: options.watch?.reloadPageOnChange ?? false,
   },
-  hook: options.hook ?? 'writeBundle'
+  hook: options.hook ?? 'writeBundle',
 })

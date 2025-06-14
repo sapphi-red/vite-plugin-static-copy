@@ -6,16 +6,16 @@ export default defineConfig({
   appType: 'custom', // disable SPA/MPA fallback
   root: path.resolve(__dirname),
   build: {
-    outDir: path.resolve(__dirname, './dist-absolute')
+    outDir: path.resolve(__dirname, './dist-absolute'),
   },
   plugins: [
     viteStaticCopy({
       targets: [
         {
           src: 'foo.txt',
-          dest: 'fixture1'
-        }
-      ]
-    })
-  ]
+          dest: 'fixture1',
+        },
+      ],
+    }),
+  ],
 })

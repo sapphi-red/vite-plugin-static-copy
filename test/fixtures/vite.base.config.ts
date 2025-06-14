@@ -5,16 +5,16 @@ export default defineConfig({
   appType: 'custom', // disable SPA/MPA fallback
   base: '/base/',
   build: {
-    outDir: './dist-base'
+    outDir: './dist-base',
   },
   plugins: [
     viteStaticCopy({
       targets: [
         {
           src: 'foo.txt',
-          dest: 'fixture1'
-        }
-      ]
-    })
-  ]
+          dest: 'fixture1',
+        },
+      ],
+    }),
+  ],
 })

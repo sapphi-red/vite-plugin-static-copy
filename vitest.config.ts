@@ -7,6 +7,6 @@ export default defineConfig({
         return false
       }
       return undefined
-    }
-  }
+    },
+  },
 })

@@ -30,9 +30,9 @@ describe('isSubdirectoryOrEqual', () => {
           ['C:/', 'C:/', true],
           ['C:\\', 'C:/', true],
           ['C:/', 'D:/', false],
-          ['C:\\', 'D:/', false]
+          ['C:\\', 'D:/', false],
         ] satisfies readonly [string, string, boolean][])
-      : [])
+      : []),
   ]
 
   const resolve = (p: string) => path.resolve(_dirname, p)
@@ -47,10 +47,10 @@ describe('isSubdirectoryOrEqual', () => {
 describe('groupTargetsByDirectoryTree', () => {
   const defineCase = (input: string[], expected: string[][]) => ({
     name: input.join(', '),
-    input: input.map(s => ({ resolvedDest: path.resolve(s) })),
-    expected: expected.map(s =>
-      s.map(s => expect.objectContaining({ resolvedDest: path.resolve(s) }))
-    )
+    input: input.map((s) => ({ resolvedDest: path.resolve(s) })),
+    expected: expected.map((s) =>
+      s.map((s) => expect.objectContaining({ resolvedDest: path.resolve(s) })),
+    ),
   })
 
   const cases = [
@@ -60,7 +60,7 @@ describe('groupTargetsByDirectoryTree', () => {
     defineCase(['a/b', 'a/b/c'], [['a/b', 'a/b/c']]),
     defineCase(['a/b/c', 'a/b'], [['a/b/c', 'a/b']]),
     defineCase(['a', 'a/b/d'], [['a', 'a/b/d']]),
-    defineCase(['foo/bar', 'FOO/BAR'], [['foo/bar', 'FOO/BAR']])
+    defineCase(['foo/bar', 'FOO/BAR'], [['foo/bar', 'FOO/BAR']]),
   ] satisfies {
     name: string
     input: { resolvedDest: string }[]

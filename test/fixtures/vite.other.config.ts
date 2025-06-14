@@ -6,18 +6,18 @@ export default defineConfig({
   server: {
     headers: {
       'Cross-Origin-Embedder-Policy': 'require-corp',
-      'Cross-Origin-Opener-Policy': 'same-origin'
+      'Cross-Origin-Opener-Policy': 'same-origin',
     },
-    cors: true
+    cors: true,
   },
   plugins: [
     viteStaticCopy({
       targets: [
         {
           src: 'foo.txt',
-          dest: 'fixture1'
-        }
-      ]
-    })
-  ]
+          dest: 'fixture1',
+        },
+      ],
+    }),
+  ],
 })

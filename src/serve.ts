@@ -5,7 +5,7 @@ import {
   collectCopyTargets,
   updateFileMapFromTargets,
   outputCollectedLog,
-  formatConsole
+  formatConsole,
 } from './utils'
 import { debounce } from 'throttle-debounce'
 import chokidar from 'chokidar'
@@ -24,7 +24,7 @@ export const servePlugin = ({
   targets,
   structured,
   watch,
-  silent
+  silent,
 }: ResolvedViteStaticCopyOptions): Plugin => {
   let config: ResolvedConfig
   let watcher: chokidar.FSWatcher
@@ -37,7 +37,7 @@ export const servePlugin = ({
         config.root,
         targets,
         structured,
-        silent
+        silent,
       )
       updateFileMapFromTargets(copyTargets, fileMap, absoluteBuildOutDir)
     } catch (e) {
@@ -66,20 +66,20 @@ export const servePlugin = ({
 
       // cannot use server.watcher since disableGlobbing is true
       watcher = chokidar.watch(
-        targets.flatMap(target => target.src),
+        targets.flatMap((target) => target.src),
         {
           cwd: config.root,
           ignoreInitial: true,
-          ...watch.options
-        }
+          ...watch.options,
+        },
       )
-      watcher.on('add', async path => {
+      watcher.on('add', async (path) => {
         if (!silent) {
           config.logger.info(
             formatConsole(`${pc.green('detected new file')} ${path}`),
             {
-              timestamp: true
-            }
+              timestamp: true,
+            },
           )
         }
         await collectFileMapDebounce()
@@ -88,24 +88,24 @@ export const servePlugin = ({
         }
       })
       if (watch.reloadPageOnChange) {
-        watcher.on('change', path => {
+        watcher.on('change', (path) => {
           if (!silent) {
             config.logger.info(
               formatConsole(`${pc.green('file changed')} ${path}`),
               {
-                timestamp: true
-              }
+                timestamp: true,
+              },
             )
           }
           reloadPage()
         })
-        watcher.on('unlink', path => {
+        watcher.on('unlink', (path) => {
           if (!silent) {
             config.logger.info(
               formatConsole(`${pc.green('file deleted')} ${path}`),
               {
-                timestamp: true
-              }
+                timestamp: true,
+              },
             )
           }
           reloadPage()
@@ -126,42 +126,42 @@ export const servePlugin = ({
         middlewares.use(serveStaticCopyMiddleware(config, fileMap))
         const targetMiddlewareIndex = findMiddlewareIndex(middlewares.stack, [
           'viteServePublicMiddleware',
-          'viteTransformMiddleware'
+          'viteTransformMiddleware',
         ])
         const serveStaticCopyMiddlewareIndex = findMiddlewareIndex(
           middlewares.stack,
-          'viteServeStaticCopyMiddleware'
+          'viteServeStaticCopyMiddleware',
         )
 
         const serveStaticCopyMiddlewareItem = middlewares.stack.splice(
           serveStaticCopyMiddlewareIndex,
-          1
+          1,
         )[0]
         if (serveStaticCopyMiddlewareItem === undefined) throw new Error()
 
         middlewares.stack.splice(
           targetMiddlewareIndex,
           0,
-          serveStaticCopyMiddlewareItem
+          serveStaticCopyMiddlewareItem,
         )
       }
     },
     async closeBundle() {
       await watcher.close()
-    }
+    },
   }
 }
 
 const findMiddlewareIndex = (
   stack: Connect.ServerStackItem[],
-  names: string | string[]
+  names: string | string[],
 ) => {
   const ns = Array.isArray(names) ? names : [names]
   for (const name of ns) {
     const index = stack.findIndex(
-      middleware =>
+      (middleware) =>
         typeof middleware.handle === 'function' &&
-        middleware.handle.name === name
+        middleware.handle.name === name,
     )
     if (index > 0) {
       return index

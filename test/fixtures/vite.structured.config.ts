@@ -9,41 +9,41 @@ const _dirname = path.dirname(url.fileURLToPath(import.meta.url))
 export default defineConfig({
   appType: 'custom', // disable SPA/MPA fallback
   build: {
-    outDir: './dist-structured'
+    outDir: './dist-structured',
   },
   plugins: [
     viteStaticCopy({
       targets: [
         {
           src: '*.txt',
-          dest: 'fixture1'
+          dest: 'fixture1',
         },
         {
           src: 'dir/*.txt',
-          dest: 'fixture2'
+          dest: 'fixture2',
         },
         {
           src: '../fixtures2/*.txt',
-          dest: 'fixture3'
+          dest: 'fixture3',
         },
         {
           src: 'foo.js',
-          dest: ''
+          dest: '',
         },
         {
           src: 'noext',
-          dest: '.'
+          dest: '.',
         },
         {
           src: 'dir/bar.txt',
-          dest: ''
+          dest: '',
         },
         {
           src: normalizePath(path.resolve(_dirname, 'dir/*.txt')),
-          dest: 'fixture4'
-        }
+          dest: 'fixture4',
+        },
       ],
-      structured: true
-    })
-  ]
+      structured: true,
+    }),
+  ],
 })

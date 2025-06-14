@@ -6,7 +6,7 @@ import type {
   RenameFunc,
   Target,
   TransformOption,
-  TransformOptionObject
+  TransformOptionObject,
 } from './options'
 import type { Logger } from 'vite'
 import type { FileMap } from './serve'
@@ -51,12 +51,12 @@ type DirectoryTrieNode<T> = {
 
 const createTrieNode = <T>(): DirectoryTrieNode<T> => ({
   children: new Map<string, DirectoryTrieNode<T>>(),
-  targets: []
+  targets: [],
 })
 
 const createPathNormalizer = (): ((filePath: string) => string) => {
   const pathCache = new Map<string, string>()
-  return filePath => {
+  return (filePath) => {
     if (!pathCache.has(filePath)) {
       const normalizedPath = path
         .normalize(filePath)
@@ -69,7 +69,7 @@ const createPathNormalizer = (): ((filePath: string) => string) => {
 }
 
 const splitPath = function* (
-  normalizedPath: string
+  normalizedPath: string,
 ): Generator<string, void, unknown> {
   const cleaned = normalizedPath.replace(/^\/+|\/+$/g, '')
   if (cleaned === '') {
@@ -89,7 +89,7 @@ const splitPath = function* (
 }
 
 export const groupTargetsByDirectoryTree = <T extends { resolvedDest: string }>(
-  targets: T[]
+  targets: T[],
 ): T[][] => {
   if (targets.length === 0) {
     return []
@@ -100,7 +100,7 @@ export const groupTargetsByDirectoryTree = <T extends { resolvedDest: string }>(
 
   const targetsWithOrder = targets.map((target, order) => ({
     ...target,
-    order
+    order,
   }))
 
   type TWithOrder = T & { order: number }
@@ -155,7 +155,7 @@ export const groupTargetsByDirectoryTree = <T extends { resolvedDest: string }>(
   }
 
   const collectTargets = (
-    node: DirectoryTrieNode<TWithOrder>
+    node: DirectoryTrieNode<TWithOrder>,
   ): TWithOrder[] => {
     if (node.children.size === 0) {
       return node.targets
@@ -186,7 +186,7 @@ export const groupTargetsByDirectoryTree = <T extends { resolvedDest: string }>(
 async function renameTarget(
   target: string,
   rename: string | RenameFunc,
-  src: string
+  src: string,
 ): Promise<string> {
   const parsedPath = path.parse(target)
 
@@ -201,7 +201,7 @@ export const collectCopyTargets = async (
   root: string,
   targets: Target[],
   structured: boolean,
-  silent: boolean
+  silent: boolean,
 ) => {
   const copyTargets: SimpleTarget[] = []
 
@@ -213,14 +213,14 @@ export const collectCopyTargets = async (
       transform,
       preserveTimestamps,
       dereference,
-      overwrite
+      overwrite,
     } = target
 
     const matchedPaths = await glob(src, {
       onlyFiles: false,
       dot: true,
       expandDirectories: false,
-      cwd: root
+      cwd: root,
     })
 
     if (matchedPaths.length === 0 && !silent) {
@@ -236,7 +236,7 @@ export const collectCopyTargets = async (
         const srcStat = await fs.stat(absoluteMatchedPath)
         if (!srcStat.isFile()) {
           throw new Error(
-            `"transform" option only supports a file: '${relativeMatchedPath}' is not a file`
+            `"transform" option only supports a file: '${relativeMatchedPath}' is not a file`,
           )
         }
       }
@@ -256,12 +256,12 @@ export const collectCopyTargets = async (
         src: relativeMatchedPath,
         dest: path.join(
           destDir,
-          rename ? await renameTarget(base, rename, absoluteMatchedPath) : base
+          rename ? await renameTarget(base, rename, absoluteMatchedPath) : base,
         ),
         transform,
         preserveTimestamps: preserveTimestamps ?? false,
         dereference: dereference ?? true,
-        overwrite: overwrite ?? true
+        overwrite: overwrite ?? true,
       })
     }
   }
@@ -270,7 +270,7 @@ export const collectCopyTargets = async (
 
 export async function getTransformedContent(
   file: string,
-  transform: TransformOptionObject
+  transform: TransformOptionObject,
 ) {
   if (transform.encoding === 'buffer') {
     const content = await fs.readFile(file)
@@ -285,7 +285,7 @@ async function transformCopy(
   transform: TransformOptionObject,
   src: string,
   dest: string,
-  overwrite: boolean | 'error'
+  overwrite: boolean | 'error',
 ): Promise<{ copied: boolean }> {
   if (overwrite === false || overwrite === 'error') {
     const exists = await fsExists(dest)
@@ -313,20 +313,20 @@ export const copyAll = async (
   rootDest: string,
   targets: Target[],
   structured: boolean,
-  silent: boolean
+  silent: boolean,
 ) => {
   const copyTargets = await collectCopyTargets(
     rootSrc,
     targets,
     structured,
-    silent
+    silent,
   )
 
-  const resolvedTargets: ResolvedTarget[] = copyTargets.map(target => ({
+  const resolvedTargets: ResolvedTarget[] = copyTargets.map((target) => ({
     ...target,
     // use `path.resolve` because rootSrc/rootDest maybe absolute path
     resolvedSrc: path.resolve(rootSrc, target.src),
-    resolvedDest: path.resolve(rootSrc, rootDest, target.dest)
+    resolvedDest: path.resolve(rootSrc, rootDest, target.dest),
   }))
   // group targets to avoid race condition in #14
   const groups = groupTargetsByDirectoryTree(resolvedTargets)
@@ -334,7 +334,7 @@ export const copyAll = async (
   let copiedCount = 0
   await pMap(
     groups,
-    async targetGroup => {
+    async (targetGroup) => {
       for (const resolvedTarget of targetGroup) {
         const {
           resolvedSrc,
@@ -342,7 +342,7 @@ export const copyAll = async (
           transform,
           preserveTimestamps,
           dereference,
-          overwrite
+          overwrite,
         } = resolvedTarget
 
         const transformOption = resolveTransformOption(transform)
@@ -352,7 +352,7 @@ export const copyAll = async (
             transformOption,
             resolvedSrc,
             resolvedDest,
-            overwrite
+            overwrite,
           )
           if (result.copied) {
             copiedCount++
@@ -362,13 +362,13 @@ export const copyAll = async (
             preserveTimestamps,
             dereference,
             overwrite: overwrite === true,
-            errorOnExist: overwrite === 'error'
+            errorOnExist: overwrite === 'error',
           })
           copiedCount++
         }
       }
     },
-    { concurrency: 5 }
+    { concurrency: 5 },
   )
 
   return { targets: copyTargets.length, copied: copiedCount }
@@ -377,7 +377,7 @@ export const copyAll = async (
 export const updateFileMapFromTargets = (
   targets: SimpleTarget[],
   fileMap: FileMap,
-  absoluteBuildOutDir: string
+  absoluteBuildOutDir: string,
 ) => {
   fileMap.clear()
   for (const target of [...targets].reverse()) {
@@ -402,7 +402,7 @@ export const updateFileMapFromTargets = (
       src: target.src,
       dest: target.dest,
       overwrite: target.overwrite,
-      transform: target.transform
+      transform: target.transform,
     })
   }
 }
@@ -416,7 +416,7 @@ export const formatConsole = (msg: string) =>
 export const outputCollectedLog = (logger: Logger, collectedMap: FileMap) => {
   if (collectedMap.size > 0) {
     logger.info(
-      formatConsole(pc.green(`Collected ${collectedMap.size} items.`))
+      formatConsole(pc.green(`Collected ${collectedMap.size} items.`)),
     )
     if (process.env.DEBUG === 'vite:plugin-static-copy') {
       for (const [key, vals] of collectedMap) {
@@ -425,8 +425,8 @@ export const outputCollectedLog = (logger: Logger, collectedMap: FileMap) => {
             formatConsole(
               `  - '${key}' -> '${val.src}'${
                 val.transform ? ' (with content transform)' : ''
-              }`
-            )
+              }`,
+            ),
           )
         }
       }
@@ -438,7 +438,7 @@ export const outputCollectedLog = (logger: Logger, collectedMap: FileMap) => {
 
 export const outputCopyLog = (
   logger: Logger,
-  result: { targets: number; copied: number }
+  result: { targets: number; copied: number },
 ) => {
   if (result.targets > 0) {
     const copiedMessage = pc.green(`Copied ${result.copied} items.`)
@@ -450,12 +450,12 @@ export const outputCopyLog = (
 }
 
 export function resolveTransformOption(
-  transformOption: TransformOption | undefined
+  transformOption: TransformOption | undefined,
 ): TransformOptionObject | undefined {
   if (typeof transformOption === 'function') {
     return {
       handler: transformOption,
-      encoding: 'utf8'
+      encoding: 'utf8',
     }
   }
   return transformOption

@@ -18,7 +18,7 @@ function generateTestTargets(count: number): TestTarget[] {
     '/home/user/project/dist/pages',
     '/home/user/project/public',
     '/home/user/project/public/static',
-    '/tmp/build'
+    '/tmp/build',
   ]
 
   for (let i = 0; i < count; i++) {
@@ -27,7 +27,7 @@ function generateTestTargets(count: number): TestTarget[] {
     targets.push({
       resolvedDest:
         suffix > 0 ? `${basePath}/file${suffix}` : `${basePath}/file`,
-      id: `target-${i}`
+      id: `target-${i}`,
     })
   }
 
@@ -61,7 +61,7 @@ describe('groupTargetsByDirectoryTree benchmark', () => {
       }
       targets.push({
         resolvedDest: pathParts.join('/'),
-        id: `nested-${depth}`
+        id: `nested-${depth}`,
       })
     }
 
@@ -78,14 +78,14 @@ describe('groupTargetsByDirectoryTree benchmark', () => {
       { resolvedDest: '/home/user/project/dist/assets', id: 'child1' },
       {
         resolvedDest: '/home/user/project/dist/assets/images',
-        id: 'grandchild1'
+        id: 'grandchild1',
       },
 
       { resolvedDest: '/tmp/build/output.txt', id: 'independent1' },
       { resolvedDest: '/var/backup/files/data.json', id: 'independent2' },
 
       { resolvedDest: '/home/user/Project/Dist/File.txt', id: 'case1' },
-      { resolvedDest: '/home/user/project/dist/file.txt', id: 'case2' }
+      { resolvedDest: '/home/user/project/dist/file.txt', id: 'case2' },
     ]
 
     groupTargetsByDirectoryTree(targets)
@@ -96,7 +96,7 @@ describe('groupTargetsByDirectoryTree benchmark', () => {
     for (let i = 0; i < 50; i++) {
       targets.push({
         resolvedDest: '/home/user/project/dist/output',
-        id: `duplicate-${i}`
+        id: `duplicate-${i}`,
       })
     }
     groupTargetsByDirectoryTree(targets)

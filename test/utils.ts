@@ -10,17 +10,17 @@ const fileURLToNormalizedPath = (url: URL) => normalizePath(fileURLToPath(url))
 export const getConfig = (filename: string): InlineConfig => ({
   logLevel: 'silent',
   root: fileURLToNormalizedPath(root),
-  configFile: fileURLToNormalizedPath(new URL(`./${filename}`, root))
+  configFile: fileURLToNormalizedPath(new URL(`./${filename}`, root)),
 })
 
 export const loadFileContent = async (
   path: string,
-  encoding: BufferEncoding | 'buffer' = 'utf8'
+  encoding: BufferEncoding | 'buffer' = 'utf8',
 ): Promise<string | ArrayBufferLike> => {
   const absolutePath = new URL(path, root)
   const content = await readFile(
     absolutePath,
-    encoding === 'buffer' ? null : encoding
+    encoding === 'buffer' ? null : encoding,
   )
 
   if (typeof content !== 'string') {

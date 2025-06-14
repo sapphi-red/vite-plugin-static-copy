@@ -12,13 +12,13 @@ export default defineConfig({
       targets: [
         {
           src: 'foo.txt',
-          dest: 'hook1'
-        }
+          dest: 'hook1',
+        },
       ],
-      hook: 'generateBundle'
+      hook: 'generateBundle',
     }),
-    testHookPlugin()
-  ]
+    testHookPlugin(),
+  ],
 })
 
 function testHookPlugin() {
@@ -26,9 +26,9 @@ function testHookPlugin() {
     name: 'test-hook-plugin',
     async writeBundle() {
       const filePath = normalizePath(
-        path.resolve(_dirname, 'dist', 'hook1', 'foo.txt')
+        path.resolve(_dirname, 'dist', 'hook1', 'foo.txt'),
       )
       await fs.access(filePath)
-    }
+    },
   }
 }

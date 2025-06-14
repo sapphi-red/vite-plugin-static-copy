@@ -28,11 +28,11 @@ export default {
       targets: [
         {
           src: 'bin/example.wasm',
-          dest: 'wasm-files'
-        }
-      ]
-    })
-  ]
+          dest: 'wasm-files',
+        },
+      ],
+    }),
+  ],
 }
 ```
 

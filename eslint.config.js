@@ -8,11 +8,11 @@ import eslintConfigPrettier from 'eslint-config-prettier'
 export default tseslint.config(
   {
     languageOptions: {
-      sourceType: 'module'
+      sourceType: 'module',
     },
     linterOptions: {
-      reportUnusedDisableDirectives: 'error'
-    }
+      reportUnusedDisableDirectives: 'error',
+    },
   },
   eslint.configs.recommended,
   ...tseslint.configs.recommended,
@@ -21,15 +21,15 @@ export default tseslint.config(
     rules: {
       '@typescript-eslint/member-delimiter-style': 'off',
       '@typescript-eslint/consistent-type-imports': 'error',
-      '@typescript-eslint/consistent-type-definitions': ['error', 'type']
-    }
+      '@typescript-eslint/consistent-type-definitions': ['error', 'type'],
+    },
   },
   {
     files: ['test/**'],
-    ...vitest.configs.recommended
+    ...vitest.configs.recommended,
   },
   eslintConfigPrettier,
   {
-    ignores: ['dist/**', 'test/fixtures/**']
-  }
+    ignores: ['dist/**', 'test/fixtures/**'],
+  },
 )

@@ -8,7 +8,7 @@ import type { AddressInfo } from 'node:net'
 
 const fetchFromServer = async (
   server: ViteDevServer | PreviewServer,
-  path: string
+  path: string,
 ) => {
   const port = (server.httpServer!.address() as AddressInfo).port
   const url = `http://localhost:${port}${path}`
@@ -19,7 +19,7 @@ const fetchFromServer = async (
 const fetchContent = async (
   server: ViteDevServer | PreviewServer,
   path: string,
-  encoding?: BufferEncoding | 'buffer'
+  encoding?: BufferEncoding | 'buffer',
 ) => {
   const res = await fetchFromServer(server, path)
   let content: string | ArrayBuffer | null = null
@@ -54,7 +54,7 @@ describe('serve', () => {
         dest,
         transformedContent,
         encoding,
-        contentType
+        contentType,
       } of tests) {
         // eslint-disable-next-line vitest/valid-title
         test.concurrent(name, async () => {
@@ -91,7 +91,7 @@ describe('serve', () => {
       const res = await fetchFromServer(server, '/fixture1/foo.txt')
       expect(res.status).toBe(200)
       expect(res.headers.get('Cross-Origin-Embedder-Policy')).toBe(
-        'require-corp'
+        'require-corp',
       )
       expect(res.headers.get('Cross-Origin-Opener-Policy')).toBe('same-origin')
     })
@@ -108,7 +108,7 @@ describe('build', () => {
         server = await preview(getConfig(configFile))
       })
       afterAll(async () => {
-        await new Promise<void>(resolve => {
+        await new Promise<void>((resolve) => {
           server.httpServer.close(() => {
             resolve()
           })
@@ -121,7 +121,7 @@ describe('build', () => {
         dest,
         transformedContent,
         encoding,
-        contentType
+        contentType,
       } of tests) {
         // eslint-disable-next-line vitest/valid-title
         test.concurrent(name, async () => {
@@ -157,7 +157,7 @@ describe('build', () => {
         result = (error as Error).message
       }
       expect(result).toContain(
-        'No file was found to copy on does-not-exist.txt src.'
+        'No file was found to copy on does-not-exist.txt src.',
       )
     })
 

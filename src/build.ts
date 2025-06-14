@@ -6,7 +6,7 @@ export const buildPlugin = ({
   targets,
   structured,
   silent,
-  hook
+  hook,
 }: ResolvedViteStaticCopyOptions): Plugin => {
   let config: ResolvedConfig
   let output = false
@@ -31,9 +31,9 @@ export const buildPlugin = ({
         config.build.outDir,
         targets,
         structured,
-        silent
+        silent,
       )
       if (!silent) outputCopyLog(config.logger, result)
-    }
+    },
   }
 }

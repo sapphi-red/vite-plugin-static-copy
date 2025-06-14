@@ -7,9 +7,9 @@ export default defineConfig({
       targets: [
         {
           src: 'does-not-exist.txt',
-          dest: 'does-not-exist'
-        }
-      ]
-    })
-  ]
+          dest: 'does-not-exist',
+        },
+      ],
+    }),
+  ],
 })

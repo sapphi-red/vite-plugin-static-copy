@@ -9,7 +9,7 @@ export type {
   RenameFunc,
   TransformFunc,
   TransformOption,
-  Target
+  Target,
 } from './options'
 
 export const viteStaticCopy = (options: ViteStaticCopyOptions): Plugin[] => {

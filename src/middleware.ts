@@ -16,7 +16,7 @@ import type { Connect, ServerOptions } from 'vite'
 import type {
   IncomingMessage,
   OutgoingHttpHeaders,
-  ServerResponse
+  ServerResponse,
 } from 'node:http'
 import { join, resolve } from 'node:path'
 import type { FileMap } from './serve'
@@ -24,7 +24,7 @@ import type { TransformOptionObject } from './options'
 import {
   calculateMd5Base64,
   getTransformedContent,
-  resolveTransformOption
+  resolveTransformOption,
 } from './utils'
 
 const knownJavascriptExtensionRE = /\.(?:[tj]sx?|[cm][tj]s)$/
@@ -34,7 +34,7 @@ function shouldServeOverwriteCheck(
   srcAbsolutePath: string,
   root: string,
   publicDir: string,
-  dest: string
+  dest: string,
 ) {
   const publicDirDisabled = publicDir === ''
   if (overwrite === true || publicDirDisabled) {
@@ -46,7 +46,7 @@ function shouldServeOverwriteCheck(
     if (overwrite === 'error' && existsSync(srcAbsolutePath)) {
       const destAbsolutePath = resolve(root, dest)
       throw new Error(
-        `File ${destAbsolutePath} will be copied from ${publicFile} (overwrite option is set to "error")`
+        `File ${destAbsolutePath} will be copied from ${publicFile} (overwrite option is set to "error")`,
       )
     }
     return false
@@ -58,7 +58,7 @@ function viaLocal(
   root: string,
   publicDir: string,
   fileMap: FileMap,
-  uri: string
+  uri: string,
 ) {
   if (uri.endsWith('/')) {
     uri = uri.slice(0, -1)
@@ -73,7 +73,7 @@ function viaLocal(
       filepath,
       root,
       publicDir,
-      file.dest
+      file.dest,
     )
     if (overwriteCheck === false) {
       return undefined // public middleware will serve instead
@@ -93,7 +93,7 @@ function viaLocal(
         filepath,
         root,
         publicDir,
-        join(val.dest, uri.slice(dir.length))
+        join(val.dest, uri.slice(dir.length)),
       )
       if (overwriteCheck === false) {
         return undefined // public middleware will serve instead
@@ -115,21 +115,21 @@ function getStaticHeaders(stats: Stats): OutgoingHttpHeaders {
     'Content-Length': stats.size,
     'Last-Modified': stats.mtime.toUTCString(),
     ETag: `W/"${stats.size}-${stats.mtime.getTime()}"`,
-    'Cache-Control': 'no-cache'
+    'Cache-Control': 'no-cache',
   }
 }
 
 function getTransformHeaders(
   encoding: BufferEncoding | 'buffer',
-  content: string | Buffer
+  content: string | Buffer,
 ): OutgoingHttpHeaders {
   return {
     'Content-Length': Buffer.byteLength(
       content,
-      encoding === 'buffer' ? undefined : encoding
+      encoding === 'buffer' ? undefined : encoding,
     ),
     ETag: `W/"${calculateMd5Base64(content)}"`,
-    'Cache-Control': 'no-cache'
+    'Cache-Control': 'no-cache',
   }
 }
 
@@ -152,7 +152,7 @@ function sendStatic(
   req: IncomingMessage,
   res: ServerResponse,
   file: string,
-  stats: Stats
+  stats: Stats,
 ) {
   const staticHeaders = getStaticHeaders(stats)
 
@@ -198,11 +198,11 @@ function sendTransform(
   req: IncomingMessage,
   res: ServerResponse,
   transform: TransformOptionObject,
-  transformedContent: string | Buffer
+  transformedContent: string | Buffer,
 ): void {
   const transformHeaders = getTransformHeaders(
     transform.encoding,
-    transformedContent
+    transformedContent,
   )
 
   if (req.headers['if-none-match'] === transformHeaders['ETag']) {
@@ -222,7 +222,7 @@ function sendTransform(
 function setHeaders(
   res: ServerResponse,
   pathname: string,
-  headers: OutgoingHttpHeaders | undefined
+  headers: OutgoingHttpHeaders | undefined,
 ) {
   // Matches js, jsx, ts, tsx, mts, mjs, cjs, cts, ctx, mtx
   // The reason this is done, is that the .ts and .mts file extensions are
@@ -257,9 +257,9 @@ export function serveStaticCopyMiddleware(
   {
     root,
     publicDir,
-    server
+    server,
   }: { root: string; publicDir: string; server: ServerOptions },
-  fileMap: FileMap
+  fileMap: FileMap,
 ): Connect.NextHandleFunction {
   // Keep the named function. The name is visible in debug logs via `DEBUG=connect:dispatcher ...`
   return async function viteServeStaticCopyMiddleware(req, res, next) {
@@ -283,7 +283,7 @@ export function serveStaticCopyMiddleware(
       if (transformOption) {
         const transformedContent = await getTransformedContent(
           data.filepath,
-          transformOption
+          transformOption,
         )
         if (transformedContent === null) {
           return404(res, next)
