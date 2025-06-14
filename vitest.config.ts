@@ -8,5 +8,23 @@ export default defineConfig({
       }
       return undefined
     },
+    projects: [
+      {
+        test: {
+          name: 'unit',
+          include: ['src/**/*.test.{ts,js}'],
+          benchmark: {
+            include: ['src/**/*.bench.{ts,js}'],
+          },
+        },
+      },
+      {
+        test: {
+          name: 'e2e',
+          include: ['test/**/*.test.{ts,js}'],
+          benchmark: { include: [] },
+        },
+      },
+    ],
   },
 })
