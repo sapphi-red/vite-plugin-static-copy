@@ -44,46 +44,143 @@ export const isSubdirectoryOrEqual = (a: string, b: string) => {
   )
 }
 
+type DirectoryTrieNode<T> = {
+  children: Map<string, DirectoryTrieNode<T>>
+  targets: T[]
+}
+
+const createTrieNode = <T,>(): DirectoryTrieNode<T> => ({
+  children: new Map<string, DirectoryTrieNode<T>>(),
+  targets: []
+})
+
+const createPathNormalizer = (): ((filePath: string) => string) => {
+  const pathCache = new Map<string, string>()
+  return filePath => {
+    if (!pathCache.has(filePath)) {
+      const normalizedPath = path
+        .normalize(filePath)
+        .toLowerCase()
+        .replace(/\\/g, '/')
+      pathCache.set(filePath, normalizedPath)
+    }
+    return pathCache.get(filePath)!
+  }
+}
+
+const splitPath = function* (
+  normalizedPath: string
+): Generator<string, void, unknown> {
+  const cleaned = normalizedPath.replace(/^\/+|\/+$/g, '')
+  if (cleaned === '') {
+    return
+  }
+
+  let start = 0
+  while (start < cleaned.length) {
+    const idx = cleaned.indexOf('/', start)
+    if (idx === -1) {
+      yield cleaned.slice(start)
+      break
+    }
+    yield cleaned.slice(start, idx)
+    start = idx + 1
+  }
+}
+
 export const groupTargetsByDirectoryTree = <T extends { resolvedDest: string }>(
   targets: T[]
 ): T[][] => {
-  const targetsWithOrder = targets
-    .map((target, order) => ({ ...target, order }))
-    .sort((a, b) =>
-      a.resolvedDest === b.resolvedDest
-        ? 0
-        : a.resolvedDest > b.resolvedDest
-          ? 1
-          : -1
-    )
+  if (targets.length === 0) {
+    return []
+  }
+  if (targets.length === 1) {
+    return [targets]
+  }
 
-  const groups: Record<string, (T & { order: number })[]> = {}
+  const targetsWithOrder = targets.map((target, order) => ({
+    ...target,
+    order
+  }))
+
+  type TWithOrder = T & { order: number }
+  const getNormalizedPath = createPathNormalizer()
+
+  // build trie
+  const root = createTrieNode<TWithOrder>()
   for (const target of targetsWithOrder) {
-    const resolvedDest = target.resolvedDest.toLowerCase()
-    const parent = Object.keys(groups).find(key =>
-      isSubdirectoryOrEqual(key, resolvedDest)
-    )
-    if (parent) {
-      groups[parent]!.push(target)
-      continue
-    }
-    const child = Object.keys(groups).find(key =>
-      isSubdirectoryOrEqual(resolvedDest, key)
-    )
-    if (child) {
-      groups[resolvedDest] = [target, ...groups[child]!]
-      delete groups[child]
-      continue
+    const normalizedPath = getNormalizedPath(target.resolvedDest)
+    const segments = splitPath(normalizedPath)
+
+    let currentNode = root
+    for (const segment of segments) {
+      if (!currentNode.children.has(segment)) {
+        currentNode.children.set(segment, createTrieNode())
+      }
+      currentNode = currentNode.children.get(segment)!
     }
 
-    groups[resolvedDest] = [target]
-  }
-  const groupList = Object.values(groups)
-  for (const g of groupList) {
-    g.sort((a, b) => a.order - b.order)
+    currentNode.targets.push(target)
   }
 
-  return groupList
+  const groups: TWithOrder[][] = []
+
+  const collectGroups = (node: DirectoryTrieNode<TWithOrder>): TWithOrder[] => {
+    if (node.children.size === 0) {
+      return node.targets
+    }
+
+    // If this node has targets, collect all child targets into this group
+    if (node.targets.length > 0) {
+      const allTargets: TWithOrder[] = [...node.targets]
+
+      for (const child of node.children.values()) {
+        const childTargets = collectTargets(child)
+        if (childTargets.length > 0) {
+          allTargets.push(...childTargets)
+        }
+      }
+      return allTargets
+    }
+
+    // If this node has no targets, process children separately
+    for (const child of node.children.values()) {
+      const childTargets = collectGroups(child)
+      if (childTargets.length > 0) {
+        groups.push(childTargets)
+      }
+    }
+
+    return []
+  }
+
+  const collectTargets = (
+    node: DirectoryTrieNode<TWithOrder>
+  ): TWithOrder[] => {
+    if (node.children.size === 0) {
+      return node.targets
+    }
+
+    const allTargets: TWithOrder[] = [...node.targets]
+    for (const child of node.children.values()) {
+      const childTargets = collectTargets(child)
+      if (childTargets.length > 0) {
+        allTargets.push(...childTargets)
+      }
+    }
+    return allTargets
+  }
+
+  const rootTargets = collectGroups(root)
+  if (rootTargets.length > 0) {
+    groups.push(rootTargets)
+  }
+
+  // Sort targets within each group by original order
+  for (const group of groups) {
+    group.sort((a, b) => a.order - b.order)
+  }
+  return groups
 }
 
 async function renameTarget(
