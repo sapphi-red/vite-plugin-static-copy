@@ -1,5 +1,11 @@
 # vite-plugin-static-copy
 
+## 3.0.2
+
+### Patch Changes
+
+- [#167](https://github.com/sapphi-red/vite-plugin-static-copy/pull/167) [`89458b2`](https://github.com/sapphi-red/vite-plugin-static-copy/commit/89458b2134a5aae93ce0322f3b2c0b7af4bc1be9) Thanks [@sapphi-red](https://github.com/sapphi-red)! - improved file grouping algorithm for better performance
+
 ## 3.0.1
 
 ### Patch Changes
