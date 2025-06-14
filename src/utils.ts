@@ -49,7 +49,7 @@ type DirectoryTrieNode<T> = {
   targets: T[]
 }
 
-const createTrieNode = <T,>(): DirectoryTrieNode<T> => ({
+const createTrieNode = <T>(): DirectoryTrieNode<T> => ({
   children: new Map<string, DirectoryTrieNode<T>>(),
   targets: []
 })
