@@ -13,7 +13,7 @@
     "build:structured": "vite --config vite.structured.config.ts build"
   },
   "devDependencies": {
-    "vite": "^6.3.5",
+    "vite": "^7.0.0",
     "vite-plugin-static-copy": "workspace:*"
   }
 }
