@@ -1,5 +1,11 @@
 # vite-plugin-static-copy
 
+## 3.1.0
+
+### Minor Changes
+
+- [#171](https://github.com/sapphi-red/vite-plugin-static-copy/pull/171) [`9c7cf2e`](https://github.com/sapphi-red/vite-plugin-static-copy/commit/9c7cf2e9831e52c00d9789ee11c8f0db0ea1c330) Thanks [@MrRefactoring](https://github.com/MrRefactoring)! - add Vite 7 to peer dep range
+
 ## 3.0.2
 
 ### Patch Changes
