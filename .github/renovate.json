@@ -7,13 +7,9 @@
     "helpers:disableTypesNodeMajor"
   ],
   "labels": ["dependencies"],
+  "ignorePaths": ["**/node_modules/**"],
   "rangeStrategy": "bump",
   "packageRules": [
-    {
-      "extends": ["monorepo:octokit"],
-      "groupName": "octokit monorepo",
-      "separateMajorMinor": false
-    },
     {
       "matchDepTypes": ["action"],
       "pinDigests": true,
