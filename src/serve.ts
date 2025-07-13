@@ -123,14 +123,14 @@ export const servePlugin = ({
       return () => {
         // insert serveStaticCopyMiddleware before viteServePublicMiddleware
         // if viteServePublicMiddleware didn't exist use transformMiddleware instead
-        middlewares.use(serveStaticCopyMiddleware(config, fileMap))
+        const middleware = serveStaticCopyMiddleware(config, fileMap)
+        middlewares.use(middleware)
         const targetMiddlewareIndex = findMiddlewareIndex(middlewares.stack, [
           'viteServePublicMiddleware',
           'viteTransformMiddleware',
         ])
-        const serveStaticCopyMiddlewareIndex = findMiddlewareIndex(
-          middlewares.stack,
-          'viteServeStaticCopyMiddleware',
+        const serveStaticCopyMiddlewareIndex = middlewares.stack.findIndex(
+          (item) => item.handle === middleware,
         )
 
         const serveStaticCopyMiddlewareItem = middlewares.stack.splice(
