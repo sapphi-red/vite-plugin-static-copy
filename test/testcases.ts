@@ -151,6 +151,11 @@ export const testcases: Record<string, Testcase[]> = {
       src: './eexist/b/1.txt',
       dest: '/eexist/b/1.txt',
     },
+    {
+      name: 'multiple plugin instance',
+      src: './foo.txt',
+      dest: '/fixture1-1/foo.txt',
+    },
   ],
   'vite.absolute.config.ts': [
     {

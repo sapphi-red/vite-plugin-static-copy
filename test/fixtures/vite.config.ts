@@ -148,5 +148,13 @@ export default defineConfig({
         { src: 'eexist/*', dest: 'Eexist' },
       ],
     }),
+    viteStaticCopy({
+      targets: [
+        {
+          src: 'foo.txt',
+          dest: 'fixture1-1',
+        },
+      ]
+    }),
   ],
 })
