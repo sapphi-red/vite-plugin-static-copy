@@ -105,6 +105,10 @@ describe('build', () => {
       beforeAll(async () => {
         await build(getConfig(configFile))
         server = await preview(getConfig(configFile))
+        // quickly timeout keep-alive to shutdown preview server faster
+        if ('keepAliveTimeout' in server.httpServer) {
+          server.httpServer.keepAliveTimeout = 1
+        }
       })
       afterAll(async () => {
         await new Promise<void>((resolve) => {
