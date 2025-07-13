@@ -1,5 +1,11 @@
 # vite-plugin-static-copy
 
+## 3.1.1
+
+### Patch Changes
+
+- [#186](https://github.com/sapphi-red/vite-plugin-static-copy/pull/186) [`fc84156`](https://github.com/sapphi-red/vite-plugin-static-copy/commit/fc84156418cd06f599a196c1d681f243c65c4f95) Thanks [@sapphi-red](https://github.com/sapphi-red)! - fix a bug that the content was not sent when multiple vite-plugin-static-copy instance was used
+
 ## 3.1.0
 
 ### Minor Changes
