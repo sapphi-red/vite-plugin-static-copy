@@ -130,7 +130,7 @@ export const servePlugin = ({
           'viteTransformMiddleware',
         ])
         const serveStaticCopyMiddlewareIndex = middlewares.stack.findIndex(
-          item => item.handle === middleware,
+          (item) => item.handle === middleware,
         )
 
         const serveStaticCopyMiddlewareItem = middlewares.stack.splice(

@@ -154,7 +154,7 @@ export default defineConfig({
           src: 'foo.txt',
           dest: 'fixture1-1',
         },
-      ]
+      ],
     }),
   ],
 })
