@@ -62,10 +62,7 @@ You can enable detailed logging by setting the `DEBUG` environment variable:
 DEBUG=vite:plugin-static-copy npm run dev
 ```
 
-When debug logging is enabled, the plugin will output detailed information about each file being collected and copied, including:
-- The destination path where the file will be available
-- The source path of the original file
-- Whether content transformation is applied
+When debug logging is enabled, the plugin will output which file is served from each URL.
 
 Example output:
 ```
