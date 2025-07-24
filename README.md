@@ -58,6 +58,16 @@ So the file will be copied to `dist/wasm-files/example.wasm`.
 
 See [options.ts](https://github.com/sapphi-red/vite-plugin-static-copy/blob/main/src/options.ts).
 
+### Debug
+
+You can enable detailed logging by setting the `DEBUG` environment variable:
+
+```bash
+DEBUG=vite:plugin-static-copy npm run dev
+```
+
+When debug logging is enabled, the plugin will output which file is served from each URL.
+
 ## Differences with `rollup-plugin-copy`
 
 - Faster dev server start-up than using `rollup-plugin-copy` on `buildStart` hook.
