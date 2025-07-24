@@ -54,6 +54,29 @@ So the file will be copied to `dist/wasm-files/example.wasm`.
 > path.resolve(__dirname, './foo') // C:\project\foo
 > ```
 
+### Debug
+
+You can enable detailed logging by setting the `DEBUG` environment variable:
+
+```bash
+DEBUG=vite:plugin-static-copy npm run dev
+# or
+DEBUG=vite:plugin-static-copy npm run build
+```
+
+When debug logging is enabled, the plugin will output detailed information about each file being collected and copied, including:
+- The destination path where the file will be available
+- The source path of the original file
+- Whether content transformation is applied
+
+Example output:
+```
+[vite-plugin-static-copy] Collected 3 items.
+[vite-plugin-static-copy]   - '/wasm-files/example.wasm' -> 'bin/example.wasm'
+[vite-plugin-static-copy]   - '/assets/data.json' -> 'src/data.json' (with content transform)
+[vite-plugin-static-copy]   - '/images/logo.png' -> 'assets/logo.png'
+```
+
 ### Options
 
 See [options.ts](https://github.com/sapphi-red/vite-plugin-static-copy/blob/main/src/options.ts).
