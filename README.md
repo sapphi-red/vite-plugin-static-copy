@@ -60,8 +60,6 @@ You can enable detailed logging by setting the `DEBUG` environment variable:
 
 ```bash
 DEBUG=vite:plugin-static-copy npm run dev
-# or
-DEBUG=vite:plugin-static-copy npm run build
 ```
 
 When debug logging is enabled, the plugin will output detailed information about each file being collected and copied, including:
