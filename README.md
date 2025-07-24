@@ -54,6 +54,10 @@ So the file will be copied to `dist/wasm-files/example.wasm`.
 > path.resolve(__dirname, './foo') // C:\project\foo
 > ```
 
+### Options
+
+See [options.ts](https://github.com/sapphi-red/vite-plugin-static-copy/blob/main/src/options.ts).
+
 ### Debug
 
 You can enable detailed logging by setting the `DEBUG` environment variable:
@@ -63,18 +67,6 @@ DEBUG=vite:plugin-static-copy npm run dev
 ```
 
 When debug logging is enabled, the plugin will output which file is served from each URL.
-
-Example output:
-```
-[vite-plugin-static-copy] Collected 3 items.
-[vite-plugin-static-copy]   - '/wasm-files/example.wasm' -> 'bin/example.wasm'
-[vite-plugin-static-copy]   - '/assets/data.json' -> 'src/data.json' (with content transform)
-[vite-plugin-static-copy]   - '/images/logo.png' -> 'assets/logo.png'
-```
-
-### Options
-
-See [options.ts](https://github.com/sapphi-red/vite-plugin-static-copy/blob/main/src/options.ts).
 
 ## Differences with `rollup-plugin-copy`
 
