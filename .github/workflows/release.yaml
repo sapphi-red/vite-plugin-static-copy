@@ -18,7 +18,7 @@ jobs:
       id-token: write
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: ./.github/actions/setup-repo
       - run: pnpm run build
       - name: Create Release Pull Request or Publish to npm
