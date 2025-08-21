@@ -1,5 +1,11 @@
 # vite-plugin-static-copy
 
+## 2.3.2
+
+### Patch Changes
+
+- [`4627afb`](https://github.com/sapphi-red/vite-plugin-static-copy/commit/4627afb8582083eab733881d3d974e1c1f23997d) Thanks [@sapphi-red](https://github.com/sapphi-red)! - Files not included in `src` was possible to acess with a crafted request. See [GHSA-pp7p-q8fx-2968](https://github.com/sapphi-red/vite-plugin-static-copy/security/advisories/GHSA-pp7p-q8fx-2968) for more details.
+
 ## 2.3.1
 
 ### Patch Changes
