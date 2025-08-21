@@ -18,7 +18,7 @@ import type {
   OutgoingHttpHeaders,
   ServerResponse,
 } from 'node:http'
-import { join, resolve } from 'node:path'
+import { join, resolve, sep } from 'node:path'
 import type { FileMap } from './serve'
 import type { TransformOptionObject } from './options'
 import {
@@ -54,6 +54,13 @@ function shouldServeOverwriteCheck(
   return true
 }
 
+function isFileInside(filepath: string, srcBase: string) {
+  const srcBaseWithTrailingSlash = srcBase.endsWith(sep)
+    ? srcBase
+    : `${srcBase}${sep}`
+  return filepath.startsWith(srcBaseWithTrailingSlash)
+}
+
 function viaLocal(
   root: string,
   publicDir: string,
@@ -87,7 +94,13 @@ function viaLocal(
     if (!uri.startsWith(dir)) continue
 
     for (const val of vals) {
-      const filepath = resolve(root, val.src, uri.slice(dir.length))
+      const srcBase = resolve(root, val.src)
+      const filepath = resolve(srcBase, uri.slice(dir.length))
+      if (!isFileInside(filepath, srcBase)) {
+        // uri includes non-normalized `../`
+        return undefined
+      }
+
       const overwriteCheck = shouldServeOverwriteCheck(
         val.overwrite,
         filepath,
