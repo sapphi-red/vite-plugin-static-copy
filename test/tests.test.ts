@@ -3,15 +3,24 @@ import type { PreviewServer, ViteDevServer } from 'vite'
 import { build, createServer, preview } from 'vite'
 import fetch from 'node-fetch'
 import { testcases } from './testcases'
-import { getConfig, loadFileContent, normalizeLineBreak } from './utils'
+import {
+  getConfig,
+  loadFileContent,
+  normalizeLineBreak,
+  sendRawRequest,
+} from './utils'
 import type { AddressInfo } from 'node:net'
+
+const constructUrl = (server: ViteDevServer | PreviewServer, path: string) => {
+  const port = (server.httpServer!.address() as AddressInfo).port
+  return `http://localhost:${port}${path}`
+}
 
 const fetchFromServer = async (
   server: ViteDevServer | PreviewServer,
   path: string
 ) => {
-  const port = (server.httpServer!.address() as AddressInfo).port
-  const url = `http://localhost:${port}${path}`
+  const url = constructUrl(server, path)
   const res = await fetch(url)
   return res
 }
@@ -94,6 +103,15 @@ describe('serve', () => {
         'require-corp'
       )
       expect(res.headers.get('Cross-Origin-Opener-Policy')).toBe('same-origin')
+    })
+
+    test.concurrent('disallow path traversal with ../', async () => {
+      const res = await sendRawRequest(
+        constructUrl(server, '/'),
+        '/fixture1/foo.txt/../.env',
+      )
+      expect(res).not.toContain('SHOULD_BE_HIDDEN')
+      expect(res).toContain('HTTP/1.1 404 Not Found')
     })
   })
 })

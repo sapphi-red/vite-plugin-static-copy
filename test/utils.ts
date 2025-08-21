@@ -2,6 +2,7 @@ import { readFile } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
 import type { InlineConfig } from 'vite'
 import { normalizePath } from 'vite'
+import net from 'node:net'
 
 export const root = new URL('./fixtures/', import.meta.url)
 
@@ -31,3 +32,38 @@ export const loadFileContent = async (
 
 export const normalizeLineBreak = (input: string) =>
   input.replace(/\r\n/g, '\n')
+
+export const sendRawRequest = async (
+  baseUrl: string,
+  requestTarget: string,
+) => {
+  return new Promise<string>((resolve, reject) => {
+    const parsedUrl = new URL(baseUrl)
+
+    const buf: Buffer[] = []
+    const client = net.createConnection(
+      { port: +parsedUrl.port, host: parsedUrl.hostname },
+      () => {
+        client.write(
+          [
+            `GET ${encodeURI(requestTarget)} HTTP/1.1`,
+            `Host: ${parsedUrl.host}`,
+            'Connection: Close',
+            '\r\n',
+          ].join('\r\n'),
+        )
+      },
+    )
+    client.on('data', (data) => {
+      buf.push(data)
+    })
+    client.on('end', (hadError: unknown) => {
+      if (!hadError) {
+        resolve(Buffer.concat(buf).toString())
+      }
+    })
+    client.on('error', (err) => {
+      reject(err)
+    })
+  })
+}
