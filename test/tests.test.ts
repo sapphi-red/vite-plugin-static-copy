@@ -7,7 +7,7 @@ import {
   getConfig,
   loadFileContent,
   normalizeLineBreak,
-  sendRawRequest,
+  sendRawRequest
 } from './utils'
 import type { AddressInfo } from 'node:net'
 
@@ -108,7 +108,7 @@ describe('serve', () => {
     test.concurrent('disallow path traversal with ../', async () => {
       const res = await sendRawRequest(
         constructUrl(server, '/'),
-        '/fixture1/foo.txt/../.env',
+        '/fixture1/foo.txt/../.env'
       )
       expect(res).not.toContain('SHOULD_BE_HIDDEN')
       expect(res).toContain('HTTP/1.1 404 Not Found')

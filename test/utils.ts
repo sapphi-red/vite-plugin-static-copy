@@ -35,7 +35,7 @@ export const normalizeLineBreak = (input: string) =>
 
 export const sendRawRequest = async (
   baseUrl: string,
-  requestTarget: string,
+  requestTarget: string
 ) => {
   return new Promise<string>((resolve, reject) => {
     const parsedUrl = new URL(baseUrl)
@@ -49,12 +49,12 @@ export const sendRawRequest = async (
             `GET ${encodeURI(requestTarget)} HTTP/1.1`,
             `Host: ${parsedUrl.host}`,
             'Connection: Close',
-            '\r\n',
-          ].join('\r\n'),
+            '\r\n'
+          ].join('\r\n')
         )
-      },
+      }
     )
-    client.on('data', (data) => {
+    client.on('data', data => {
       buf.push(data)
     })
     client.on('end', (hadError: unknown) => {
@@ -62,7 +62,7 @@ export const sendRawRequest = async (
         resolve(Buffer.concat(buf).toString())
       }
     })
-    client.on('error', (err) => {
+    client.on('error', err => {
       reject(err)
     })
   })
