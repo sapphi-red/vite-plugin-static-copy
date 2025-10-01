@@ -1,5 +1,11 @@
 # vite-plugin-static-copy
 
+## 3.1.3
+
+### Patch Changes
+
+- [#202](https://github.com/sapphi-red/vite-plugin-static-copy/pull/202) [`9388186`](https://github.com/sapphi-red/vite-plugin-static-copy/commit/938818611347b7996ae8649d607390e587c549d9) Thanks [@sapphi-red](https://github.com/sapphi-red)! - Switched to use trusted publisher to publish the package.
+
 ## 3.1.2
 
 ### Patch Changes
