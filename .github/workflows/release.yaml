@@ -21,6 +21,8 @@ jobs:
       - uses: actions/checkout@v5
       - uses: ./.github/actions/setup-repo
       - run: pnpm run build
+      - name: Upgrade npm for trusted publishing
+        run: npm i -g npm@^11.5.2
       - name: Create Release Pull Request or Publish to npm
         id: changesets
         uses: changesets/action@v1
@@ -31,5 +33,4 @@ jobs:
           publish: pnpm run release:publish
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          NPM_CONFIG_PROVENANCE: true # https://github.com/changesets/changesets/issues/1152
+          NPM_TOKEN: '' # https://github.com/changesets/changesets/issues/1152#issuecomment-3190884868
