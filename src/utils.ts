@@ -1,6 +1,6 @@
 import { glob } from 'tinyglobby'
 import path from 'node:path'
-import fs from 'fs-extra'
+import fs from 'node:fs/promises'
 import pc from 'picocolors'
 import type {
   RenameFunc,
@@ -304,7 +304,8 @@ async function transformCopy(
   if (transformedContent === null) {
     return { copied: false }
   }
-  await fs.outputFile(dest, transformedContent)
+  await fs.mkdir(path.dirname(dest), { recursive: true })
+  await fs.writeFile(dest, transformedContent)
   return { copied: true }
 }
 
@@ -358,10 +359,11 @@ export const copyAll = async (
             copiedCount++
           }
         } else {
-          await fs.copy(resolvedSrc, resolvedDest, {
+          await fs.cp(resolvedSrc, resolvedDest, {
+            recursive: true,
             preserveTimestamps,
             dereference,
-            overwrite: overwrite === true,
+            force: overwrite === true,
             errorOnExist: overwrite === 'error',
           })
           copiedCount++
