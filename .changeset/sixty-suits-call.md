@@ -2,4 +2,4 @@
 'vite-plugin-static-copy': patch
 ---
 
-refactor: replace `fs-extra` with `node:fs`
+Removed `fs-extra` dependency in favor of `node:fs`. This should not affect the behavior.
