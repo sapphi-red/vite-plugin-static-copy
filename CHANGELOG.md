@@ -1,5 +1,11 @@
 # vite-plugin-static-copy
 
+## 3.1.4
+
+### Patch Changes
+
+- [#204](https://github.com/sapphi-red/vite-plugin-static-copy/pull/204) [`d0b5370`](https://github.com/sapphi-red/vite-plugin-static-copy/commit/d0b537035262b419da2b8f0843a8ddccef71a236) Thanks [@stianjensen](https://github.com/stianjensen)! - Removed `fs-extra` dependency in favor of `node:fs`. This should not affect the behavior.
+
 ## 3.1.3
 
 ### Patch Changes
