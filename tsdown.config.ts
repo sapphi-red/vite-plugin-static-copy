@@ -5,4 +5,5 @@ export default defineConfig({
   target: 'node18',
   dts: true,
   format: 'esm',
+  fixedExtension: false,
 })

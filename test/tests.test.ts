@@ -72,6 +72,7 @@ describe('serve', () => {
           expect(actual.content).toStrictEqual(transformedContent ?? expected)
 
           if (contentType !== undefined) {
+            // eslint-disable-next-line vitest/no-conditional-expect
             expect(actual.contentType).toStrictEqual(contentType)
           }
         })
@@ -144,6 +145,7 @@ describe('build', () => {
           expect(actual.content).toStrictEqual(transformedContent ?? expected)
 
           if (contentType !== undefined) {
+            // eslint-disable-next-line vitest/no-conditional-expect
             expect(actual.contentType).toStrictEqual(contentType)
           }
         })
