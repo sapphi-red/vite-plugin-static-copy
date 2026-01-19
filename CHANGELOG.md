@@ -1,5 +1,11 @@
 # vite-plugin-static-copy
 
+## 3.1.5
+
+### Patch Changes
+
+- [#214](https://github.com/sapphi-red/vite-plugin-static-copy/pull/214) [`3f252cc`](https://github.com/sapphi-red/vite-plugin-static-copy/commit/3f252cc60af76786294c4319b40627d3347b1b51) Thanks [@sapphi-red](https://github.com/sapphi-red)! - Only copy for the client environment.
+
 ## 3.1.4
 
 ### Patch Changes
