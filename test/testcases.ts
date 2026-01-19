@@ -208,4 +208,11 @@ export const testcases: Record<string, Testcase[]> = {
       dest: '/fixture4/dir/bar.txt',
     },
   ],
+  'vite.envs.config.ts': [
+    {
+      name: 'multi-environment build copy',
+      src: './foo.txt',
+      dest: '/fixture/foo.txt',
+    },
+  ],
 }

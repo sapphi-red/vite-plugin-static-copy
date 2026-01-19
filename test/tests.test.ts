@@ -163,6 +163,22 @@ describe('build', () => {
     expect(result).toBe('')
   })
 
+  test('should only copy once in multi-environment build', async () => {
+    let result = ''
+    try {
+      await build(getConfig('vite.envs.config.ts'))
+    } catch (error: unknown) {
+      result = (error as Error).message
+    }
+    expect(result).toBe('')
+    expect(await loadFileContent('dist-envs/client/fixture/foo.txt')).toBe(
+      'foo\n',
+    )
+    await expect(() =>
+      loadFileContent('dist-envs/ssr/fixture/foo.txt'),
+    ).rejects.toThrow()
+  })
+
   describe('on error', () => {
     test('should throw error when it does not find the file on given src', async () => {
       let result = ''
