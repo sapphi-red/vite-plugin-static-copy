@@ -18,10 +18,12 @@ export const buildPlugin = ({
       config = _config
     },
     buildEnd() {
+      if (this.environment && this.environment.name !== 'client') return
       // reset for watch mode
       output = false
     },
-    async [hook]() {
+    async [hook as 'writeBundle']() {
+      if (this.environment && this.environment.name !== 'client') return
       // run copy only once even if multiple bundles are generated
       if (output) return
       output = true
