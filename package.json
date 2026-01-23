@@ -70,5 +70,16 @@
     "picocolors": "^1.1.1",
     "tinyglobby": "^0.2.15"
   },
+  "compatiblePackages": {
+    "schemaVersion": 1,
+    "rollup": {
+      "type": "incompatible",
+      "reason": "Uses Vite-specific APIs"
+    },
+    "rolldown": {
+      "type": "incompatible",
+      "reason": "Uses Vite-specific APIs"
+    }
+  },
   "packageManager": "pnpm@10.24.0"
 }
