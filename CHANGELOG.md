@@ -1,5 +1,11 @@
 # vite-plugin-static-copy
 
+## 3.1.6
+
+### Patch Changes
+
+- [#217](https://github.com/sapphi-red/vite-plugin-static-copy/pull/217) [`e3d457d`](https://github.com/sapphi-red/vite-plugin-static-copy/commit/e3d457dfef957de13e33fc665efea027fe84a44e) Thanks [@sapphi-red](https://github.com/sapphi-red)! - Only skip non-client environments when multiple environments exist.
+
 ## 3.1.5
 
 ### Patch Changes
