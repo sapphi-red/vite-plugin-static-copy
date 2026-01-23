@@ -57,7 +57,12 @@ export const servePlugin = ({
       config = _config
     },
     async buildStart() {
-      if (this.environment && this.environment.name !== 'client') return
+      if (
+        this.environment &&
+        Object.keys(config.environments).length > 1 &&
+        this.environment.name !== 'client'
+      )
+        return
       await collectFileMap()
     },
     configureServer({ httpServer, middlewares, ws }) {
@@ -148,7 +153,12 @@ export const servePlugin = ({
       }
     },
     async closeBundle() {
-      if (this.environment && this.environment.name !== 'client') return
+      if (
+        this.environment &&
+        Object.keys(config.environments).length > 1 &&
+        this.environment.name !== 'client'
+      )
+        return
       await watcher.close()
     },
   }
