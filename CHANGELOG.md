@@ -1,5 +1,11 @@
 # vite-plugin-static-copy
 
+## 3.2.0
+
+### Minor Changes
+
+- [#219](https://github.com/sapphi-red/vite-plugin-static-copy/pull/219) [`fbb2a7a`](https://github.com/sapphi-red/vite-plugin-static-copy/commit/fbb2a7aee6484574d0e39953e9fa3bdd07c0b8d4) Thanks [@sapphi-red](https://github.com/sapphi-red)! - Add `environment` option to configure which environment the plugin runs in. Defaults to `'client'`.
+
 ## 3.1.6
 
 ### Patch Changes
