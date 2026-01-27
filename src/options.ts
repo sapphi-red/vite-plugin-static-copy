@@ -112,6 +112,11 @@ export type ViteStaticCopyOptions = {
    * @default 'writeBundle'
    */
   hook?: string
+  /**
+   * The environment to run this plugin in.
+   * @default 'client'
+   */
+  environment?: string
 }
 
 export type ResolvedViteStaticCopyOptions = {
@@ -123,6 +128,7 @@ export type ResolvedViteStaticCopyOptions = {
     reloadPageOnChange: boolean
   }
   hook: string
+  environment: string
 }
 
 export const resolveOptions = (
@@ -136,4 +142,5 @@ export const resolveOptions = (
     reloadPageOnChange: options.watch?.reloadPageOnChange ?? false,
   },
   hook: options.hook ?? 'writeBundle',
+  environment: options.environment ?? 'client',
 })
