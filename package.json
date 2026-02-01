@@ -47,21 +47,21 @@
   "devDependencies": {
     "@changesets/changelog-github": "^0.5.2",
     "@changesets/cli": "^2.29.8",
-    "@eslint/js": "^9.39.1",
+    "@eslint/js": "^9.39.2",
     "@polka/url": "^1.0.0-next.29",
     "@types/eslint-config-prettier": "^6.11.3",
-    "@types/node": "^22.19.1",
+    "@types/node": "^22.19.7",
     "@types/throttle-debounce": "^5.0.2",
-    "@vitest/eslint-plugin": "^1.5.1",
-    "eslint": "^9.39.1",
+    "@vitest/eslint-plugin": "^1.6.6",
+    "eslint": "^9.39.2",
     "eslint-config-prettier": "^10.1.8",
     "mrmime": "^2.0.1",
-    "prettier": "^3.7.3",
+    "prettier": "^3.8.1",
     "throttle-debounce": "^5.0.2",
-    "tsdown": "^0.16.8",
+    "tsdown": "^0.20.1",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.48.0",
-    "vite": "^7.2.4",
+    "typescript-eslint": "^8.54.0",
+    "vite": "^7.3.1",
     "vitest": "^3.2.4"
   },
   "dependencies": {
@@ -81,5 +81,5 @@
       "reason": "Uses Vite-specific APIs"
     }
   },
-  "packageManager": "pnpm@10.24.0"
+  "packageManager": "pnpm@10.28.2"
 }
