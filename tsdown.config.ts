@@ -6,4 +6,5 @@ export default defineConfig({
   dts: true,
   format: 'esm',
   fixedExtension: false,
+  inlineOnly: ['@polka/url', 'mrmime', 'throttle-debounce'],
 })
