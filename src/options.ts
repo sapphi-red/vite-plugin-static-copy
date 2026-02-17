@@ -1,4 +1,6 @@
-import type { WatchOptions } from 'chokidar'
+import type { ChokidarOptions } from 'chokidar'
+
+type WatchOptions = ChokidarOptions
 
 type MaybePromise<T> = T | Promise<T>
 

@@ -8,7 +8,7 @@ import {
   formatConsole,
 } from './utils'
 import { debounce } from 'throttle-debounce'
-import chokidar from 'chokidar'
+import chokidar, { type FSWatcher } from 'chokidar'
 import pc from 'picocolors'
 import path from 'node:path'
 
@@ -28,7 +28,7 @@ export const servePlugin = ({
   environment,
 }: ResolvedViteStaticCopyOptions): Plugin => {
   let config: ResolvedConfig
-  let watcher: chokidar.FSWatcher
+  let watcher: FSWatcher
   const fileMap: FileMap = new Map()
 
   const collectFileMap = async () => {
