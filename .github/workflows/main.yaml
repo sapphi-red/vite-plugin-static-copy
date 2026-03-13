@@ -67,5 +67,8 @@ jobs:
           name: dist
           path: dist
       - if: matrix.node_version == '18.x'
-        run: pnpm i -D vite@6.3.5 -w
+        run: |
+          yq -i '.overrides.vite = "^6.3.5"' pnpm-workspace.yaml
+          yq -i '.overrides["vitest"] = "^4.0.18"' pnpm-workspace.yaml
+          pnpm install --no-frozen-lockfile
       - run: pnpm run test
