@@ -69,4 +69,5 @@ jobs:
       - if: matrix.node_version == '18.x'
         run: |
           yq -i '.overrides.vite = "^6.3.5"' pnpm-workspace.yaml
+          yq -i '.overrides["vitest"] = "^4.0.18"' pnpm-workspace.yaml
       - run: pnpm run test
