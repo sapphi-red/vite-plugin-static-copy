@@ -67,5 +67,6 @@ jobs:
           name: dist
           path: dist
       - if: matrix.node_version == '18.x'
-        run: pnpm i -D vite@6.3.5 -w
+        run: |
+          yq -i '.overrides.vite = "^6.3.5"' pnpm-workspace.yaml
       - run: pnpm run test
