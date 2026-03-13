@@ -1,5 +1,11 @@
 # vite-plugin-static-copy
 
+## 3.3.0
+
+### Minor Changes
+
+- [#230](https://github.com/sapphi-red/vite-plugin-static-copy/pull/230) [`3074e1a`](https://github.com/sapphi-red/vite-plugin-static-copy/commit/3074e1ab4a8ad0bcb25283463c9cc41e79b1286b) Thanks [@sapphi-red](https://github.com/sapphi-red)! - Add Vite 8 to peer dependency range.
+
 ## 3.2.0
 
 ### Minor Changes
