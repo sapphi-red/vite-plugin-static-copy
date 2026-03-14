@@ -242,10 +242,15 @@ export const collectCopyTargets = async (
       }
 
       const { base, dir } = path.parse(relativeMatchedPath)
+      const effectiveStructured = target.structured ?? structured
 
       let destDir: string
-      if (!structured || !dir) {
+      if (!effectiveStructured || !dir) {
         destDir = dest
+      } else if (typeof effectiveStructured === 'object') {
+        // { base } mode: strip base prefix, preserve relative structure
+        const rel = path.relative(effectiveStructured.base, dir)
+        destDir = rel.startsWith('..') ? dest : path.join(dest, rel)
       } else {
         const dirClean = dir.replace(/^(?:\.\.\/)+/, '')
         const destClean = `${dest}/${dirClean}`.replace(/^\/+|\/+$/g, '')

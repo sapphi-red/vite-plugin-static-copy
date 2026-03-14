@@ -156,6 +156,21 @@ export const testcases: Record<string, Testcase[]> = {
       src: './foo.txt',
       dest: '/fixture1-1/foo.txt',
     },
+    {
+      name: 'structured base preserves relative path (a/foo.txt)',
+      src: './nested/a/foo.txt',
+      dest: '/fixture14/a/foo.txt',
+    },
+    {
+      name: 'structured base preserves relative path (b/foo.txt)',
+      src: './nested/b/foo.txt',
+      dest: '/fixture14/b/foo.txt',
+    },
+    {
+      name: 'structured base with deeper nesting',
+      src: './dir/deep/bar.txt',
+      dest: '/fixture15/bar.txt',
+    },
   ],
   'vite.absolute.config.ts': [
     {

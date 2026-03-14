@@ -30,6 +30,8 @@ export type TransformOptionObject =
 
 export type TransformOption = TransformFunc<string> | TransformOptionObject
 
+export type StructuredOption = boolean | { base: string }
+
 export type Target = {
   /**
    * path or glob
@@ -77,6 +79,25 @@ export type Target = {
    * @default true
    */
   overwrite?: boolean | 'error'
+  /**
+   * Preserve the directory structure for this target.
+   *
+   * - `false`: flatten. only the filename is kept
+   * - `true`: preserve full source directory path
+   * - `{ base: string }`: preserve structure relative to `base` path
+   *
+   * @default the value of `structured` in the plugin options
+   * @example
+   * // Copies src/pages/events/test.html to dist/test.html
+   * { src: 'src/pages/**\/*.html', dest: 'dist/', structured: false }
+   * @example
+   * // Copies src/pages/events/test.html to dist/src/pages/events/test.html
+   * { src: 'src/pages/**\/*.html', dest: 'dist/', structured: true }
+   * @example
+   * // Copies src/pages/events/test.html to dist/pages/events/test.html
+   * { src: 'src/pages/**\/*.html', dest: 'dist/', structured: { base: 'src' } }
+   */
+  structured?: StructuredOption
 }
 
 export type ViteStaticCopyOptions = {

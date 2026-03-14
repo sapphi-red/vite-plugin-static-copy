@@ -146,6 +146,16 @@ export default defineConfig({
         },
         { src: 'eexist/*', dest: 'eexist' },
         { src: 'eexist/*', dest: 'Eexist' },
+        {
+          src: 'nested/**/*.txt',
+          dest: 'fixture14',
+          structured: { base: 'nested' },
+        },
+        {
+          src: 'dir/**/*.txt',
+          dest: 'fixture15',
+          structured: { base: 'dir/deep' },
+        },
       ],
     }),
     viteStaticCopy({
