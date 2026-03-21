@@ -4,6 +4,7 @@ import fs from 'node:fs/promises'
 import pc from 'picocolors'
 import type {
   RenameFunc,
+  RenameObject,
   Target,
   TransformOption,
   TransformOptionObject,
@@ -185,13 +186,21 @@ export const groupTargetsByDirectoryTree = <T extends { resolvedDest: string }>(
 
 async function renameTarget(
   target: string,
-  rename: string | RenameFunc,
+  rename: string | RenameObject | RenameFunc,
   src: string,
+  dir: string,
 ): Promise<string> {
   const parsedPath = path.parse(target)
 
   if (typeof rename === 'string') {
     return rename
+  }
+
+  if (typeof rename === 'object' && 'stripBase' in rename) {
+    const dirSegments = dir ? dir.split('/') : []
+    const goUp = '../'.repeat(dirSegments.length)
+    const remaining = dirSegments.slice(rename.stripBase).join('/')
+    return remaining ? `${goUp}${remaining}/${target}` : `${goUp}${target}`
   }
 
   return rename(parsedPath.name, parsedPath.ext.replace('.', ''), src)
@@ -256,7 +265,9 @@ export const collectCopyTargets = async (
         src: relativeMatchedPath,
         dest: path.join(
           destDir,
-          rename ? await renameTarget(base, rename, absoluteMatchedPath) : base,
+          rename
+            ? await renameTarget(base, rename, absoluteMatchedPath, dir)
+            : base,
         ),
         transform,
         preserveTimestamps: preserveTimestamps ?? false,
