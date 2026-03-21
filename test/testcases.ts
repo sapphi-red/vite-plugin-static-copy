@@ -142,6 +142,11 @@ export const testcases: Record<string, Testcase[]> = {
       dest: '/fixture13/foo.txt',
     },
     {
+      name: 'rename with ../ (non-structured)',
+      src: './foo.txt',
+      dest: '/fixture14/renamed.txt',
+    },
+    {
       name: 'parallel copy to same dir (1)',
       src: './eexist/a/1.txt',
       dest: '/eexist/a/1.txt',
@@ -206,6 +211,16 @@ export const testcases: Record<string, Testcase[]> = {
       name: 'absolute path',
       src: './dir/bar.txt',
       dest: '/fixture4/dir/bar.txt',
+    },
+    {
+      name: 'rename with ../ to strip structured dir',
+      src: './dir/bar.txt',
+      dest: '/fixture5/bar.txt',
+    },
+    {
+      name: 'rename with ../ on deeper nesting',
+      src: './dir/deep/bar.txt',
+      dest: '/fixture5/dir/bar2.txt',
     },
   ],
   'vite.envs.config.ts': [

@@ -42,7 +42,18 @@ export type Target = {
    */
   dest: string
   /**
-   * rename
+   * Rename the output file.
+   *
+   * When a string is provided, the matched file is renamed to that string.
+   *
+   * When a function is provided, it receives `(fileName, fileExtension, fullPath)`
+   * and should return the new file name.
+   *
+   * The returned value is joined with the resolved `dest` directory using
+   * `path.join`, so it can include path segments (e.g. `subdir/file.txt`) or
+   * `../` traversals to restructure the output. For example, with
+   * `structured: true`, returning `../${name}.${ext}` strips one directory
+   * level that `structured` would otherwise add.
    */
   rename?: string | RenameFunc
   /**
