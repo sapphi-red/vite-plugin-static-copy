@@ -1,5 +1,13 @@
 # vite-plugin-static-copy
 
+## 3.4.0
+
+### Minor Changes
+
+- [#233](https://github.com/sapphi-red/vite-plugin-static-copy/pull/233) [`f665a15`](https://github.com/sapphi-red/vite-plugin-static-copy/commit/f665a15aba09d9cd43db0fbcf09bb7932ad3d2a0) Thanks [@sapphi-red](https://github.com/sapphi-red)! - Add `{ stripBase: number }` object form to the `rename` option. This strips the given number of leading directory segments from the matched path, avoiding the need for manual `../` traversals in a rename function.
+
+  This is useful when copying files from deep paths like `node_modules/my-lib/dist/**/*` with `structured: true`, where the full directory structure would otherwise be preserved in the output. Instead of writing a rename function that manually returns `../` traversals to flatten unwanted nesting, you can use `rename: { stripBase: N }` to declaratively strip the leading segments.
+
 ## 3.3.0
 
 ### Minor Changes
