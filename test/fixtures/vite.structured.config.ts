@@ -56,6 +56,16 @@ export default defineConfig({
             return `../../dir/${_name}2.${_ext}`
           },
         },
+        {
+          src: 'dir/bar.txt',
+          dest: 'fixture6',
+          rename: { stripBase: 1 },
+        },
+        {
+          src: 'dir/deep/bar.txt',
+          dest: 'fixture6',
+          rename: { stripBase: 1 },
+        },
       ],
       structured: true,
     }),

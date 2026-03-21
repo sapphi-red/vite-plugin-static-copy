@@ -222,6 +222,16 @@ export const testcases: Record<string, Testcase[]> = {
       src: './dir/deep/bar.txt',
       dest: '/fixture5/dir/bar2.txt',
     },
+    {
+      name: 'stripBase on single dir',
+      src: './dir/bar.txt',
+      dest: '/fixture6/bar.txt',
+    },
+    {
+      name: 'stripBase on deeper nesting',
+      src: './dir/deep/bar.txt',
+      dest: '/fixture6/deep/bar.txt',
+    },
   ],
   'vite.envs.config.ts': [
     {

@@ -8,6 +8,8 @@ export type RenameFunc = (
   fullPath: string,
 ) => MaybePromise<string>
 
+export type RenameObject = { stripBase: number }
+
 /**
  * @param content content of file
  * @param filename absolute path to the file
@@ -46,16 +48,22 @@ export type Target = {
    *
    * When a string is provided, the matched file is renamed to that string.
    *
+   * When an object `{ stripBase: number }` is provided, the given number of
+   * leading directory segments from the matched path are stripped from the
+   * structured destination. For example, with `structured: true` and a matched
+   * path of `dir/deep/bar.txt`, `rename: { stripBase: 1 }` removes `dir/` so
+   * the file is written to `dest/deep/bar.txt` instead of
+   * `dest/dir/deep/bar.txt`.
+   *
    * When a function is provided, it receives `(fileName, fileExtension, fullPath)`
    * and should return the new file name.
-   *
    * The returned value is joined with the resolved `dest` directory using
    * `path.join`, so it can include path segments (e.g. `subdir/file.txt`) or
    * `../` traversals to restructure the output. For example, with
    * `structured: true`, returning `../${name}.${ext}` strips one directory
    * level that `structured` would otherwise add.
    */
-  rename?: string | RenameFunc
+  rename?: string | RenameObject | RenameFunc
   /**
    * transform
    *

@@ -7,6 +7,7 @@ import { buildPlugin } from './build'
 export type { ViteStaticCopyOptions }
 export type {
   RenameFunc,
+  RenameObject,
   TransformFunc,
   TransformOption,
   Target,
