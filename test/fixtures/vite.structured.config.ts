@@ -42,6 +42,20 @@ export default defineConfig({
           src: normalizePath(path.resolve(_dirname, 'dir/*.txt')),
           dest: 'fixture4',
         },
+        {
+          src: 'dir/bar.txt',
+          dest: 'fixture5',
+          rename: (_name, _ext, _absPath) => {
+            return `../${_name}.${_ext}`
+          },
+        },
+        {
+          src: 'dir/deep/bar.txt',
+          dest: 'fixture5',
+          rename: (_name, _ext, _absPath) => {
+            return `../../dir/${_name}2.${_ext}`
+          },
+        },
       ],
       structured: true,
     }),

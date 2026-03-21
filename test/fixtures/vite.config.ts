@@ -144,6 +144,11 @@ export default defineConfig({
           src: 'foo.txt',
           dest: path.resolve(_dirname, 'dist/fixture13'),
         },
+        {
+          src: 'foo.txt',
+          dest: 'fixture14/sub',
+          rename: () => '../renamed.txt',
+        },
         { src: 'eexist/*', dest: 'eexist' },
         { src: 'eexist/*', dest: 'Eexist' },
       ],
