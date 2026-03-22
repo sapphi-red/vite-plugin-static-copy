@@ -50,7 +50,7 @@ jobs:
     needs: [build]
     strategy:
       matrix:
-        node_version: [18.x, 20.x, 22.x, 24.x]
+        node_version: [22.x, 24.x]
         os: [ubuntu-latest]
         include:
           - node_version: 22.x
@@ -66,9 +66,4 @@ jobs:
         with:
           name: dist
           path: dist
-      - if: matrix.node_version == '18.x'
-        run: |
-          yq -i '.overrides.vite = "^6.3.5"' pnpm-workspace.yaml
-          yq -i '.overrides["vitest"] = "^4.0.18"' pnpm-workspace.yaml
-          pnpm install --no-frozen-lockfile
       - run: pnpm run test
