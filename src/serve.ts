@@ -33,11 +33,7 @@ export const servePlugin = ({
   const collectFileMap = async () => {
     const absoluteBuildOutDir = path.resolve(config.root, config.build.outDir)
     try {
-      const copyTargets = await collectCopyTargets(
-        config.root,
-        targets,
-        silent,
-      )
+      const copyTargets = await collectCopyTargets(config.root, targets, silent)
       updateFileMapFromTargets(copyTargets, fileMap, absoluteBuildOutDir)
     } catch (e) {
       if (!silent) {

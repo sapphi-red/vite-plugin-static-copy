@@ -165,10 +165,15 @@ export default defineConfig({
         {
           src: 'dir/deep/bar.txt',
           dest: 'fixture16',
-          rename: (_name: string, _ext: string) => `../../dir/${_name}2.${_ext}`,
+          rename: (_name: string, _ext: string) =>
+            `../../dir/${_name}2.${_ext}`,
         },
         { src: 'dir/bar.txt', dest: 'fixture17', rename: { stripBase: 1 } },
-        { src: 'dir/deep/bar.txt', dest: 'fixture17', rename: { stripBase: 1 } },
+        {
+          src: 'dir/deep/bar.txt',
+          dest: 'fixture17',
+          rename: { stripBase: 1 },
+        },
         {
           src: normalizePath(path.resolve(import.meta.dirname, 'dir/*.txt')),
           dest: 'fixture18',
@@ -176,12 +181,23 @@ export default defineConfig({
         {
           src: 'to-flat/**/*.txt',
           dest: 'fixture19',
-          rename: (fileName: string, fileExtension: string, absPath: string) => {
-            const s = path.relative(absPath, path.resolve(import.meta.dirname, 'to-flat'))
+          rename: (
+            fileName: string,
+            fileExtension: string,
+            absPath: string,
+          ) => {
+            const s = path.relative(
+              absPath,
+              path.resolve(import.meta.dirname, 'to-flat'),
+            )
             return path.join(s, `${fileName}.${fileExtension}`)
           },
         },
-        { src: 'to-flat/**/*.txt', dest: 'fixture20', rename: { stripBase: true } },
+        {
+          src: 'to-flat/**/*.txt',
+          dest: 'fixture20',
+          rename: { stripBase: true },
+        },
         { src: 'eexist/**/*', dest: 'eexist', rename: { stripBase: 1 } },
         { src: 'eexist/**/*', dest: 'Eexist', rename: { stripBase: 1 } },
       ],

@@ -318,11 +318,7 @@ export const copyAll = async (
   targets: Target[],
   silent: boolean,
 ) => {
-  const copyTargets = await collectCopyTargets(
-    rootSrc,
-    targets,
-    silent,
-  )
+  const copyTargets = await collectCopyTargets(rootSrc, targets, silent)
 
   const resolvedTargets: ResolvedTarget[] = copyTargets.map((target) => ({
     ...target,
