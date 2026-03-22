@@ -1,6 +1,6 @@
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { defineConfig } from 'vite'
+import { defineConfig, normalizePath } from 'vite'
 import { viteStaticCopy } from 'vite-plugin-static-copy'
 
 const _dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -15,6 +15,9 @@ export default defineConfig({
   plugins: [
     viteStaticCopy({
       targets: [
+        { src: 'foo.js', dest: '' },
+        { src: 'noext', dest: '.' },
+        { src: 'dir/bar.txt', dest: '' },
         {
           src: 'foo.txt',
           dest: 'fixture1',
@@ -52,10 +55,12 @@ export default defineConfig({
         {
           src: 'dir/bar.txt',
           dest: 'fixture6',
+          rename: { stripBase: 1 },
         },
         {
           src: 'dir/deep/bar.txt',
           dest: 'fixture6',
+          rename: { stripBase: 2 },
         },
         {
           src: 'dir',
@@ -64,6 +69,7 @@ export default defineConfig({
         {
           src: 'dir2/dir',
           dest: 'fixture7',
+          rename: { stripBase: 1 },
         },
         {
           src: 'foo.txt',
@@ -111,6 +117,7 @@ export default defineConfig({
         {
           src: 'dir/bar.txt',
           dest: 'fixture11/notOverwriteDir/',
+          rename: { stripBase: 1 },
           overwrite: false,
           transform(content) {
             return content + '1'
@@ -149,8 +156,34 @@ export default defineConfig({
           dest: 'fixture14/sub',
           rename: () => '../renamed.txt',
         },
-        { src: 'eexist/*', dest: 'eexist' },
-        { src: 'eexist/*', dest: 'Eexist' },
+        { src: '../fixtures2/*.txt', dest: 'fixture15' },
+        {
+          src: 'dir/bar.txt',
+          dest: 'fixture16',
+          rename: (_name: string, _ext: string) => `../${_name}.${_ext}`,
+        },
+        {
+          src: 'dir/deep/bar.txt',
+          dest: 'fixture16',
+          rename: (_name: string, _ext: string) => `../../dir/${_name}2.${_ext}`,
+        },
+        { src: 'dir/bar.txt', dest: 'fixture17', rename: { stripBase: 1 } },
+        { src: 'dir/deep/bar.txt', dest: 'fixture17', rename: { stripBase: 1 } },
+        {
+          src: normalizePath(path.resolve(import.meta.dirname, 'dir/*.txt')),
+          dest: 'fixture18',
+        },
+        {
+          src: 'to-flat/**/*.txt',
+          dest: 'fixture19',
+          rename: (fileName: string, fileExtension: string, absPath: string) => {
+            const s = path.relative(absPath, path.resolve(import.meta.dirname, 'to-flat'))
+            return path.join(s, `${fileName}.${fileExtension}`)
+          },
+        },
+        { src: 'to-flat/**/*.txt', dest: 'fixture20', rename: { stripBase: true } },
+        { src: 'eexist/**/*', dest: 'eexist', rename: { stripBase: 1 } },
+        { src: 'eexist/**/*', dest: 'Eexist', rename: { stripBase: 1 } },
       ],
     }),
     viteStaticCopy({

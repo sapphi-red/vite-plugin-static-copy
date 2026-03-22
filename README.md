@@ -29,6 +29,7 @@ export default {
         {
           src: 'bin/example.wasm',
           dest: 'wasm-files',
+          rename: { stripBase: 1 }, // strips `bin/`
         },
       ],
     }),
@@ -78,4 +79,4 @@ When debug logging is enabled, the plugin will output which file is served from 
   - Because `tinyglobby` is used inside `vite`.
 - `transform` could return `null` as a way to tell the plugin not to copy the file, this is similar to the [CopyWebpackPlugin#filter](https://webpack.js.org/plugins/copy-webpack-plugin/#filter) option, but it expects `transform` to return the original content in case you want it to be copied.
 - `transform` can optionally be an object, with a `handler` property (with the same signature of the `rollup-plugin-copy` transform option) and an `encoding` property (`BufferEncoding | 'buffer'`) that will be used to read the file content so that the `handler`'s content argument will reflect the correct encoding (could be Buffer);
-- `structured: true` preserves the directory structure. This is similar to `flatten: false` in `rollup-plugin-copy`, but it covers more edge cases.
+- Directory structure is always preserved in the output (similar to `flatten: false` in `rollup-plugin-copy`). Use `rename: { stripBase: true }` for flat copy.

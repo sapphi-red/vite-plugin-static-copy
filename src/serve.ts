@@ -22,7 +22,6 @@ export type FileMap = Map<string, FileMapValue[]>
 
 export const servePlugin = ({
   targets,
-  structured,
   watch,
   silent,
   environment,
@@ -37,7 +36,6 @@ export const servePlugin = ({
       const copyTargets = await collectCopyTargets(
         config.root,
         targets,
-        structured,
         silent,
       )
       updateFileMapFromTargets(copyTargets, fileMap, absoluteBuildOutDir)

@@ -18,7 +18,7 @@ import type {
   OutgoingHttpHeaders,
   ServerResponse,
 } from 'node:http'
-import { join, resolve, sep } from 'node:path'
+import { resolve } from 'node:path'
 import type { FileMap } from './serve'
 import type { TransformOptionObject } from './options'
 import {
@@ -54,13 +54,6 @@ function shouldServeOverwriteCheck(
   return true
 }
 
-function isFileInside(filepath: string, srcBase: string) {
-  const srcBaseWithTrailingSlash = srcBase.endsWith(sep)
-    ? srcBase
-    : `${srcBase}${sep}`
-  return filepath.startsWith(srcBaseWithTrailingSlash)
-}
-
 function viaLocal(
   root: string,
   publicDir: string,
@@ -87,37 +80,6 @@ function viaLocal(
     }
     const stats = statSync(filepath)
     return { filepath, stats, transform: file.transform }
-  }
-
-  for (const [key, vals] of fileMap) {
-    const dir = key.endsWith('/') ? key : `${key}/`
-    if (!uri.startsWith(dir)) continue
-
-    for (const val of vals) {
-      const srcBase = resolve(root, val.src)
-      const filepath = resolve(srcBase, uri.slice(dir.length))
-      if (!isFileInside(filepath, srcBase)) {
-        // uri includes non-normalized `../`
-        return undefined
-      }
-
-      const overwriteCheck = shouldServeOverwriteCheck(
-        val.overwrite,
-        filepath,
-        root,
-        publicDir,
-        join(val.dest, uri.slice(dir.length)),
-      )
-      if (overwriteCheck === false) {
-        return undefined // public middleware will serve instead
-      }
-      const stats = statSync(filepath, { throwIfNoEntry: false })
-      if (stats) {
-        return { filepath, stats }
-      }
-    }
-    // no entry matched for this prefix
-    return undefined
   }
 
   return undefined

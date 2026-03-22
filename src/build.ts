@@ -4,7 +4,6 @@ import { copyAll, outputCopyLog } from './utils'
 
 export const buildPlugin = ({
   targets,
-  structured,
   silent,
   hook,
   environment,
@@ -33,7 +32,6 @@ export const buildPlugin = ({
         config.root,
         config.build.outDir,
         targets,
-        structured,
         silent,
       )
       if (!silent) outputCopyLog(config.logger, result)
