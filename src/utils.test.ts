@@ -109,7 +109,9 @@ describe('collectCopyTargets', () => {
         ],
         false,
       )
-      const srcs = targets.map((t) => path.relative(process.cwd(), t.src))
+      const srcs = targets.map((t) =>
+        path.relative(process.cwd(), t.src).replaceAll('\\', '/'),
+      )
       expect(srcs).toMatchInlineSnapshot(`
         [
           "foo.txt",
@@ -131,7 +133,9 @@ describe('collectCopyTargets', () => {
         ],
         false,
       )
-      const srcs = targets.map((t) => path.relative(process.cwd(), t.src))
+      const srcs = targets.map((t) =>
+        path.relative(process.cwd(), t.src).replaceAll('\\', '/'),
+      )
       expect(srcs).toMatchInlineSnapshot(`
         [
           "dir/bar.txt",
