@@ -10,6 +10,22 @@ type Testcase = {
 export const testcases: Record<string, Testcase[]> = {
   'vite.config.ts': [
     {
+      name: 'empty dest',
+      src: './foo.js',
+      dest: '/foo.js',
+    },
+    {
+      name: 'dot dest',
+      src: './noext',
+      dest: '/noext',
+    },
+    {
+      name: 'dir to empty dest',
+      src: './dir/bar.txt',
+      dest: '/dir/bar.txt',
+    },
+
+    {
       name: 'file copy',
       src: './foo.txt',
       dest: '/fixture1/foo.txt',
@@ -147,6 +163,56 @@ export const testcases: Record<string, Testcase[]> = {
       dest: '/fixture14/renamed.txt',
     },
     {
+      name: 'parent dir glob',
+      src: '../fixtures2/baz.txt',
+      dest: '/fixture15/fixtures2/baz.txt',
+    },
+    {
+      name: 'rename ../ strips structured dir',
+      src: './dir/bar.txt',
+      dest: '/fixture16/bar.txt',
+    },
+    {
+      name: 'rename ../ on deeper nesting',
+      src: './dir/deep/bar.txt',
+      dest: '/fixture16/dir/bar2.txt',
+    },
+    {
+      name: 'stripBase single dir',
+      src: './dir/bar.txt',
+      dest: '/fixture17/bar.txt',
+    },
+    {
+      name: 'stripBase deeper nesting',
+      src: './dir/deep/bar.txt',
+      dest: '/fixture17/deep/bar.txt',
+    },
+    {
+      name: 'absolute path',
+      src: './dir/bar.txt',
+      dest: '/fixture18/dir/bar.txt',
+    },
+    {
+      name: 'rename function can be equivalent to flat copy (1)',
+      src: './to-flat/a.txt',
+      dest: '/fixture19/a.txt',
+    },
+    {
+      name: 'rename function can be equivalent to flat copy (2)',
+      src: './to-flat/deep/b.txt',
+      dest: '/fixture19/b.txt',
+    },
+    {
+      name: 'stripBase true is equivalent to flat copy (1)',
+      src: './to-flat/a.txt',
+      dest: '/fixture20/a.txt',
+    },
+    {
+      name: 'stripBase true is equivalent to flat copy (2)',
+      src: './to-flat/deep/b.txt',
+      dest: '/fixture20/b.txt',
+    },
+    {
       name: 'parallel copy to same dir (1)',
       src: './eexist/a/1.txt',
       dest: '/eexist/a/1.txt',
@@ -174,63 +240,6 @@ export const testcases: Record<string, Testcase[]> = {
       name: 'copy',
       src: './foo.txt',
       dest: '/base/fixture1/foo.txt',
-    },
-  ],
-  'vite.structured.config.ts': [
-    {
-      name: 'glob without dir',
-      src: './foo.txt',
-      dest: '/fixture1/foo.txt',
-    },
-    {
-      name: 'glob with dir',
-      src: './dir/bar.txt',
-      dest: '/fixture2/dir/bar.txt',
-    },
-    {
-      name: 'glob with parent dir',
-      src: '../fixtures2/baz.txt',
-      dest: '/fixture3/fixtures2/baz.txt',
-    },
-    {
-      name: 'empty dest',
-      src: './foo.js',
-      dest: '/foo.js',
-    },
-    {
-      name: 'dot dest',
-      src: './noext',
-      dest: '/noext',
-    },
-    {
-      name: 'dir to empty dest',
-      src: './dir/bar.txt',
-      dest: '/dir/bar.txt',
-    },
-    {
-      name: 'absolute path',
-      src: './dir/bar.txt',
-      dest: '/fixture4/dir/bar.txt',
-    },
-    {
-      name: 'rename with ../ to strip structured dir',
-      src: './dir/bar.txt',
-      dest: '/fixture5/bar.txt',
-    },
-    {
-      name: 'rename with ../ on deeper nesting',
-      src: './dir/deep/bar.txt',
-      dest: '/fixture5/dir/bar2.txt',
-    },
-    {
-      name: 'stripBase on single dir',
-      src: './dir/bar.txt',
-      dest: '/fixture6/bar.txt',
-    },
-    {
-      name: 'stripBase on deeper nesting',
-      src: './dir/deep/bar.txt',
-      dest: '/fixture6/deep/bar.txt',
     },
   ],
   'vite.envs.config.ts': [

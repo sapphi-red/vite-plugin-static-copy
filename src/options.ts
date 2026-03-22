@@ -8,7 +8,7 @@ export type RenameFunc = (
   fullPath: string,
 ) => MaybePromise<string>
 
-export type RenameObject = { stripBase: number }
+export type RenameObject = { stripBase: number | true }
 
 /**
  * @param content content of file
@@ -48,26 +48,32 @@ export type Target = {
    *
    * When a string is provided, the matched file is renamed to that string.
    *
-   * When an object `{ stripBase: number }` is provided, the given number of
-   * leading directory segments from the matched path are stripped from the
-   * structured destination. For example, with `structured: true` and a matched
-   * path of `dir/deep/bar.txt`, `rename: { stripBase: 1 }` removes `dir/` so
-   * the file is written to `dest/deep/bar.txt` instead of
-   * `dest/dir/deep/bar.txt`.
+   * When an object `{ stripBase: number | true }` is provided, the given number
+   * of leading directory segments from the matched path are stripped from the
+   * destination. When `true`, all directory segments are stripped (equivalent to
+   * flat copy).
    *
    * When a function is provided, it receives `(fileName, fileExtension, fullPath)`
    * and should return the new file name.
    * The returned value is joined with the resolved `dest` directory using
    * `path.join`, so it can include path segments (e.g. `subdir/file.txt`) or
-   * `../` traversals to restructure the output. For example, with
-   * `structured: true`, returning `../${name}.${ext}` strips one directory
-   * level that `structured` would otherwise add.
+   * `../` traversals to restructure the output.
+   *
+   * @example
+   * ```js
+   * // Copies src/pages/events/test.html to dist/events/test.html
+   * { src: 'src/pages/**\/*.html', dest: 'dist/', rename: { stripBase: 2 } }
+   * // Copies src/pages/events/test.html to dist/test.html
+   * { src: 'src/pages/**\/*.html', dest: 'dist/', rename: { stripBase: true } }
+   * // Copies src/pages/events/test.html to dist/src/pages/events/test2.html
+   * { src: 'src/pages/**\/*.html', dest: 'dist/', rename: (name, ext) => `${name}2.${ext}` }
+   * // Copies src/pages/events/test.html to dist/pages/events/test.html
+   * { src: 'src/pages/**\/*.html', dest: 'dist/', rename: (name, ext, fullPath) => `../${name}.${ext}` }
+   * ```
    */
   rename?: string | RenameObject | RenameFunc
   /**
-   * transform
-   *
-   * `src` should only include files when this option is used
+   * Transform file contents before writing.
    */
   transform?: TransformOption
   /**
@@ -104,13 +110,6 @@ export type ViteStaticCopyOptions = {
    */
   targets: Target[]
   /**
-   * Preserve the directory structure.
-   *
-   * Similar to `flatten: false` in rollup-plugin-copy
-   * @default false
-   */
-  structured?: boolean
-  /**
    * Suppress console output and ignore validation errors.
    * @default false
    */
@@ -140,7 +139,6 @@ export type ViteStaticCopyOptions = {
 
 export type ResolvedViteStaticCopyOptions = {
   targets: Target[]
-  structured: boolean
   silent: boolean
   watch: {
     options: WatchOptions
@@ -154,7 +152,6 @@ export const resolveOptions = (
   options: ViteStaticCopyOptions,
 ): ResolvedViteStaticCopyOptions => ({
   targets: options.targets,
-  structured: options.structured ?? false,
   silent: options.silent ?? false,
   watch: {
     options: options.watch?.options ?? {},

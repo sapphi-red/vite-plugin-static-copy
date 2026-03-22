@@ -199,7 +199,9 @@ async function renameTarget(
   if (typeof rename === 'object' && 'stripBase' in rename) {
     const dirSegments = dir ? dir.split('/') : []
     const goUp = '../'.repeat(dirSegments.length)
-    const remaining = dirSegments.slice(rename.stripBase).join('/')
+    const stripCount =
+      rename.stripBase === true ? dirSegments.length : rename.stripBase
+    const remaining = dirSegments.slice(stripCount).join('/')
     return remaining ? `${goUp}${remaining}/${target}` : `${goUp}${target}`
   }
 
@@ -209,7 +211,6 @@ async function renameTarget(
 export const collectCopyTargets = async (
   root: string,
   targets: Target[],
-  structured: boolean,
   silent: boolean,
 ) => {
   const copyTargets: SimpleTarget[] = []
@@ -226,9 +227,9 @@ export const collectCopyTargets = async (
     } = target
 
     const matchedPaths = await glob(src, {
-      onlyFiles: false,
+      onlyFiles: true,
       dot: true,
-      expandDirectories: false,
+      expandDirectories: true,
       cwd: root,
     })
 
@@ -241,19 +242,10 @@ export const collectCopyTargets = async (
         : matchedPath
       const absoluteMatchedPath = path.resolve(root, matchedPath)
 
-      if (transform) {
-        const srcStat = await fs.stat(absoluteMatchedPath)
-        if (!srcStat.isFile()) {
-          throw new Error(
-            `"transform" option only supports a file: '${relativeMatchedPath}' is not a file`,
-          )
-        }
-      }
-
       const { base, dir } = path.parse(relativeMatchedPath)
 
       let destDir: string
-      if (!structured || !dir) {
+      if (!dir) {
         destDir = dest
       } else {
         const dirClean = dir.replace(/^(?:\.\.\/)+/, '')
@@ -324,15 +316,9 @@ export const copyAll = async (
   rootSrc: string,
   rootDest: string,
   targets: Target[],
-  structured: boolean,
   silent: boolean,
 ) => {
-  const copyTargets = await collectCopyTargets(
-    rootSrc,
-    targets,
-    structured,
-    silent,
-  )
+  const copyTargets = await collectCopyTargets(rootSrc, targets, silent)
 
   const resolvedTargets: ResolvedTarget[] = copyTargets.map((target) => ({
     ...target,
