@@ -53,7 +53,7 @@ jobs:
         node_version: [22.x, 24.x]
         os: [ubuntu-latest]
         include:
-          - node_version: 22.x
+          - node_version: 24.x
             os: windows-latest
       fail-fast: false
     runs-on: ${{ matrix.os }}
