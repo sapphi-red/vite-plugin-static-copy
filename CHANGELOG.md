@@ -1,5 +1,20 @@
 # vite-plugin-static-copy
 
+## 4.0.0
+
+### Major Changes
+
+- [#235](https://github.com/sapphi-red/vite-plugin-static-copy/pull/235) [`b2edc86`](https://github.com/sapphi-red/vite-plugin-static-copy/commit/b2edc86ff157040de96de1f0ffe8b2e04b5f5f2c) Thanks [@sapphi-red](https://github.com/sapphi-red)! - Simplify glob behavior and always preserve directory structure.
+
+  **Breaking changes:**
+  - **Only files are matched.** Glob patterns no longer match directory entries. Previously, matching a directory would recursively copy it via `fs.cp`, which caused files to be copied twice when using `**` patterns.
+  - **Directory patterns are auto-expanded.** `src: 'assets'` now automatically expands to match all files inside the directory, using tinyglobby's built-in `expandDirectories` option. No migration needed for this pattern alone.
+  - **`structured` option removed.** Directory structure is now always preserved in the output. The `structured` option has been removed entirely. Use `rename: { stripBase: true }` to flatten output paths when needed.
+
+- [#237](https://github.com/sapphi-red/vite-plugin-static-copy/pull/237) [`6129008`](https://github.com/sapphi-red/vite-plugin-static-copy/commit/6129008c438c082210493082b9d547c1fd8d7626) Thanks [@sapphi-red](https://github.com/sapphi-red)! - Drop support for Vite 5
+
+- [#238](https://github.com/sapphi-red/vite-plugin-static-copy/pull/238) [`9766e42`](https://github.com/sapphi-red/vite-plugin-static-copy/commit/9766e42cce4479eb170a9aa87c82932bdcdafaed) Thanks [@sapphi-red](https://github.com/sapphi-red)! - Drop support for Node 18, 20, 21, 23. The new support range is `^22.0.0 || >= 24.0.0`.
+
 ## 3.4.0
 
 ### Minor Changes
