@@ -28,12 +28,13 @@ export const buildPlugin = ({
       if (output) return
       output = true
 
-      const result = await copyAll(
-        config.root,
-        config.build.outDir,
-        targets,
-        silent,
-      )
+      // In Vite 6's Environment API, configResolved is called per-environment
+      // and the last call overwrites `config`. Use the environment-specific
+      // outDir so files land in the correct output directory.
+      const outDir =
+        this.environment?.config?.build?.outDir ?? config.build.outDir
+
+      const result = await copyAll(config.root, outDir, targets, silent)
       if (!silent) outputCopyLog(config.logger, result)
     },
   }
