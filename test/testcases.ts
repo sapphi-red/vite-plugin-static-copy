@@ -213,6 +213,26 @@ export const testcases: Record<string, Testcase[]> = {
       dest: '/fixture20/b.txt',
     },
     {
+      name: 'parent dir stripBase true flattens (1)',
+      src: '../fixtures2/baz.txt',
+      dest: '/fixture21/baz.txt',
+    },
+    {
+      name: 'parent dir stripBase true flattens (2)',
+      src: '../fixtures2/nested/qux.txt',
+      dest: '/fixture21/qux.txt',
+    },
+    {
+      name: 'parent dir stripBase 1 (1)',
+      src: '../fixtures2/baz.txt',
+      dest: '/fixture22/baz.txt',
+    },
+    {
+      name: 'parent dir stripBase 1 (2)',
+      src: '../fixtures2/nested/qux.txt',
+      dest: '/fixture22/nested/qux.txt',
+    },
+    {
       name: 'parallel copy to same dir (1)',
       src: './eexist/a/1.txt',
       dest: '/eexist/a/1.txt',

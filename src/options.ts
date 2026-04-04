@@ -63,8 +63,12 @@ export type Target = {
    * ```js
    * // Copies src/pages/events/test.html to dist/events/test.html
    * { src: 'src/pages/**\/*.html', dest: 'dist/', rename: { stripBase: 2 } }
+   * // Copies ../../src/pages/events/test.html to dist/events/test.html
+   * { src: '../../src/pages/**\/*.html', dest: 'dist/', rename: { stripBase: 2 } }
    * // Copies src/pages/events/test.html to dist/test.html
    * { src: 'src/pages/**\/*.html', dest: 'dist/', rename: { stripBase: true } }
+   * // Copies ../../src/pages/events/test.html to dist/test.html
+   * { src: '../../src/pages/**\/*.html', dest: 'dist/', rename: { stripBase: true } }
    * // Copies src/pages/events/test.html to dist/src/pages/events/test2.html
    * { src: 'src/pages/**\/*.html', dest: 'dist/', rename: (name, ext) => `${name}2.${ext}` }
    * // Copies src/pages/events/test.html to dist/pages/events/test.html

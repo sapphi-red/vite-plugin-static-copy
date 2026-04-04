@@ -200,6 +200,16 @@ export default defineConfig({
         },
         { src: 'eexist/**/*', dest: 'eexist', rename: { stripBase: 1 } },
         { src: 'eexist/**/*', dest: 'Eexist', rename: { stripBase: 1 } },
+        {
+          src: '../fixtures2/**/*.txt',
+          dest: 'fixture21',
+          rename: { stripBase: true },
+        },
+        {
+          src: '../fixtures2/**/*.txt',
+          dest: 'fixture22',
+          rename: { stripBase: 1 },
+        },
       ],
     }),
     viteStaticCopy({
