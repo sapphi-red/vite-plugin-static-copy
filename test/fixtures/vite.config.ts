@@ -152,6 +152,14 @@ export default defineConfig({
           dest: path.resolve(_dirname, 'dist/fixture13'),
         },
         {
+          src: 'dir/bar.txt',
+          dest: path.resolve(_dirname, 'dist/fixture13-structured'),
+        },
+        {
+          src: normalizePath(path.resolve(_dirname, 'dir/*.txt')),
+          dest: 'fixture13-absolute-src',
+        },
+        {
           src: 'foo.txt',
           dest: 'fixture14/sub',
           rename: () => '../renamed.txt',

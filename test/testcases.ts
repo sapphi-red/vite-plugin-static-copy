@@ -158,6 +158,16 @@ export const testcases: Record<string, Testcase[]> = {
       dest: '/fixture13/foo.txt',
     },
     {
+      name: 'absolute path dest with structured dir',
+      src: './dir/bar.txt',
+      dest: '/fixture13-structured/dir/bar.txt',
+    },
+    {
+      name: 'absolute src and absolute dest',
+      src: './dir/bar.txt',
+      dest: '/fixture13-absolute-src/dir/bar.txt',
+    },
+    {
       name: 'rename with ../ (non-structured)',
       src: './foo.txt',
       dest: '/fixture14/renamed.txt',
