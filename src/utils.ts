@@ -244,11 +244,11 @@ export const collectCopyTargets = async (
 
       const { base, dir } = path.parse(relativeMatchedPath)
 
+      const dirClean = dir.replace(/^(?:\.\.\/)+/, '')
       let destDir: string
       if (!dir) {
         destDir = dest
       } else {
-        const dirClean = dir.replace(/^(?:\.\.\/)+/, '')
         const destClean = `${dest}/${dirClean}`.replace(/^\/+|\/+$/g, '')
         destDir = destClean
       }
@@ -258,7 +258,7 @@ export const collectCopyTargets = async (
         dest: path.join(
           destDir,
           rename
-            ? await renameTarget(base, rename, absoluteMatchedPath, dir)
+            ? await renameTarget(base, rename, absoluteMatchedPath, dirClean)
             : base,
         ),
         transform,
