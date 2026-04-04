@@ -248,6 +248,26 @@ export const testcases: Record<string, Testcase[]> = {
       dest: '/fixture23/bar.txt',
     },
     {
+      name: 'rename object with name only',
+      src: './foo.txt',
+      dest: '/fixture24/newname.txt',
+    },
+    {
+      name: 'rename object with stripBase and name',
+      src: './dir/bar.txt',
+      dest: '/fixture24/newname2.txt',
+    },
+    {
+      name: 'rename function returning object with name',
+      src: './foo.txt',
+      dest: '/fixture24/fn-renamed.txt',
+    },
+    {
+      name: 'rename function returning object with stripBase',
+      src: './dir/bar.txt',
+      dest: '/fixture24/bar.txt',
+    },
+    {
       name: 'parallel copy to same dir (1)',
       src: './eexist/a/1.txt',
       dest: '/eexist/a/1.txt',

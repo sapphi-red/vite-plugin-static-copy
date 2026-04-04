@@ -1,14 +1,18 @@
 import type { WatchOptions } from 'chokidar'
 
 type MaybePromise<T> = T | Promise<T>
+type WithRequiredSingleKey<T, K extends keyof T> = { [P in K]-?: Required<T[P]> } & T
+
+type OptionalRenameObject = { stripBase?: number | true; name?: string }
+export type RenameObject =
+  | WithRequiredSingleKey<OptionalRenameObject, 'stripBase'>
+  | WithRequiredSingleKey<OptionalRenameObject, 'name'>
 
 export type RenameFunc = (
   fileName: string,
   fileExtension: string,
   fullPath: string,
-) => MaybePromise<string>
-
-export type RenameObject = { stripBase: number | true }
+) => MaybePromise<string | RenameObject>
 
 /**
  * @param content content of file
@@ -46,18 +50,23 @@ export type Target = {
   /**
    * Rename the output file.
    *
-   * When a string is provided, the matched file is renamed to that string.
+   * When a string is provided, it is a shorthand for `{ name: string }`.
    *
-   * When an object `{ stripBase: number | true }` is provided, the given number
-   * of leading directory segments from the matched path are stripped from the
-   * destination. When `true`, all directory segments are stripped (equivalent to
-   * flat copy).
+   * When an object is provided:
+   * - `name`: replaces the file's basename (filename + extension).
+   * - `stripBase`: the given number of leading directory segments from the matched
+   *   path are stripped from the destination. When `true`, all directory segments
+   *   are stripped (equivalent to flat copy).
+   * - When both are provided, `stripBase` is applied first, then `name` replaces
+   *   the basename.
    *
    * When a function is provided, it receives `(fileName, fileExtension, fullPath)`
-   * and should return the new file name.
-   * The returned value is joined with the resolved `dest` directory using
-   * `path.join`, so it can include path segments (e.g. `subdir/file.txt`) or
-   * `../` traversals to restructure the output.
+   * and should return the new file name or a `RenameObject`.
+   * When a string is returned, it is joined with the resolved `dest` directory
+   * using `path.join`, so it can include path segments (e.g. `subdir/file.txt`)
+   * or `../` traversals to restructure the output.
+   * When a `RenameObject` is returned, it is applied the same way as the object
+   * form above.
    *
    * @example
    * ```js
@@ -69,6 +78,11 @@ export type Target = {
    * { src: 'src/pages/**\/*.html', dest: 'dist/', rename: { stripBase: true } }
    * // Copies ../../src/pages/events/test.html to dist/test.html
    * { src: '../../src/pages/**\/*.html', dest: 'dist/', rename: { stripBase: true } }
+   * // Copies foo.txt to dist/newname.txt (name only)
+   * { src: 'foo.txt', dest: 'dist/', rename: { name: 'newname.txt' } }
+   * // Copies src/pages/events/test.html to dist/events/newname.txt (stripBase + name)
+   * { src: 'src/pages/**\/*.html', dest: 'dist/', rename: { stripBase: 2, name: 'newname.txt' } }
+   *
    * // Copies src/pages/events/test.html to dist/src/pages/events/test2.html
    * { src: 'src/pages/**\/*.html', dest: 'dist/', rename: (name, ext) => `${name}2.${ext}` }
    * // Copies src/pages/events/test.html to dist/pages/events/test.html
