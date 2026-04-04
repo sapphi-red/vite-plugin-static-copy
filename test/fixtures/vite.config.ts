@@ -210,6 +210,11 @@ export default defineConfig({
           dest: 'fixture22',
           rename: { stripBase: 1 },
         },
+        {
+          src: 'dir/deep/*.txt',
+          dest: 'fixture23',
+          rename: { stripBase: true },
+        },
       ],
     }),
     viteStaticCopy({
