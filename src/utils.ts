@@ -249,8 +249,7 @@ export const collectCopyTargets = async (
       if (!dir) {
         destDir = dest
       } else {
-        const destClean = `${dest}/${dirClean}`.replace(/^\/+|\/+$/g, '')
-        destDir = destClean
+        destDir = path.join(dest, dirClean)
       }
 
       copyTargets.push({
