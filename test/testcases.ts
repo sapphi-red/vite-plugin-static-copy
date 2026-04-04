@@ -233,6 +233,11 @@ export const testcases: Record<string, Testcase[]> = {
       dest: '/fixture22/nested/qux.txt',
     },
     {
+      name: 'stripBase true with multi-segment base',
+      src: './dir/deep/bar.txt',
+      dest: '/fixture23/bar.txt',
+    },
+    {
       name: 'parallel copy to same dir (1)',
       src: './eexist/a/1.txt',
       dest: '/eexist/a/1.txt',
