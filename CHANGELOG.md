@@ -1,5 +1,38 @@
 # vite-plugin-static-copy
 
+## 4.0.1
+
+### Patch Changes
+
+- [#249](https://github.com/sapphi-red/vite-plugin-static-copy/pull/249) [`c6bf44c`](https://github.com/sapphi-red/vite-plugin-static-copy/commit/c6bf44cced74417aa2ff90a0bc2c3dcc2fbaf93a) Thanks [@sapphi-red](https://github.com/sapphi-red)! - Fix absolute `dest` paths being nested under the output directory
+
+  When `dest` was an absolute path and the source file had a directory component (structured output), the path was incorrectly converted to a relative path, causing files to be nested under the build output directory instead of being copied to the specified absolute path.
+
+  ```js
+  { src: 'foo/foo.txt', dest: '/home/user/my-repo/bar' }
+  ```
+
+  **Before**: `/home/user/my-repo/dist/home/user/my-repo/bar/foo/foo.txt`
+  **After**: `/home/user/my-repo/bar/foo/foo.txt`
+
+- [#247](https://github.com/sapphi-red/vite-plugin-static-copy/pull/247) [`d3af79e`](https://github.com/sapphi-red/vite-plugin-static-copy/commit/d3af79e6bf3ac8ef9fd77b9f4c3ae9bfe427a16e) Thanks [@sapphi-red](https://github.com/sapphi-red)! - Fix `rename.stripBase` to work correctly with `../` paths
+
+  Previously, `stripBase` counted `..` as directory segments, causing incorrect output paths when copying from parent directories.
+
+  ```js
+  { src: '../../src/pages/**/*.html', dest: 'dist/', rename: { stripBase: 2 } }
+  ```
+
+  **Before**: `dist/src/pages/events/test.html`
+  **After**: `dist/events/test.html`
+
+  ```js
+  { src: '../../src/pages/**/*.html', dest: 'dist/', rename: { stripBase: true } }
+  ```
+
+  **Before**: `dist/src/pages/events/test.html`
+  **After**: `dist/test.html`
+
 ## 4.0.0
 
 ### Major Changes
