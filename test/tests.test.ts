@@ -179,6 +179,16 @@ describe('build', () => {
     ).rejects.toThrow()
   })
 
+  test('should copy to correct outDir for non-default environment in multi-environment build', async () => {
+    await build(getConfig('vite.envs-ssr.config.ts'))
+    expect(await loadFileContent('dist-envs-ssr/ssr/fixture/foo.txt')).toBe(
+      'foo\n',
+    )
+    await expect(() =>
+      loadFileContent('dist-envs-ssr/client/fixture/foo.txt'),
+    ).rejects.toThrow()
+  })
+
   describe('on error', () => {
     test('should throw error when it does not find the file on given src', async () => {
       let result = ''
