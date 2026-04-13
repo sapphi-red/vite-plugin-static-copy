@@ -15,13 +15,13 @@ export default defineConfig({
     }),
   ],
   environments: {
-    // ssr is defined first so that configResolved is called for ssr before client.
-    // This means config ends up holding client's resolved config (the last call),
-    // which would cause the stale outDir bug to copy files into dist-envs-ssr/client
-    // instead of dist-envs-ssr/ssr without the this.environment?.config fix.
+    // ssr needs an explicit entry to trigger writeBundle
     ssr: {
       build: {
         outDir: 'dist-envs-ssr/ssr',
+        rollupOptions: {
+          input: 'foo.js',
+        },
       },
     },
     client: {
