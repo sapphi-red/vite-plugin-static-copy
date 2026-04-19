@@ -1,5 +1,19 @@
 # vite-plugin-static-copy
 
+## 4.1.0
+
+### Minor Changes
+
+- [#251](https://github.com/sapphi-red/vite-plugin-static-copy/pull/251) [`7672842`](https://github.com/sapphi-red/vite-plugin-static-copy/commit/767284229162b4f0bd40698cc7e9b9478a2b156e) Thanks [@sapphi-red](https://github.com/sapphi-red)! - Add `name` property to the `rename` object form and allow rename functions to return a `RenameObject`. The `name` property replaces the file's basename (filename + extension), and can be combined with `stripBase` to both flatten directory structure and rename the file in one step. Rename functions can now return `{ name, stripBase }` objects instead of only strings, making it easier to declaratively control output paths from dynamic rename logic.
+
+  ```js
+  // node_modules/lib/dist/index.js → vendor/lib.js
+  { src: 'node_modules/lib/dist/index.js', dest: 'vendor', rename: { name: 'lib.js', stripBase: true } }
+
+  // src/pages/events/test.html → dist/events/index.html
+  { src: 'src/pages/**/*.html', dest: 'dist/', rename: { stripBase: 2, name: 'index.html' } }
+  ```
+
 ## 4.0.1
 
 ### Patch Changes
