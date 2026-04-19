@@ -223,6 +223,26 @@ export default defineConfig({
           dest: 'fixture23',
           rename: { stripBase: true },
         },
+        {
+          src: 'foo.txt',
+          dest: 'fixture24',
+          rename: { name: 'newname.txt' },
+        },
+        {
+          src: 'dir/bar.txt',
+          dest: 'fixture24',
+          rename: { stripBase: 1, name: 'newname2.txt' },
+        },
+        {
+          src: 'foo.txt',
+          dest: 'fixture24',
+          rename: () => ({ name: 'fn-renamed.txt' }),
+        },
+        {
+          src: 'dir/bar.txt',
+          dest: 'fixture24',
+          rename: () => ({ stripBase: 1 }),
+        },
       ],
     }),
     viteStaticCopy({

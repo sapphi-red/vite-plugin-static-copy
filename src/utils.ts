@@ -184,28 +184,50 @@ export const groupTargetsByDirectoryTree = <T extends { resolvedDest: string }>(
   return groups
 }
 
+function applyRenameObject(
+  renameObj: RenameObject,
+  target: string,
+  dir: string,
+): string {
+  let result = target
+  if ('stripBase' in renameObj && renameObj.stripBase !== undefined) {
+    const dirSegments = dir ? dir.split('/') : []
+    const goUp = '../'.repeat(dirSegments.length)
+    const stripCount =
+      renameObj.stripBase === true ? dirSegments.length : renameObj.stripBase
+    const remaining = dirSegments.slice(stripCount).join('/')
+    result = remaining ? `${goUp}${remaining}/${target}` : `${goUp}${target}`
+  }
+  if ('name' in renameObj && renameObj.name !== undefined) {
+    const parsed = path.parse(result)
+    result = path.join(parsed.dir, renameObj.name)
+  }
+  return result
+}
+
 async function renameTarget(
   target: string,
   rename: string | RenameObject | RenameFunc,
   src: string,
   dir: string,
 ): Promise<string> {
-  const parsedPath = path.parse(target)
-
   if (typeof rename === 'string') {
     return rename
   }
-
-  if (typeof rename === 'object' && 'stripBase' in rename) {
-    const dirSegments = dir ? dir.split('/') : []
-    const goUp = '../'.repeat(dirSegments.length)
-    const stripCount =
-      rename.stripBase === true ? dirSegments.length : rename.stripBase
-    const remaining = dirSegments.slice(stripCount).join('/')
-    return remaining ? `${goUp}${remaining}/${target}` : `${goUp}${target}`
+  if (typeof rename === 'object') {
+    return applyRenameObject(rename, target, dir)
   }
 
-  return rename(parsedPath.name, parsedPath.ext.replace('.', ''), src)
+  const parsedPath = path.parse(target)
+  const result = await rename(
+    parsedPath.name,
+    parsedPath.ext.replace('.', ''),
+    src,
+  )
+  if (typeof result === 'object') {
+    return applyRenameObject(result, target, dir)
+  }
+  return result
 }
 
 export const collectCopyTargets = async (
