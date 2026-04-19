@@ -1,4 +1,4 @@
-import type { WatchOptions } from 'chokidar'
+import type { ChokidarOptions } from 'chokidar'
 
 type MaybePromise<T> = T | Promise<T>
 type WithRequiredSingleKey<T, K extends keyof T> = {
@@ -138,7 +138,7 @@ export type ViteStaticCopyOptions = {
     /**
      * Watch options
      */
-    options?: WatchOptions
+    options?: ChokidarOptions
     /**
      * Reloads page on file change when true
      * @default false
@@ -161,7 +161,7 @@ export type ResolvedViteStaticCopyOptions = {
   targets: Target[]
   silent: boolean
   watch: {
-    options: WatchOptions
+    options: ChokidarOptions
     reloadPageOnChange: boolean
   }
   hook: string
