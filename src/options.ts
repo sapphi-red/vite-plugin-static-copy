@@ -1,7 +1,9 @@
 import type { WatchOptions } from 'chokidar'
 
 type MaybePromise<T> = T | Promise<T>
-type WithRequiredSingleKey<T, K extends keyof T> = { [P in K]-?: Required<T[P]> } & T
+type WithRequiredSingleKey<T, K extends keyof T> = {
+  [P in K]-?: Required<T[P]>
+} & T
 
 type OptionalRenameObject = { stripBase?: number | true; name?: string }
 export type RenameObject =
