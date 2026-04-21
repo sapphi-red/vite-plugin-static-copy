@@ -11,23 +11,22 @@ export default defineConfig({
           dest: 'fixture',
         },
       ],
+      environment: 'ssr',
     }),
   ],
   environments: {
-    client: {
-      build: {
-        outDir: 'dist-envs-ssr/client',
-        rollupOptions: {
-          input: 'foo.js',
-        },
-      },
-    },
+    // ssr needs an explicit entry to trigger writeBundle
     ssr: {
       build: {
         outDir: 'dist-envs-ssr/ssr',
         rollupOptions: {
           input: 'foo.js',
         },
+      },
+    },
+    client: {
+      build: {
+        outDir: 'dist-envs-ssr/client',
       },
     },
   },
