@@ -44,7 +44,11 @@ describe('buildPlugin', () => {
 
     // without fix: ssrOutDir used (config.build.outDir = ssrOutDir, last resolved)
     // with fix: clientOutDir used (this.environment.config.build.outDir)
-    await expect(readFile(join(clientOutDir, 'out', 'foo.txt'), 'utf8')).resolves.toBe('foo\n')
-    await expect(readFile(join(ssrOutDir, 'out', 'foo.txt'), 'utf8')).rejects.toThrow()
+    await expect(
+      readFile(join(clientOutDir, 'out', 'foo.txt'), 'utf8'),
+    ).resolves.toBe('foo\n')
+    await expect(
+      readFile(join(ssrOutDir, 'out', 'foo.txt'), 'utf8'),
+    ).rejects.toThrow()
   })
 })
