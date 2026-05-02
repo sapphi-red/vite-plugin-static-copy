@@ -28,12 +28,10 @@ export const buildPlugin = ({
       if (output) return
       output = true
 
-      const result = await copyAll(
-        config.root,
-        config.build.outDir,
-        targets,
-        silent,
-      )
+      const outDir =
+        this.environment?.config?.build?.outDir ?? config.build.outDir
+
+      const result = await copyAll(config.root, outDir, targets, silent)
       if (!silent) outputCopyLog(config.logger, result)
     },
   }

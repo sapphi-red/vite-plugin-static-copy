@@ -1,6 +1,6 @@
 import { describe, test, beforeAll, afterAll, expect } from 'vitest'
 import type { PreviewServer, ViteDevServer } from 'vite'
-import { build, createServer, preview } from 'vite'
+import { build, createBuilder, createServer, preview } from 'vite'
 import { testcases } from './testcases'
 import {
   getConfig,
@@ -176,6 +176,18 @@ describe('build', () => {
     )
     await expect(() =>
       loadFileContent('dist-envs/ssr/fixture/foo.txt'),
+    ).rejects.toThrow()
+  })
+
+  test('should copy to correct outDir for non-default environment in multi-environment build', async () => {
+    // createBuilder builds all environments; build() only runs client
+    const builder = await createBuilder(getConfig('vite.envs-ssr.config.ts'))
+    await builder.buildApp()
+    expect(await loadFileContent('dist-envs-ssr/ssr/fixture/foo.txt')).toBe(
+      'foo\n',
+    )
+    await expect(() =>
+      loadFileContent('dist-envs-ssr/client/fixture/foo.txt'),
     ).rejects.toThrow()
   })
 
