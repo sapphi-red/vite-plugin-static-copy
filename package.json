@@ -81,5 +81,5 @@
       "reason": "Uses Vite-specific APIs"
     }
   },
-  "packageManager": "pnpm@10.34.1"
+  "packageManager": "pnpm@11.5.2"
 }
