@@ -1,5 +1,11 @@
 # vite-plugin-static-copy
 
+## 4.1.1
+
+### Patch Changes
+
+- [#240](https://github.com/sapphi-red/vite-plugin-static-copy/pull/240) [`671579b`](https://github.com/sapphi-red/vite-plugin-static-copy/commit/671579bcf3de6071983669dedd02aa20baabe737) Thanks [@saif-shines](https://github.com/saif-shines)! - Use each environment's resolved `build.outDir` when copying static assets during build. Previously the plugin kept only the last `configResolved` config, so multi-environment setups (for example Astro with separate client and SSR output directories) could copy files into the wrong folder.
+
 ## 4.1.0
 
 ### Minor Changes
