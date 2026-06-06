@@ -30,5 +30,11 @@ export default defineConfig({
       },
     },
   },
-  builder: {},
+  builder: {
+    async buildApp(builder) {
+      await builder.build(builder.environments.ssr!)
+      await builder.build(builder.environments.client!)
+    },
+    sharedConfigBuild: true,
+  },
 })

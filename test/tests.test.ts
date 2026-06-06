@@ -180,7 +180,6 @@ describe('build', () => {
   })
 
   test('should copy to correct outDir for non-default environment in multi-environment build', async () => {
-    // createBuilder builds all environments; build() only runs client
     const builder = await createBuilder(getConfig('vite.envs-ssr.config.ts'))
     await builder.buildApp()
     expect(await loadFileContent('dist-envs-ssr/ssr/fixture/foo.txt')).toBe(
