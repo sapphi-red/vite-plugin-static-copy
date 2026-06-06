@@ -30,7 +30,7 @@ export const buildPlugin = ({
 
       const result = await copyAll(
         config.root,
-        config.build.outDir,
+        this.environment.config.build.outDir,
         targets,
         silent,
       )
