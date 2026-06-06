@@ -158,6 +158,16 @@ export const testcases: Record<string, Testcase[]> = {
       dest: '/fixture13/foo.txt',
     },
     {
+      name: 'absolute path dest with structured dir',
+      src: './dir/bar.txt',
+      dest: '/fixture13-structured/dir/bar.txt',
+    },
+    {
+      name: 'absolute src and absolute dest',
+      src: './dir/bar.txt',
+      dest: '/fixture13-absolute-src/dir/bar.txt',
+    },
+    {
       name: 'rename with ../ (non-structured)',
       src: './foo.txt',
       dest: '/fixture14/renamed.txt',
@@ -211,6 +221,51 @@ export const testcases: Record<string, Testcase[]> = {
       name: 'stripBase true is equivalent to flat copy (2)',
       src: './to-flat/deep/b.txt',
       dest: '/fixture20/b.txt',
+    },
+    {
+      name: 'parent dir stripBase true flattens (1)',
+      src: '../fixtures2/baz.txt',
+      dest: '/fixture21/baz.txt',
+    },
+    {
+      name: 'parent dir stripBase true flattens (2)',
+      src: '../fixtures2/nested/qux.txt',
+      dest: '/fixture21/qux.txt',
+    },
+    {
+      name: 'parent dir stripBase 1 (1)',
+      src: '../fixtures2/baz.txt',
+      dest: '/fixture22/baz.txt',
+    },
+    {
+      name: 'parent dir stripBase 1 (2)',
+      src: '../fixtures2/nested/qux.txt',
+      dest: '/fixture22/nested/qux.txt',
+    },
+    {
+      name: 'stripBase true with multi-segment base',
+      src: './dir/deep/bar.txt',
+      dest: '/fixture23/bar.txt',
+    },
+    {
+      name: 'rename object with name only',
+      src: './foo.txt',
+      dest: '/fixture24/newname.txt',
+    },
+    {
+      name: 'rename object with stripBase and name',
+      src: './dir/bar.txt',
+      dest: '/fixture24/newname2.txt',
+    },
+    {
+      name: 'rename function returning object with name',
+      src: './foo.txt',
+      dest: '/fixture24/fn-renamed.txt',
+    },
+    {
+      name: 'rename function returning object with stripBase',
+      src: './dir/bar.txt',
+      dest: '/fixture24/bar.txt',
     },
     {
       name: 'parallel copy to same dir (1)',

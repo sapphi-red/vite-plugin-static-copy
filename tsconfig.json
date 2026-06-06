@@ -14,7 +14,6 @@
     "noUncheckedIndexedAccess": true,
     "verbatimModuleSyntax": true,
     "moduleResolution": "bundler",
-    "baseUrl": ".",
     "esModuleInterop": true,
     "skipLibCheck": true
   }

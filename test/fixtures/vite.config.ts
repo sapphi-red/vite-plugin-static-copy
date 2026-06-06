@@ -152,6 +152,14 @@ export default defineConfig({
           dest: path.resolve(_dirname, 'dist/fixture13'),
         },
         {
+          src: 'dir/bar.txt',
+          dest: path.resolve(_dirname, 'dist/fixture13-structured'),
+        },
+        {
+          src: normalizePath(path.resolve(_dirname, 'dir/*.txt')),
+          dest: 'fixture13-absolute-src',
+        },
+        {
           src: 'foo.txt',
           dest: 'fixture14/sub',
           rename: () => '../renamed.txt',
@@ -200,6 +208,41 @@ export default defineConfig({
         },
         { src: 'eexist/**/*', dest: 'eexist', rename: { stripBase: 1 } },
         { src: 'eexist/**/*', dest: 'Eexist', rename: { stripBase: 1 } },
+        {
+          src: '../fixtures2/**/*.txt',
+          dest: 'fixture21',
+          rename: { stripBase: true },
+        },
+        {
+          src: '../fixtures2/**/*.txt',
+          dest: 'fixture22',
+          rename: { stripBase: 1 },
+        },
+        {
+          src: 'dir/deep/*.txt',
+          dest: 'fixture23',
+          rename: { stripBase: true },
+        },
+        {
+          src: 'foo.txt',
+          dest: 'fixture24',
+          rename: { name: 'newname.txt' },
+        },
+        {
+          src: 'dir/bar.txt',
+          dest: 'fixture24',
+          rename: { stripBase: 1, name: 'newname2.txt' },
+        },
+        {
+          src: 'foo.txt',
+          dest: 'fixture24',
+          rename: () => ({ name: 'fn-renamed.txt' }),
+        },
+        {
+          src: 'dir/bar.txt',
+          dest: 'fixture24',
+          rename: () => ({ stripBase: 1 }),
+        },
       ],
     }),
     viteStaticCopy({

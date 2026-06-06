@@ -1,5 +1,7 @@
 packages:
   - .
   - test/fixtures
+allowBuilds:
+  esbuild: false
 onlyBuiltDependencies:
   - esbuild
