@@ -140,14 +140,16 @@ describe('build', () => {
     }
     expect(result).toBe('')
     expect(await loadFileContent('dist-envs/client/fixture/foo.txt')).toBe('foo\n')
-    await expect(() => loadFileContent('dist-envs/ssr/fixture/foo.txt')).rejects.toThrow("ENOENT")
+    await expect(() => loadFileContent('dist-envs/ssr/fixture/foo.txt')).rejects.toThrow('ENOENT')
   })
 
   test('should copy to correct outDir for non-default environment in multi-environment build', async () => {
     const builder = await createBuilder(getConfig('vite.envs-ssr.config.ts'))
     await builder.buildApp()
     expect(await loadFileContent('dist-envs-ssr/ssr/fixture/foo.txt')).toBe('foo\n')
-    await expect(() => loadFileContent('dist-envs-ssr/client/fixture/foo.txt')).rejects.toThrow("ENOENT")
+    await expect(() => loadFileContent('dist-envs-ssr/client/fixture/foo.txt')).rejects.toThrow(
+      'ENOENT',
+    )
   })
 
   describe('on error', () => {
