@@ -71,12 +71,9 @@ export const servePlugin = ({
       )
       watcher.on('add', async (path) => {
         if (!silent) {
-          config.logger.info(
-            formatConsole(`${pc.green('detected new file')} ${path}`),
-            {
-              timestamp: true,
-            },
-          )
+          config.logger.info(formatConsole(`${pc.green('detected new file')} ${path}`), {
+            timestamp: true,
+          })
         }
         await collectFileMapDebounce()
         if (watch.reloadPageOnChange) {
@@ -86,23 +83,17 @@ export const servePlugin = ({
       if (watch.reloadPageOnChange) {
         watcher.on('change', (path) => {
           if (!silent) {
-            config.logger.info(
-              formatConsole(`${pc.green('file changed')} ${path}`),
-              {
-                timestamp: true,
-              },
-            )
+            config.logger.info(formatConsole(`${pc.green('file changed')} ${path}`), {
+              timestamp: true,
+            })
           }
           reloadPage()
         })
         watcher.on('unlink', (path) => {
           if (!silent) {
-            config.logger.info(
-              formatConsole(`${pc.green('file deleted')} ${path}`),
-              {
-                timestamp: true,
-              },
-            )
+            config.logger.info(formatConsole(`${pc.green('file deleted')} ${path}`), {
+              timestamp: true,
+            })
           }
           reloadPage()
         })
@@ -135,11 +126,7 @@ export const servePlugin = ({
         )[0]
         if (serveStaticCopyMiddlewareItem === undefined) throw new Error()
 
-        middlewares.stack.splice(
-          targetMiddlewareIndex,
-          0,
-          serveStaticCopyMiddlewareItem,
-        )
+        middlewares.stack.splice(targetMiddlewareIndex, 0, serveStaticCopyMiddlewareItem)
       }
     },
     async closeBundle() {
@@ -149,16 +136,11 @@ export const servePlugin = ({
   }
 }
 
-const findMiddlewareIndex = (
-  stack: Connect.ServerStackItem[],
-  names: string | string[],
-) => {
+const findMiddlewareIndex = (stack: Connect.ServerStackItem[], names: string | string[]) => {
   const ns = Array.isArray(names) ? names : [names]
   for (const name of ns) {
     const index = stack.findIndex(
-      (middleware) =>
-        typeof middleware.handle === 'function' &&
-        middleware.handle.name === name,
+      (middleware) => typeof middleware.handle === 'function' && middleware.handle.name === name,
     )
     if (index > 0) {
       return index

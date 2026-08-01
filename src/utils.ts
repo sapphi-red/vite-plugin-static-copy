@@ -39,10 +39,7 @@ type ResolvedTarget = SimpleTarget & {
 export const isSubdirectoryOrEqual = (a: string, b: string) => {
   const normalizedA = a.toLowerCase()
   const normalizedB = b.toLowerCase()
-  return (
-    normalizedA.startsWith(normalizedB + path.sep) ||
-    normalizedA === normalizedB
-  )
+  return normalizedA.startsWith(normalizedB + path.sep) || normalizedA === normalizedB
 }
 
 type DirectoryTrieNode<T> = {
@@ -59,19 +56,14 @@ const createPathNormalizer = (): ((filePath: string) => string) => {
   const pathCache = new Map<string, string>()
   return (filePath) => {
     if (!pathCache.has(filePath)) {
-      const normalizedPath = path
-        .normalize(filePath)
-        .toLowerCase()
-        .replace(/\\/g, '/')
+      const normalizedPath = path.normalize(filePath).toLowerCase().replace(/\\/g, '/')
       pathCache.set(filePath, normalizedPath)
     }
     return pathCache.get(filePath)!
   }
 }
 
-const splitPath = function* (
-  normalizedPath: string,
-): Generator<string, void, unknown> {
+const splitPath = function* (normalizedPath: string): Generator<string, void, unknown> {
   const cleaned = normalizedPath.replace(/^\/+|\/+$/g, '')
   if (cleaned === '') {
     return
@@ -155,9 +147,7 @@ export const groupTargetsByDirectoryTree = <T extends { resolvedDest: string }>(
     return []
   }
 
-  const collectTargets = (
-    node: DirectoryTrieNode<TWithOrder>,
-  ): TWithOrder[] => {
+  const collectTargets = (node: DirectoryTrieNode<TWithOrder>): TWithOrder[] => {
     if (node.children.size === 0) {
       return node.targets
     }
@@ -184,17 +174,12 @@ export const groupTargetsByDirectoryTree = <T extends { resolvedDest: string }>(
   return groups
 }
 
-function applyRenameObject(
-  renameObj: RenameObject,
-  target: string,
-  dir: string,
-): string {
+function applyRenameObject(renameObj: RenameObject, target: string, dir: string): string {
   let result = target
   if ('stripBase' in renameObj && renameObj.stripBase !== undefined) {
     const dirSegments = dir ? dir.split('/') : []
     const goUp = '../'.repeat(dirSegments.length)
-    const stripCount =
-      renameObj.stripBase === true ? dirSegments.length : renameObj.stripBase
+    const stripCount = renameObj.stripBase === true ? dirSegments.length : renameObj.stripBase
     const remaining = dirSegments.slice(stripCount).join('/')
     result = remaining ? `${goUp}${remaining}/${target}` : `${goUp}${target}`
   }
@@ -219,34 +204,18 @@ async function renameTarget(
   }
 
   const parsedPath = path.parse(target)
-  const result = await rename(
-    parsedPath.name,
-    parsedPath.ext.replace('.', ''),
-    src,
-  )
+  const result = await rename(parsedPath.name, parsedPath.ext.replace('.', ''), src)
   if (typeof result === 'object') {
     return applyRenameObject(result, target, dir)
   }
   return result
 }
 
-export const collectCopyTargets = async (
-  root: string,
-  targets: Target[],
-  silent: boolean,
-) => {
+export const collectCopyTargets = async (root: string, targets: Target[], silent: boolean) => {
   const copyTargets: SimpleTarget[] = []
 
   for (const target of targets) {
-    const {
-      src,
-      dest,
-      rename,
-      transform,
-      preserveTimestamps,
-      dereference,
-      overwrite,
-    } = target
+    const { src, dest, rename, transform, preserveTimestamps, dereference, overwrite } = target
 
     const matchedPaths = await glob(src, {
       onlyFiles: true,
@@ -278,9 +247,7 @@ export const collectCopyTargets = async (
         src: relativeMatchedPath,
         dest: path.join(
           destDir,
-          rename
-            ? await renameTarget(base, rename, absoluteMatchedPath, dirClean)
-            : base,
+          rename ? await renameTarget(base, rename, absoluteMatchedPath, dirClean) : base,
         ),
         transform,
         preserveTimestamps: preserveTimestamps ?? false,
@@ -292,10 +259,7 @@ export const collectCopyTargets = async (
   return copyTargets
 }
 
-export async function getTransformedContent(
-  file: string,
-  transform: TransformOptionObject,
-) {
+export async function getTransformedContent(file: string, transform: TransformOptionObject) {
   if (transform.encoding === 'buffer') {
     const content = await fs.readFile(file)
     return transform.handler(content, file)
@@ -355,24 +319,13 @@ export const copyAll = async (
     groups,
     async (targetGroup) => {
       for (const resolvedTarget of targetGroup) {
-        const {
-          resolvedSrc,
-          resolvedDest,
-          transform,
-          preserveTimestamps,
-          dereference,
-          overwrite,
-        } = resolvedTarget
+        const { resolvedSrc, resolvedDest, transform, preserveTimestamps, dereference, overwrite } =
+          resolvedTarget
 
         const transformOption = resolveTransformOption(transform)
 
         if (transformOption) {
-          const result = await transformCopy(
-            transformOption,
-            resolvedSrc,
-            resolvedDest,
-            overwrite,
-          )
+          const result = await transformCopy(transformOption, resolvedSrc, resolvedDest, overwrite)
           if (result.copied) {
             copiedCount++
           }
@@ -430,22 +383,17 @@ export const updateFileMapFromTargets = (
 export const calculateMd5Base64 = (content: string | Buffer) =>
   createHash('md5').update(content).digest('base64')
 
-export const formatConsole = (msg: string) =>
-  `${pc.cyan('[vite-plugin-static-copy]')} ${msg}`
+export const formatConsole = (msg: string) => `${pc.cyan('[vite-plugin-static-copy]')} ${msg}`
 
 export const outputCollectedLog = (logger: Logger, collectedMap: FileMap) => {
   if (collectedMap.size > 0) {
-    logger.info(
-      formatConsole(pc.green(`Collected ${collectedMap.size} items.`)),
-    )
+    logger.info(formatConsole(pc.green(`Collected ${collectedMap.size} items.`)))
     if (process.env.DEBUG === 'vite:plugin-static-copy') {
       for (const [key, vals] of collectedMap) {
         for (const val of vals) {
           logger.info(
             formatConsole(
-              `  - '${key}' -> '${val.src}'${
-                val.transform ? ' (with content transform)' : ''
-              }`,
+              `  - '${key}' -> '${val.src}'${val.transform ? ' (with content transform)' : ''}`,
             ),
           )
         }
@@ -456,15 +404,11 @@ export const outputCollectedLog = (logger: Logger, collectedMap: FileMap) => {
   }
 }
 
-export const outputCopyLog = (
-  logger: Logger,
-  result: { targets: number; copied: number },
-) => {
+export const outputCopyLog = (logger: Logger, result: { targets: number; copied: number }) => {
   if (result.targets > 0) {
     const copiedMessage = pc.green(`Copied ${result.copied} items.`)
     const skipped = result.targets - result.copied
-    const skippedMessage =
-      skipped > 0 ? ` ${pc.gray(`(Skipped ${skipped} items.)`)}` : ''
+    const skippedMessage = skipped > 0 ? ` ${pc.gray(`(Skipped ${skipped} items.)`)}` : ''
     logger.info(formatConsole(`${copiedMessage}${skippedMessage}`))
   }
 }

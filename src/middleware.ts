@@ -13,19 +13,11 @@ import { lookup } from 'mrmime'
 import type { Stats } from 'node:fs'
 import { statSync, createReadStream, existsSync } from 'node:fs'
 import type { Connect, ServerOptions } from 'vite'
-import type {
-  IncomingMessage,
-  OutgoingHttpHeaders,
-  ServerResponse,
-} from 'node:http'
+import type { IncomingMessage, OutgoingHttpHeaders, ServerResponse } from 'node:http'
 import { resolve } from 'node:path'
 import type { FileMap } from './serve'
 import type { TransformOptionObject } from './options'
-import {
-  calculateMd5Base64,
-  getTransformedContent,
-  resolveTransformOption,
-} from './utils'
+import { calculateMd5Base64, getTransformedContent, resolveTransformOption } from './utils'
 
 const knownJavascriptExtensionRE = /\.(?:[tj]sx?|[cm][tj]s)$/
 
@@ -54,12 +46,7 @@ function shouldServeOverwriteCheck(
   return true
 }
 
-function viaLocal(
-  root: string,
-  publicDir: string,
-  fileMap: FileMap,
-  uri: string,
-) {
+function viaLocal(root: string, publicDir: string, fileMap: FileMap, uri: string) {
   if (uri.endsWith('/')) {
     uri = uri.slice(0, -1)
   }
@@ -99,10 +86,7 @@ function getTransformHeaders(
   content: string | Buffer,
 ): OutgoingHttpHeaders {
   return {
-    'Content-Length': Buffer.byteLength(
-      content,
-      encoding === 'buffer' ? undefined : encoding,
-    ),
+    'Content-Length': Buffer.byteLength(content, encoding === 'buffer' ? undefined : encoding),
     ETag: `W/"${calculateMd5Base64(content)}"`,
     'Cache-Control': 'no-cache',
   }
@@ -123,12 +107,7 @@ function getMergeHeaders(headers: OutgoingHttpHeaders, res: ServerResponse) {
   return headers
 }
 
-function sendStatic(
-  req: IncomingMessage,
-  res: ServerResponse,
-  file: string,
-  stats: Stats,
-) {
+function sendStatic(req: IncomingMessage, res: ServerResponse, file: string, stats: Stats) {
   const staticHeaders = getStaticHeaders(stats)
 
   if (req.headers['if-none-match'] === staticHeaders['ETag']) {
@@ -175,10 +154,7 @@ function sendTransform(
   transform: TransformOptionObject,
   transformedContent: string | Buffer,
 ): void {
-  const transformHeaders = getTransformHeaders(
-    transform.encoding,
-    transformedContent,
-  )
+  const transformHeaders = getTransformHeaders(transform.encoding, transformedContent)
 
   if (req.headers['if-none-match'] === transformHeaders['ETag']) {
     res.writeHead(304)
@@ -229,11 +205,7 @@ function return404(res: ServerResponse, next: Connect.NextFunction) {
 }
 
 export function serveStaticCopyMiddleware(
-  {
-    root,
-    publicDir,
-    server,
-  }: { root: string; publicDir: string; server: ServerOptions },
+  { root, publicDir, server }: { root: string; publicDir: string; server: ServerOptions },
   fileMap: FileMap,
 ): Connect.NextHandleFunction {
   // Keep the named function. The name is visible in debug logs via `DEBUG=connect:dispatcher ...`
@@ -256,10 +228,7 @@ export function serveStaticCopyMiddleware(
 
       const transformOption = resolveTransformOption(data.transform)
       if (transformOption) {
-        const transformedContent = await getTransformedContent(
-          data.filepath,
-          transformOption,
-        )
+        const transformedContent = await getTransformedContent(data.filepath, transformOption)
         if (transformedContent === null) {
           return404(res, next)
           return

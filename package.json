@@ -2,16 +2,32 @@
   "name": "vite-plugin-static-copy",
   "version": "4.1.1",
   "description": "rollup-plugin-copy for vite with dev server support.",
-  "type": "module",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "exports": "./dist/index.js",
+  "keywords": [
+    "vite",
+    "vite-plugin"
+  ],
+  "homepage": "https://github.com/sapphi-red/vite-plugin-static-copy#readme",
+  "bugs": {
+    "url": "https://github.com/sapphi-red/vite-plugin-static-copy/issues"
+  },
+  "license": "MIT",
+  "author": "sapphi-red (https://github.com/sapphi-red)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sapphi-red/vite-plugin-static-copy.git"
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/sapphi-red"
+  },
   "files": [
     "dist"
   ],
-  "engines": {
-    "node": "^22.0.0 || >=24.0.0"
-  },
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": "./dist/index.js",
   "scripts": {
     "dev": "tsdown --watch",
     "build": "tsdown",
@@ -22,27 +38,11 @@
     "release:version": "changeset version && pnpm install --no-frozen-lockfile",
     "release:publish": "changeset publish"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/sapphi-red/vite-plugin-static-copy.git"
-  },
-  "keywords": [
-    "vite",
-    "vite-plugin"
-  ],
-  "author": "sapphi-red (https://github.com/sapphi-red)",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/sapphi-red/vite-plugin-static-copy/issues"
-  },
-  "homepage": "https://github.com/sapphi-red/vite-plugin-static-copy#readme",
-  "funding": {
-    "type": "github",
-    "url": "https://github.com/sponsors/sapphi-red"
-  },
-  "sideEffects": false,
-  "peerDependencies": {
-    "vite": "^6.0.0 || ^7.0.0 || ^8.0.0"
+  "dependencies": {
+    "chokidar": "^3.6.0",
+    "p-map": "^7.0.6",
+    "picocolors": "^1.1.1",
+    "tinyglobby": "^0.2.17"
   },
   "devDependencies": {
     "@changesets/changelog-github": "^0.7.0",
@@ -64,12 +64,13 @@
     "vite": "^8.2.0",
     "vitest": "^4.1.10"
   },
-  "dependencies": {
-    "chokidar": "^3.6.0",
-    "p-map": "^7.0.6",
-    "picocolors": "^1.1.1",
-    "tinyglobby": "^0.2.17"
+  "peerDependencies": {
+    "vite": "^6.0.0 || ^7.0.0 || ^8.0.0"
   },
+  "engines": {
+    "node": "^22.0.0 || >=24.0.0"
+  },
+  "packageManager": "pnpm@11.18.0",
   "compatiblePackages": {
     "schemaVersion": 1,
     "rollup": {
@@ -80,6 +81,5 @@
       "type": "incompatible",
       "reason": "Uses Vite-specific APIs"
     }
-  },
-  "packageManager": "pnpm@11.18.0"
+  }
 }
