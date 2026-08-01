@@ -37,7 +37,7 @@ export const servePlugin = ({
       updateFileMapFromTargets(copyTargets, fileMap, absoluteBuildOutDir)
     } catch (e) {
       if (!silent) {
-        config.logger.error(formatConsole(pc.red((e as Error).toString())))
+        config.logger.error(formatConsole(pc.red(String(e))))
       }
     }
   }
@@ -69,13 +69,13 @@ export const servePlugin = ({
           ...watch.options,
         },
       )
-      watcher.on('add', async (path) => {
+      watcher.on('add', (path) => {
         if (!silent) {
           config.logger.info(formatConsole(`${pc.green('detected new file')} ${path}`), {
             timestamp: true,
           })
         }
-        await collectFileMapDebounce()
+        collectFileMapDebounce()
         if (watch.reloadPageOnChange) {
           reloadPage()
         }
