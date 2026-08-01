@@ -33,7 +33,6 @@
     "build": "tsdown",
     "lint": "oxlint",
     "format": "oxfmt",
-    "type-check": "tsc --noEmit",
     "test": "vitest",
     "release:version": "changeset version && pnpm install --no-frozen-lockfile",
     "release:publish": "changeset publish"
