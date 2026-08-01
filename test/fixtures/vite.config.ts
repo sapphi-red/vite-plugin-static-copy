@@ -173,8 +173,7 @@ export default defineConfig({
         {
           src: 'dir/deep/bar.txt',
           dest: 'fixture16',
-          rename: (_name: string, _ext: string) =>
-            `../../dir/${_name}2.${_ext}`,
+          rename: (_name: string, _ext: string) => `../../dir/${_name}2.${_ext}`,
         },
         { src: 'dir/bar.txt', dest: 'fixture17', rename: { stripBase: 1 } },
         {
@@ -189,15 +188,8 @@ export default defineConfig({
         {
           src: 'to-flat/**/*.txt',
           dest: 'fixture19',
-          rename: (
-            fileName: string,
-            fileExtension: string,
-            absPath: string,
-          ) => {
-            const s = path.relative(
-              absPath,
-              path.resolve(import.meta.dirname, 'to-flat'),
-            )
+          rename: (fileName: string, fileExtension: string, absPath: string) => {
+            const s = path.relative(absPath, path.resolve(import.meta.dirname, 'to-flat'))
             return path.join(s, `${fileName}.${fileExtension}`)
           },
         },

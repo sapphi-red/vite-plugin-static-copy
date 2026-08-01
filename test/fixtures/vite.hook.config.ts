@@ -25,9 +25,7 @@ function testHookPlugin() {
   return {
     name: 'test-hook-plugin',
     async writeBundle() {
-      const filePath = normalizePath(
-        path.resolve(_dirname, 'dist', 'hook1', 'foo.txt'),
-      )
+      const filePath = normalizePath(path.resolve(_dirname, 'dist', 'hook1', 'foo.txt'))
       await fs.access(filePath)
     },
   }

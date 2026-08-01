@@ -1,9 +1,5 @@
 import { describe, expect, test } from 'vitest'
-import {
-  isSubdirectoryOrEqual,
-  groupTargetsByDirectoryTree,
-  collectCopyTargets,
-} from './utils'
+import { isSubdirectoryOrEqual, groupTargetsByDirectoryTree, collectCopyTargets } from './utils'
 import path from 'node:path'
 import fs from 'node:fs'
 import { fileURLToPath } from 'node:url'
@@ -82,9 +78,7 @@ describe('groupTargetsByDirectoryTree', () => {
 describe('collectCopyTargets', () => {
   // eslint-disable-next-line no-empty-pattern
   const collectTest = test.extend('tmpDir', async ({}, { onCleanup }) => {
-    const tmpDir = fs.mkdtempSync(
-      path.join(os.tmpdir(), 'vite-static-copy-test-'),
-    )
+    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'vite-static-copy-test-'))
     fs.writeFileSync(path.join(tmpDir, 'foo.js'), '')
     fs.writeFileSync(path.join(tmpDir, 'foo.txt'), '')
     fs.mkdirSync(path.join(tmpDir, 'dir/deep'), { recursive: true })
@@ -96,51 +90,41 @@ describe('collectCopyTargets', () => {
     return tmpDir
   })
 
-  collectTest(
-    'negated glob patterns exclude matched files',
-    async ({ tmpDir }) => {
-      const targets = await collectCopyTargets(
-        tmpDir,
-        [
-          {
-            src: ['foo.*', '!**/foo.js'],
-            dest: 'out',
-          },
-        ],
-        false,
-      )
-      const srcs = targets.map((t) =>
-        path.relative(process.cwd(), t.src).replaceAll('\\', '/'),
-      )
-      expect(srcs).toMatchInlineSnapshot(`
+  collectTest('negated glob patterns exclude matched files', async ({ tmpDir }) => {
+    const targets = await collectCopyTargets(
+      tmpDir,
+      [
+        {
+          src: ['foo.*', '!**/foo.js'],
+          dest: 'out',
+        },
+      ],
+      false,
+    )
+    const srcs = targets.map((t) => path.relative(process.cwd(), t.src).replaceAll('\\', '/'))
+    expect(srcs).toMatchInlineSnapshot(`
         [
           "foo.txt",
         ]
       `)
-    },
-  )
+  })
 
-  collectTest(
-    'negated glob patterns with directory expansion',
-    async ({ tmpDir }) => {
-      const targets = await collectCopyTargets(
-        tmpDir,
-        [
-          {
-            src: ['dir', '!**/deep/**'],
-            dest: 'out',
-          },
-        ],
-        false,
-      )
-      const srcs = targets.map((t) =>
-        path.relative(process.cwd(), t.src).replaceAll('\\', '/'),
-      )
-      expect(srcs).toMatchInlineSnapshot(`
+  collectTest('negated glob patterns with directory expansion', async ({ tmpDir }) => {
+    const targets = await collectCopyTargets(
+      tmpDir,
+      [
+        {
+          src: ['dir', '!**/deep/**'],
+          dest: 'out',
+        },
+      ],
+      false,
+    )
+    const srcs = targets.map((t) => path.relative(process.cwd(), t.src).replaceAll('\\', '/'))
+    expect(srcs).toMatchInlineSnapshot(`
         [
           "dir/bar.txt",
         ]
       `)
-    },
-  )
+  })
 })

@@ -168,9 +168,7 @@ export type ResolvedViteStaticCopyOptions = {
   environment: string
 }
 
-export const resolveOptions = (
-  options: ViteStaticCopyOptions,
-): ResolvedViteStaticCopyOptions => ({
+export const resolveOptions = (options: ViteStaticCopyOptions): ResolvedViteStaticCopyOptions => ({
   targets: options.targets,
   silent: options.silent ?? false,
   watch: {

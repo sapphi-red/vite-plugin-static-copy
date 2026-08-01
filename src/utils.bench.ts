@@ -25,8 +25,7 @@ function generateTestTargets(count: number): TestTarget[] {
     const basePath = basePaths[i % basePaths.length]
     const suffix = Math.floor(i / basePaths.length)
     targets.push({
-      resolvedDest:
-        suffix > 0 ? `${basePath}/file${suffix}` : `${basePath}/file`,
+      resolvedDest: suffix > 0 ? `${basePath}/file${suffix}` : `${basePath}/file`,
       id: `target-${i}`,
     })
   }

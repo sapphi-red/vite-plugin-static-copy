@@ -2,12 +2,7 @@ import { describe, test, beforeAll, afterAll, expect } from 'vitest'
 import type { PreviewServer, ViteDevServer } from 'vite'
 import { build, createBuilder, createServer, preview } from 'vite'
 import { testcases } from './testcases'
-import {
-  getConfig,
-  loadFileContent,
-  normalizeLineBreak,
-  sendRawRequest,
-} from './utils'
+import { getConfig, loadFileContent, normalizeLineBreak, sendRawRequest } from './utils'
 import type { AddressInfo } from 'node:net'
 
 const constructUrl = (server: ViteDevServer | PreviewServer, path: string) => {
@@ -15,10 +10,7 @@ const constructUrl = (server: ViteDevServer | PreviewServer, path: string) => {
   return `http://localhost:${port}${path}`
 }
 
-const fetchFromServer = async (
-  server: ViteDevServer | PreviewServer,
-  path: string,
-) => {
+const fetchFromServer = async (server: ViteDevServer | PreviewServer, path: string) => {
   const url = constructUrl(server, path)
   const res = await fetch(url)
   return res
@@ -33,10 +25,7 @@ const fetchContent = async (
   let content: string | ArrayBuffer | null = null
 
   if (res.status === 200) {
-    content =
-      encoding === 'buffer'
-        ? await res.arrayBuffer()
-        : normalizeLineBreak(await res.text())
+    content = encoding === 'buffer' ? await res.arrayBuffer() : normalizeLineBreak(await res.text())
   }
 
   const contentType = res.headers.get('content-type')
@@ -56,18 +45,10 @@ describe('serve', () => {
         await server.close()
       })
 
-      for (const {
-        name,
-        src,
-        dest,
-        transformedContent,
-        encoding,
-        contentType,
-      } of tests) {
+      for (const { name, src, dest, transformedContent, encoding, contentType } of tests) {
         // eslint-disable-next-line vitest/valid-title
         test.concurrent(name, async () => {
-          const expected =
-            src === null ? null : await loadFileContent(src, encoding)
+          const expected = src === null ? null : await loadFileContent(src, encoding)
           const actual = await fetchContent(server, dest, encoding)
           expect(actual.content).toStrictEqual(transformedContent ?? expected)
 
@@ -99,17 +80,12 @@ describe('serve', () => {
     test.concurrent('headers', async () => {
       const res = await fetchFromServer(server, '/fixture1/foo.txt')
       expect(res.status).toBe(200)
-      expect(res.headers.get('Cross-Origin-Embedder-Policy')).toBe(
-        'require-corp',
-      )
+      expect(res.headers.get('Cross-Origin-Embedder-Policy')).toBe('require-corp')
       expect(res.headers.get('Cross-Origin-Opener-Policy')).toBe('same-origin')
     })
 
     test.concurrent('disallow path traversal with ../', async () => {
-      const res = await sendRawRequest(
-        constructUrl(server, '/'),
-        '/fixture1/foo.txt/../.env',
-      )
+      const res = await sendRawRequest(constructUrl(server, '/'), '/fixture1/foo.txt/../.env')
       expect(res).not.toContain('SHOULD_BE_HIDDEN')
       expect(res).toContain('HTTP/1.1 404 Not Found')
     })
@@ -129,18 +105,10 @@ describe('build', () => {
         await server.close()
       })
 
-      for (const {
-        name,
-        src,
-        dest,
-        transformedContent,
-        encoding,
-        contentType,
-      } of tests) {
+      for (const { name, src, dest, transformedContent, encoding, contentType } of tests) {
         // eslint-disable-next-line vitest/valid-title
         test.concurrent(name, async () => {
-          const expected =
-            src === null ? null : await loadFileContent(src, encoding)
+          const expected = src === null ? null : await loadFileContent(src, encoding)
           const actual = await fetchContent(server, dest, encoding)
           expect(actual.content).toStrictEqual(transformedContent ?? expected)
 
@@ -171,23 +139,15 @@ describe('build', () => {
       result = (error as Error).message
     }
     expect(result).toBe('')
-    expect(await loadFileContent('dist-envs/client/fixture/foo.txt')).toBe(
-      'foo\n',
-    )
-    await expect(() =>
-      loadFileContent('dist-envs/ssr/fixture/foo.txt'),
-    ).rejects.toThrow()
+    expect(await loadFileContent('dist-envs/client/fixture/foo.txt')).toBe('foo\n')
+    await expect(() => loadFileContent('dist-envs/ssr/fixture/foo.txt')).rejects.toThrow()
   })
 
   test('should copy to correct outDir for non-default environment in multi-environment build', async () => {
     const builder = await createBuilder(getConfig('vite.envs-ssr.config.ts'))
     await builder.buildApp()
-    expect(await loadFileContent('dist-envs-ssr/ssr/fixture/foo.txt')).toBe(
-      'foo\n',
-    )
-    await expect(() =>
-      loadFileContent('dist-envs-ssr/client/fixture/foo.txt'),
-    ).rejects.toThrow()
+    expect(await loadFileContent('dist-envs-ssr/ssr/fixture/foo.txt')).toBe('foo\n')
+    await expect(() => loadFileContent('dist-envs-ssr/client/fixture/foo.txt')).rejects.toThrow()
   })
 
   describe('on error', () => {
@@ -198,9 +158,7 @@ describe('build', () => {
       } catch (error: unknown) {
         result = (error as Error).message
       }
-      expect(result).toContain(
-        'No file was found to copy on does-not-exist.txt src.',
-      )
+      expect(result).toContain('No file was found to copy on does-not-exist.txt src.')
     })
 
     test('should not throw error when it does not find the file on given src as silent=true', async () => {

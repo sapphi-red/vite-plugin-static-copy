@@ -19,10 +19,7 @@ export const loadFileContent = async (
   encoding: BufferEncoding | 'buffer' = 'utf8',
 ): Promise<string | ArrayBufferLike> => {
   const absolutePath = new URL(path, root)
-  const content = await readFile(
-    absolutePath,
-    encoding === 'buffer' ? null : encoding,
-  )
+  const content = await readFile(absolutePath, encoding === 'buffer' ? null : encoding)
 
   if (typeof content !== 'string') {
     return content.buffer
@@ -30,30 +27,23 @@ export const loadFileContent = async (
   return normalizeLineBreak(content)
 }
 
-export const normalizeLineBreak = (input: string) =>
-  input.replace(/\r\n/g, '\n')
+export const normalizeLineBreak = (input: string) => input.replace(/\r\n/g, '\n')
 
-export const sendRawRequest = async (
-  baseUrl: string,
-  requestTarget: string,
-) => {
+export const sendRawRequest = async (baseUrl: string, requestTarget: string) => {
   return new Promise<string>((resolve, reject) => {
     const parsedUrl = new URL(baseUrl)
 
     const buf: Buffer[] = []
-    const client = net.createConnection(
-      { port: +parsedUrl.port, host: parsedUrl.hostname },
-      () => {
-        client.write(
-          [
-            `GET ${encodeURI(requestTarget)} HTTP/1.1`,
-            `Host: ${parsedUrl.host}`,
-            'Connection: Close',
-            '\r\n',
-          ].join('\r\n'),
-        )
-      },
-    )
+    const client = net.createConnection({ port: +parsedUrl.port, host: parsedUrl.hostname }, () => {
+      client.write(
+        [
+          `GET ${encodeURI(requestTarget)} HTTP/1.1`,
+          `Host: ${parsedUrl.host}`,
+          'Connection: Close',
+          '\r\n',
+        ].join('\r\n'),
+      )
+    })
     client.on('data', (data) => {
       buf.push(data)
     })
