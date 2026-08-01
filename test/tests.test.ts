@@ -34,7 +34,7 @@ const fetchContent = async (
 
 describe('serve', () => {
   for (const [configFile, tests] of Object.entries(testcases)) {
-    // eslint-disable-next-line vitest/valid-title
+    // oxlint-disable-next-line vitest/valid-title
     describe(configFile, () => {
       let server: ViteDevServer
       beforeAll(async () => {
@@ -46,14 +46,14 @@ describe('serve', () => {
       })
 
       for (const { name, src, dest, transformedContent, encoding, contentType } of tests) {
-        // eslint-disable-next-line vitest/valid-title
+        // oxlint-disable-next-line vitest/valid-title
         test.concurrent(name, async () => {
           const expected = src === null ? null : await loadFileContent(src, encoding)
           const actual = await fetchContent(server, dest, encoding)
           expect(actual.content).toStrictEqual(transformedContent ?? expected)
 
           if (contentType !== undefined) {
-            // eslint-disable-next-line vitest/no-conditional-expect
+            // oxlint-disable-next-line vitest/no-conditional-expect
             expect(actual.contentType).toStrictEqual(contentType)
           }
         })
@@ -94,7 +94,7 @@ describe('serve', () => {
 
 describe('build', () => {
   for (const [configFile, tests] of Object.entries(testcases)) {
-    // eslint-disable-next-line vitest/valid-title
+    // oxlint-disable-next-line vitest/valid-title
     describe(configFile, () => {
       let server: PreviewServer
       beforeAll(async () => {
@@ -106,14 +106,14 @@ describe('build', () => {
       })
 
       for (const { name, src, dest, transformedContent, encoding, contentType } of tests) {
-        // eslint-disable-next-line vitest/valid-title
+        // oxlint-disable-next-line vitest/valid-title
         test.concurrent(name, async () => {
           const expected = src === null ? null : await loadFileContent(src, encoding)
           const actual = await fetchContent(server, dest, encoding)
           expect(actual.content).toStrictEqual(transformedContent ?? expected)
 
           if (contentType !== undefined) {
-            // eslint-disable-next-line vitest/no-conditional-expect
+            // oxlint-disable-next-line vitest/no-conditional-expect
             expect(actual.contentType).toStrictEqual(contentType)
           }
         })
@@ -140,14 +140,14 @@ describe('build', () => {
     }
     expect(result).toBe('')
     expect(await loadFileContent('dist-envs/client/fixture/foo.txt')).toBe('foo\n')
-    await expect(() => loadFileContent('dist-envs/ssr/fixture/foo.txt')).rejects.toThrow()
+    await expect(() => loadFileContent('dist-envs/ssr/fixture/foo.txt')).rejects.toThrow("ENOENT")
   })
 
   test('should copy to correct outDir for non-default environment in multi-environment build', async () => {
     const builder = await createBuilder(getConfig('vite.envs-ssr.config.ts'))
     await builder.buildApp()
     expect(await loadFileContent('dist-envs-ssr/ssr/fixture/foo.txt')).toBe('foo\n')
-    await expect(() => loadFileContent('dist-envs-ssr/client/fixture/foo.txt')).rejects.toThrow()
+    await expect(() => loadFileContent('dist-envs-ssr/client/fixture/foo.txt')).rejects.toThrow("ENOENT")
   })
 
   describe('on error', () => {

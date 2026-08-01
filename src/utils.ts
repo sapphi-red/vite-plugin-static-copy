@@ -225,7 +225,7 @@ export const collectCopyTargets = async (root: string, targets: Target[], silent
     })
 
     if (matchedPaths.length === 0 && !silent) {
-      throw new Error(`No file was found to copy on ${src} src.`)
+      throw new Error(`No file was found to copy on ${String(src)} src.`)
     }
     for (const matchedPath of matchedPaths) {
       const relativeMatchedPath = path.isAbsolute(matchedPath)

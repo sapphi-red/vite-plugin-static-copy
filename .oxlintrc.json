@@ -1,0 +1,24 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "options": {
+    "typeAware": true
+  },
+  "plugins": ["typescript", "vitest"],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "error"
+  },
+  "ignorePatterns": ["dist/**", "test/fixtures/**"],
+  "rules": {
+    "no-case-declarations": "error",
+    "no-fallthrough": "error",
+    "no-shadow": "off",
+    "typescript/consistent-type-imports": "error",
+    "typescript/consistent-type-definitions": ["error", "type"],
+    "typescript/no-misused-promises": "error",
+    "typescript/require-await": "error",
+    "typescript/restrict-plus-operands": "error",
+    "vitest/no-standalone-expect": ["error", { "additionalTestBlockFunctions": ["collectTest"] }],
+    "typescript/no-unsafe-type-assertion": "off"
+  }
+}

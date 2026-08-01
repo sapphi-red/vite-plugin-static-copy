@@ -2,10 +2,8 @@ import { describe, expect, test } from 'vitest'
 import { isSubdirectoryOrEqual, groupTargetsByDirectoryTree, collectCopyTargets } from './utils'
 import path from 'node:path'
 import fs from 'node:fs'
-import { fileURLToPath } from 'node:url'
 import os from 'node:os'
 
-const _dirname = path.dirname(fileURLToPath(import.meta.url))
 const isWindows = os.platform() === 'win32'
 
 describe('isSubdirectoryOrEqual', () => {
@@ -36,7 +34,7 @@ describe('isSubdirectoryOrEqual', () => {
       : []),
   ]
 
-  const resolve = (p: string) => path.resolve(_dirname, p)
+  const resolve = (p: string) => path.resolve(import.meta.dirname, p)
 
   for (const [a, b, expected] of cases) {
     test(`isSubdirectoryOrEqual(${a}, ${b})`, () => {
@@ -76,8 +74,8 @@ describe('groupTargetsByDirectoryTree', () => {
 })
 
 describe('collectCopyTargets', () => {
-  // eslint-disable-next-line no-empty-pattern
-  const collectTest = test.extend('tmpDir', async ({}, { onCleanup }) => {
+  // oxlint-disable-next-line no-empty-pattern
+  const collectTest = test.extend('tmpDir', ({}, { onCleanup }) => {
     const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'vite-static-copy-test-'))
     fs.writeFileSync(path.join(tmpDir, 'foo.js'), '')
     fs.writeFileSync(path.join(tmpDir, 'foo.txt'), '')

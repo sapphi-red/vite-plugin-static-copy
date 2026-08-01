@@ -62,7 +62,7 @@ function viaLocal(root: string, publicDir: string, fileMap: FileMap, uri: string
       publicDir,
       file.dest,
     )
-    if (overwriteCheck === false) {
+    if (!overwriteCheck) {
       return undefined // public middleware will serve instead
     }
     const stats = statSync(filepath)
@@ -209,6 +209,7 @@ export function serveStaticCopyMiddleware(
   fileMap: FileMap,
 ): Connect.NextHandleFunction {
   // Keep the named function. The name is visible in debug logs via `DEBUG=connect:dispatcher ...`
+  // oxlint-disable-next-line typescript/no-misused-promises
   return async function viteServeStaticCopyMiddleware(req, res, next) {
     let pathname = parse(req).pathname
     if (pathname.includes('%')) {
