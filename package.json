@@ -39,7 +39,7 @@
   },
   "dependencies": {
     "chokidar": "^3.6.0",
-    "p-map": "^7.0.6",
+    "p-map": "^7.0.7",
     "picocolors": "^1.1.1",
     "tinyglobby": "^0.2.17"
   },
@@ -50,14 +50,14 @@
     "@types/node": "^22.20.1",
     "@types/throttle-debounce": "^5.0.2",
     "mrmime": "^2.0.1",
-    "oxfmt": "^0.61.0",
-    "oxlint": "^1.76.0",
+    "oxfmt": "^0.65.0",
+    "oxlint": "^1.80.0",
     "oxlint-tsgolint": "^7.0.2001",
     "throttle-debounce": "^5.0.2",
     "tsdown": "^0.22.14",
     "typescript": "^7.0.2",
-    "vite": "^8.2.0",
-    "vitest": "^4.1.10"
+    "vite": "^8.2.2",
+    "vitest": "^4.1.11"
   },
   "peerDependencies": {
     "vite": "^6.0.0 || ^7.0.0 || ^8.0.0"
@@ -65,7 +65,7 @@
   "engines": {
     "node": "^22.0.0 || >=24.0.0"
   },
-  "packageManager": "pnpm@11.18.0",
+  "packageManager": "pnpm@11.25.0",
   "compatiblePackages": {
     "schemaVersion": 1,
     "rollup": {
