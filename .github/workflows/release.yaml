@@ -25,12 +25,10 @@ jobs:
         run: npm i -g npm@^11.5.2
       - name: Create Release Pull Request or Publish to npm
         id: changesets
-        uses: changesets/action@a45c4d594aa4e2c509dc14a9f2b3b67ba3780d0d # v1.9.0
+        uses: changesets/action@ae32849d5ba541f9ae29e40e22a623bc13562f51 # v2.1.2
         with:
-          title: 'chore: update versions'
-          commit: 'chore: update versions'
-          version: pnpm run release:version
-          publish: pnpm run release:publish
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: '' # https://github.com/changesets/changesets/issues/1152#issuecomment-3190884868
+          pr-title: 'chore: update versions'
+          commit-message: 'chore: update versions'
+          version-script: pnpm run release:version
+          publish-script: pnpm run release:publish
+          github-token: ${{ secrets.GITHUB_TOKEN }}
