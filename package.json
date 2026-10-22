@@ -38,9 +38,10 @@
     "release:publish": "changeset publish"
   },
   "dependencies": {
-    "chokidar": "^3.6.0",
+    "chokidar": "^6.0.0",
     "p-map": "^7.1.1",
     "picocolors": "^1.1.1",
+    "picomatch": "^4.0.7",
     "tinyglobby": "^0.2.17"
   },
   "devDependencies": {
@@ -48,6 +49,7 @@
     "@changesets/cli": "^3.0.3",
     "@polka/url": "^1.0.0-next.29",
     "@types/node": "^22.20.5",
+    "@types/picomatch": "^4.0.3",
     "@types/throttle-debounce": "^5.0.2",
     "mrmime": "^2.0.1",
     "oxfmt": "^0.76.0",

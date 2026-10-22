@@ -4,6 +4,10 @@ import { build, createBuilder, createServer, preview } from 'vite'
 import { testcases } from './testcases'
 import { getConfig, loadFileContent, normalizeLineBreak, sendRawRequest } from './utils'
 import type { AddressInfo } from 'node:net'
+import { mkdtemp, mkdir, writeFile, rm, realpath } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
+import path from 'node:path'
+import { viteStaticCopy } from '../src'
 
 const constructUrl = (server: ViteDevServer | PreviewServer, path: string) => {
   const port = (server.httpServer!.address() as AddressInfo).port
@@ -171,6 +175,44 @@ describe('build', () => {
         result = (error as Error).message
       }
       expect(result).toBe('')
+    })
+  })
+
+  describe('watch', () => {
+    let dir: string
+    let server: ViteDevServer
+    beforeAll(async () => {
+      dir = await realpath(await mkdtemp(path.join(tmpdir(), 'vsc-watch-')))
+      await mkdir(path.join(dir, 'assets/nested'), { recursive: true })
+      await writeFile(path.join(dir, 'assets/first.txt'), 'first')
+      server = await createServer({
+        logLevel: 'silent',
+        root: dir,
+        configFile: false,
+        appType: 'custom',
+        plugins: [viteStaticCopy({ targets: [{ src: 'assets/**/*.txt', dest: 'out' }] })],
+      })
+      server = await server.listen()
+    })
+    afterAll(async () => {
+      await server.close()
+      await rm(dir, { recursive: true, force: true })
+    })
+
+    test('should serve files added after startup that match a glob', async () => {
+      expect((await fetchContent(server, '/out/assets/first.txt')).content).toBe('first')
+      await writeFile(path.join(dir, 'assets/nested/added.txt'), 'added')
+      await expect
+        .poll(async () => (await fetchContent(server, '/out/assets/nested/added.txt')).content, {
+          timeout: 5000,
+        })
+        .toBe('added')
+    })
+
+    test('should not serve added files that do not match the glob', async () => {
+      await writeFile(path.join(dir, 'assets/skip.png'), 'skip')
+      await new Promise((resolve) => setTimeout(resolve, 500))
+      expect((await fetchContent(server, '/out/assets/skip.png')).content).toBeNull()
     })
   })
 })
