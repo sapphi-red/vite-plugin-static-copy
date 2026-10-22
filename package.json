@@ -65,7 +65,7 @@
     "vite": "^6.0.0 || ^7.0.0 || ^8.0.0"
   },
   "engines": {
-    "node": "^22.0.0 || >=24.0.0"
+    "node": "^22.22.0 || >=24.0.0"
   },
   "packageManager": "pnpm@11.28.10",
   "compatiblePackages": {
