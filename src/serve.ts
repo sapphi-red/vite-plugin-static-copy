@@ -171,9 +171,7 @@ export const createWatchMatcher = (root: string, srcs: string[]) => {
     const base = staticSegments.join('/')
 
     // match against root-relative posix paths; absolute patterns are made relative
-    const rel = path.isAbsolute(normalized)
-      ? toPosix(path.relative(root, normalized))
-      : normalized
+    const rel = path.isAbsolute(normalized) ? toPosix(path.relative(root, normalized)) : normalized
     const matcher = picomatch([rel, `${rel}/**`], { dot: true })
     ;(negated ? excludes : includes).push(matcher)
     if (!negated) {
@@ -193,7 +191,9 @@ export const createWatchMatcher = (root: string, srcs: string[]) => {
   const toRelative = (p: string) => (path.isAbsolute(p) ? path.relative(root, p) : p)
   /** whether a directory can contain (or lead to) a matching file */
   const isDirRelevant = (p: string) => {
-    const segs = toPosix(toRelative(p)).split('/').filter((x) => x !== '' && x !== '.')
+    const segs = toPosix(toRelative(p))
+      .split('/')
+      .filter((x) => x !== '' && x !== '.')
     return descend.some(
       (d) =>
         segs.length <= d.maxDepth &&
