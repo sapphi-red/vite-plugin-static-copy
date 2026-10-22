@@ -2,7 +2,7 @@
 'vite-plugin-static-copy': major
 ---
 
-Update `chokidar` to v6 to fix a security vulnerability in the previous version.
+Update `chokidar` to v6. This drops the transitive `braces` dependency, which is affected by [GHSA-vfj7-8cjw-p6xm](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm) (CVE-2026-93687, stack-exhaustion denial of service).
 
 **Breaking changes:**
 
