@@ -36,7 +36,7 @@ type ResolvedTarget = SimpleTarget & {
  * @param a absolute path
  * @param b absolute path
  */
-export const isSubdirectoryOrEqual = (a: string, b: string) => {
+export const isSubdirectoryOrEqual = (a: string, b: string): boolean => {
   const normalizedA = a.toLowerCase()
   const normalizedB = b.toLowerCase()
   return normalizedA.startsWith(normalizedB + path.sep) || normalizedA === normalizedB
@@ -211,7 +211,11 @@ async function renameTarget(
   return result
 }
 
-export const collectCopyTargets = async (root: string, targets: Target[], silent: boolean) => {
+export const collectCopyTargets: (
+  root: string,
+  targets: Target[],
+  silent: boolean,
+) => Promise<SimpleTarget[]> = async (root: string, targets: Target[], silent: boolean) => {
   const copyTargets: SimpleTarget[] = []
 
   for (const target of targets) {
@@ -259,7 +263,10 @@ export const collectCopyTargets = async (root: string, targets: Target[], silent
   return copyTargets
 }
 
-export async function getTransformedContent(file: string, transform: TransformOptionObject) {
+export async function getTransformedContent(
+  file: string,
+  transform: TransformOptionObject,
+): Promise<string | Buffer | null> {
   if (transform.encoding === 'buffer') {
     const content = await fs.readFile(file)
     return transform.handler(content, file)
@@ -302,7 +309,10 @@ export const copyAll = async (
   rootDest: string,
   targets: Target[],
   silent: boolean,
-) => {
+): Promise<{
+  targets: number
+  copied: number
+}> => {
   const copyTargets = await collectCopyTargets(rootSrc, targets, silent)
 
   const resolvedTargets: ResolvedTarget[] = copyTargets.map((target) => ({
@@ -351,7 +361,7 @@ export const updateFileMapFromTargets = (
   targets: SimpleTarget[],
   fileMap: FileMap,
   absoluteBuildOutDir: string,
-) => {
+): void => {
   fileMap.clear()
   for (const target of [...targets].reverse()) {
     let dest = path.isAbsolute(target.dest)
@@ -380,12 +390,12 @@ export const updateFileMapFromTargets = (
   }
 }
 
-export const calculateMd5Base64 = (content: string | Buffer) =>
+export const calculateMd5Base64 = (content: string | Buffer): string =>
   createHash('md5').update(content).digest('base64')
 
 export const formatConsole = (msg: string) => `${pc.cyan('[vite-plugin-static-copy]')} ${msg}`
 
-export const outputCollectedLog = (logger: Logger, collectedMap: FileMap) => {
+export const outputCollectedLog = (logger: Logger, collectedMap: FileMap): void => {
   if (collectedMap.size > 0) {
     logger.info(formatConsole(pc.green(`Collected ${collectedMap.size} items.`)))
     if (process.env.DEBUG === 'vite:plugin-static-copy') {
@@ -404,7 +414,10 @@ export const outputCollectedLog = (logger: Logger, collectedMap: FileMap) => {
   }
 }
 
-export const outputCopyLog = (logger: Logger, result: { targets: number; copied: number }) => {
+export const outputCopyLog = (
+  logger: Logger,
+  result: { targets: number; copied: number },
+): void => {
   if (result.targets > 0) {
     const copiedMessage = pc.green(`Copied ${result.copied} items.`)
     const skipped = result.targets - result.copied
