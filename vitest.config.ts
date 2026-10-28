@@ -1,6 +1,6 @@
-import { defineConfig } from 'vitest/config'
+import { defineConfig, type ViteUserConfig } from 'vitest/config'
 
-export default defineConfig({
+const config: ViteUserConfig = defineConfig({
   test: {
     onConsoleLog(log) {
       if (log.includes('Generated an empty chunk')) {
@@ -28,3 +28,5 @@ export default defineConfig({
     ],
   },
 })
+
+export default config
