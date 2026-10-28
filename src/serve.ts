@@ -8,7 +8,9 @@ import {
   formatConsole,
 } from './utils'
 import { debounce } from 'throttle-debounce'
-import chokidar from 'chokidar'
+import chokidar, { type FSWatcher } from 'chokidar'
+import picomatch from 'picomatch'
+import { isDynamicPattern } from 'tinyglobby'
 import pc from 'picocolors'
 import path from 'node:path'
 
@@ -27,7 +29,7 @@ export const servePlugin = ({
   environment,
 }: ResolvedViteStaticCopyOptions): Plugin => {
   let config: ResolvedConfig
-  let watcher: chokidar.FSWatcher
+  let watcher: FSWatcher
   const fileMap: FileMap = new Map()
 
   const collectFileMap = async () => {
@@ -61,15 +63,19 @@ export const servePlugin = ({
       }
 
       // cannot use server.watcher since disableGlobbing is true
-      watcher = chokidar.watch(
+      // chokidar v4+ does not support globs, so watch the static base directories and filter events
+      const { roots, isTargetPath, ignored } = createWatchMatcher(
+        config.root,
         targets.flatMap((target) => target.src),
-        {
-          cwd: config.root,
-          ignoreInitial: true,
-          ...watch.options,
-        },
       )
+      watcher = chokidar.watch(roots, {
+        cwd: config.root,
+        ignoreInitial: true,
+        ...watch.options,
+        ignored: [ignored, ...[watch.options.ignored ?? []].flat()],
+      })
       watcher.on('add', (path) => {
+        if (!isTargetPath(path)) return
         if (!silent) {
           config.logger.info(formatConsole(`${pc.green('detected new file')} ${path}`), {
             timestamp: true,
@@ -82,6 +88,7 @@ export const servePlugin = ({
       })
       if (watch.reloadPageOnChange) {
         watcher.on('change', (path) => {
+          if (!isTargetPath(path)) return
           if (!silent) {
             config.logger.info(formatConsole(`${pc.green('file changed')} ${path}`), {
               timestamp: true,
@@ -90,6 +97,7 @@ export const servePlugin = ({
           reloadPage()
         })
         watcher.on('unlink', (path) => {
+          if (!isTargetPath(path)) return
           if (!silent) {
             config.logger.info(formatConsole(`${pc.green('file deleted')} ${path}`), {
               timestamp: true,
@@ -134,6 +142,72 @@ export const servePlugin = ({
       await watcher.close()
     },
   }
+}
+
+const toPosix = (p: string) => p.split(path.sep).join('/')
+
+/**
+ * Splits `src` patterns into static directories to watch and a matcher for emitted paths.
+ * Emitted paths are relative to `root` (or absolute when outside of it).
+ */
+export const createWatchMatcher = (root: string, srcs: string[]) => {
+  const roots = new Set<string>()
+  const includes: ((p: string) => boolean)[] = []
+  const excludes: ((p: string) => boolean)[] = []
+  // directories that may still contain matches: static prefix and max depth (Infinity if unbounded)
+  const descend: { prefix: string[]; maxDepth: number }[] = []
+
+  for (const src of srcs) {
+    const negated = src.startsWith('!')
+    const pattern = negated ? src.slice(1) : src
+    const normalized = pattern.replace(/^\.\//, '')
+    const segments = normalized.split('/')
+    const staticSegments: string[] = []
+    for (const seg of segments) {
+      if (isDynamicPattern(seg)) break
+      staticSegments.push(seg)
+    }
+    const dynamic = staticSegments.length < segments.length
+    const base = staticSegments.join('/')
+
+    // match against root-relative posix paths; absolute patterns are made relative
+    const rel = path.isAbsolute(normalized) ? toPosix(path.relative(root, normalized)) : normalized
+    const matcher = picomatch([rel, `${rel}/**`], { dot: true })
+    ;(negated ? excludes : includes).push(matcher)
+    if (!negated) {
+      roots.add(base === '' ? '.' : base)
+      const unbounded = !dynamic || /\*\*|[{(]/.test(rel)
+      descend.push({
+        prefix: staticSegments,
+        maxDepth: unbounded ? Infinity : rel.split('/').length - 1,
+      })
+    }
+  }
+
+  const isTargetPath = (p: string) => {
+    const posix = toPosix(p)
+    return includes.some((m) => m(posix)) && !excludes.some((m) => m(posix))
+  }
+  const toRelative = (p: string) => (path.isAbsolute(p) ? path.relative(root, p) : p)
+  /** whether a directory can contain (or lead to) a matching file */
+  const isDirRelevant = (p: string) => {
+    const segs = toPosix(toRelative(p))
+      .split('/')
+      .filter((x) => x !== '' && x !== '.')
+    return descend.some(
+      (d) =>
+        segs.length <= d.maxDepth &&
+        segs.slice(0, d.prefix.length).every((seg, i) => seg === d.prefix[i]),
+    )
+  }
+  /** chokidar `ignored` function: skips irrelevant directories and non-matching files */
+  const ignored = (p: string, stats?: { isFile(): boolean; isDirectory(): boolean }) => {
+    const rel = toRelative(p)
+    if (stats?.isDirectory()) return !isDirRelevant(rel)
+    if (stats?.isFile()) return !isTargetPath(rel)
+    return false
+  }
+  return { roots: [...roots], isTargetPath, ignored }
 }
 
 const findMiddlewareIndex = (stack: Connect.ServerStackItem[], names: string | string[]) => {
