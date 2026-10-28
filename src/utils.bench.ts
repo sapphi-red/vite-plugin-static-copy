@@ -1,4 +1,4 @@
-import { bench, describe } from 'vitest'
+import { expect, test } from 'vitest'
 import { groupTargetsByDirectoryTree } from './utils'
 
 type TestTarget = {
@@ -33,71 +33,83 @@ function generateTestTargets(count: number): TestTarget[] {
   return targets
 }
 
-describe('groupTargetsByDirectoryTree benchmark', () => {
-  bench('small dataset (10 targets)', () => {
-    const targets = generateTestTargets(10)
-    groupTargetsByDirectoryTree(targets)
-  })
+test('groupTargetsByDirectoryTree benchmark', async ({ bench }) => {
+  expect(
+    await bench('small dataset (10 targets)', () => {
+      const targets = generateTestTargets(10)
+      groupTargetsByDirectoryTree(targets)
+    }).run(),
+  ).toBeDefined()
 
-  bench('medium dataset (100 targets)', () => {
-    const targets = generateTestTargets(100)
-    groupTargetsByDirectoryTree(targets)
-  })
+  expect(
+    await bench('medium dataset (100 targets)', () => {
+      const targets = generateTestTargets(100)
+      groupTargetsByDirectoryTree(targets)
+    }).run(),
+  ).toBeDefined()
 
-  bench('large dataset (1000 targets)', () => {
-    const targets = generateTestTargets(1000)
-    groupTargetsByDirectoryTree(targets)
-  })
+  expect(
+    await bench('large dataset (1000 targets)', () => {
+      const targets = generateTestTargets(1000)
+      groupTargetsByDirectoryTree(targets)
+    }).run(),
+  ).toBeDefined()
 
-  bench('nested directory structure (deep)', () => {
-    const targets: TestTarget[] = []
-    const baseDepth = 10
+  expect(
+    await bench('nested directory structure (deep)', () => {
+      const targets: TestTarget[] = []
+      const baseDepth = 10
 
-    for (let depth = 0; depth < baseDepth; depth++) {
-      const pathParts = ['/home', 'user', 'project']
-      for (let i = 0; i <= depth; i++) {
-        pathParts.push(`level${i}`)
+      for (let depth = 0; depth < baseDepth; depth++) {
+        const pathParts = ['/home', 'user', 'project']
+        for (let i = 0; i <= depth; i++) {
+          pathParts.push(`level${i}`)
+        }
+        targets.push({
+          resolvedDest: pathParts.join('/'),
+          id: `nested-${depth}`,
+        })
       }
-      targets.push({
-        resolvedDest: pathParts.join('/'),
-        id: `nested-${depth}`,
-      })
-    }
 
-    groupTargetsByDirectoryTree(targets)
-  })
+      groupTargetsByDirectoryTree(targets)
+    }).run(),
+  ).toBeDefined()
 
-  bench('mixed path scenarios', () => {
-    const targets: TestTarget[] = [
-      { resolvedDest: '/home/user/project/dist/index.html', id: 'html1' },
-      { resolvedDest: '/home/user/project/dist/main.js', id: 'js1' },
-      { resolvedDest: '/home/user/project/dist/style.css', id: 'css1' },
+  expect(
+    await bench('mixed path scenarios', () => {
+      const targets: TestTarget[] = [
+        { resolvedDest: '/home/user/project/dist/index.html', id: 'html1' },
+        { resolvedDest: '/home/user/project/dist/main.js', id: 'js1' },
+        { resolvedDest: '/home/user/project/dist/style.css', id: 'css1' },
 
-      { resolvedDest: '/home/user/project/dist', id: 'parent' },
-      { resolvedDest: '/home/user/project/dist/assets', id: 'child1' },
-      {
-        resolvedDest: '/home/user/project/dist/assets/images',
-        id: 'grandchild1',
-      },
+        { resolvedDest: '/home/user/project/dist', id: 'parent' },
+        { resolvedDest: '/home/user/project/dist/assets', id: 'child1' },
+        {
+          resolvedDest: '/home/user/project/dist/assets/images',
+          id: 'grandchild1',
+        },
 
-      { resolvedDest: '/tmp/build/output.txt', id: 'independent1' },
-      { resolvedDest: '/var/backup/files/data.json', id: 'independent2' },
+        { resolvedDest: '/tmp/build/output.txt', id: 'independent1' },
+        { resolvedDest: '/var/backup/files/data.json', id: 'independent2' },
 
-      { resolvedDest: '/home/user/Project/Dist/File.txt', id: 'case1' },
-      { resolvedDest: '/home/user/project/dist/file.txt', id: 'case2' },
-    ]
+        { resolvedDest: '/home/user/Project/Dist/File.txt', id: 'case1' },
+        { resolvedDest: '/home/user/project/dist/file.txt', id: 'case2' },
+      ]
 
-    groupTargetsByDirectoryTree(targets)
-  })
+      groupTargetsByDirectoryTree(targets)
+    }).run(),
+  ).toBeDefined()
 
-  bench('duplicate paths', () => {
-    const targets: TestTarget[] = []
-    for (let i = 0; i < 50; i++) {
-      targets.push({
-        resolvedDest: '/home/user/project/dist/output',
-        id: `duplicate-${i}`,
-      })
-    }
-    groupTargetsByDirectoryTree(targets)
-  })
+  expect(
+    await bench('duplicate paths', () => {
+      const targets: TestTarget[] = []
+      for (let i = 0; i < 50; i++) {
+        targets.push({
+          resolvedDest: '/home/user/project/dist/output',
+          id: `duplicate-${i}`,
+        })
+      }
+      groupTargetsByDirectoryTree(targets)
+    }).run(),
+  ).toBeDefined()
 })

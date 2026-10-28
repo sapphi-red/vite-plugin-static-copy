@@ -15,6 +15,7 @@
     "verbatimModuleSyntax": true,
     "moduleResolution": "bundler",
     "esModuleInterop": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "isolatedDeclarations": true
   }
 }
