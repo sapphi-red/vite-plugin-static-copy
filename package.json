@@ -57,7 +57,7 @@
     "tsdown": "^0.23.5",
     "typescript": "^7.0.2",
     "vite": "^8.3.5",
-    "vitest": "^4.1.12"
+    "vitest": "^5.1.0"
   },
   "peerDependencies": {
     "vite": "^6.0.0 || ^7.0.0 || ^8.0.0"
