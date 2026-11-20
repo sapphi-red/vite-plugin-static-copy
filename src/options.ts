@@ -1,4 +1,4 @@
-import type { WatchOptions } from 'chokidar'
+import type { ChokidarOptions as WatchOptions } from 'chokidar'
 
 type MaybePromise<T> = T | Promise<T>
 type WithRequiredSingleKey<T, K extends keyof T> = {
