@@ -1,6 +1,6 @@
-import { defineConfig } from 'tsdown'
+import { defineConfig, type UserConfig } from 'tsdown'
 
-export default defineConfig({
+const config: UserConfig = defineConfig({
   entry: ['src/index.ts'],
   target: 'node22',
   dts: true,
@@ -10,3 +10,5 @@ export default defineConfig({
     onlyBundle: ['@polka/url', 'mrmime', 'throttle-debounce'],
   },
 })
+
+export default config
